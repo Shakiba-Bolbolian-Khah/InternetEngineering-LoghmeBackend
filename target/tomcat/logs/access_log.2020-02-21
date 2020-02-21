@@ -1,0 +1,8 @@
+127.0.0.1 - - [21/Feb/2020:16:07:56 +0330] "GET /Loghme HTTP/1.1" 302 - http-bio-8080-exec-1 0
+127.0.0.1 - - [21/Feb/2020:16:07:56 +0330] "GET /Loghme/ HTTP/1.1" 200 52 http-bio-8080-exec-2 671
+127.0.0.1 - - [21/Feb/2020:16:08:03 +0330] "GET / HTTP/1.1" 404 - http-bio-8080-exec-3 0
+127.0.0.1 - - [21/Feb/2020:16:08:06 +0330] "GET / HTTP/1.1" 404 - http-bio-8080-exec-4 0
+127.0.0.1 - - [21/Feb/2020:16:12:05 +0330] "GET /Loghme HTTP/1.1" 302 - http-bio-8080-exec-1 0
+127.0.0.1 - - [21/Feb/2020:16:12:05 +0330] "GET /Loghme/ HTTP/1.1" 200 52 http-bio-8080-exec-2 75
+127.0.0.1 - - [21/Feb/2020:16:12:05 +0330] "GET /favicon.ico HTTP/1.1" 404 - http-bio-8080-exec-3 0
+127.0.0.1 - - [21/Feb/2020:16:12:17 +0330] "GET /Loghme/DemoServlet HTTP/1.1" 200 22 http-bio-8080-exec-5 2
