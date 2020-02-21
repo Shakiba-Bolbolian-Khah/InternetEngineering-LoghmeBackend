@@ -1,5 +1,7 @@
 package Model;
 
+import Exceptions.*;
+
 import java.util.*;
 
 import static java.lang.Math.pow;
@@ -67,7 +69,7 @@ public class Loghme {
     public ArrayList<Restaurant> findNearestRestaurantsForUser() throws ErrorHandler {
         ArrayList<Restaurant> nearRestaurants = new ArrayList<>();
         if(restaurants.size() == 0){
-            throw new ErrorHandler("Error: Sorry there is no restaurant in Loghme at this time!");
+            throw new ErrorHandler("Sorry! There is no restaurant around you in Loghme at this time!");
         }
         for (Restaurant restaurant : restaurants) {
             Double distance = calculateDistance(restaurant.getLocation(), user.getLocation());

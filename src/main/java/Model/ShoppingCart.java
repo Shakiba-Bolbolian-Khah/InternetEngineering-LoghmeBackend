@@ -1,5 +1,7 @@
 package Model;
 
+import Exceptions.*;
+
 import java.util.*;
 
 public class ShoppingCart {
@@ -89,7 +91,7 @@ public class ShoppingCart {
         return "\""+newFood.getName()+"\" has been added to your cart successfully!";
     }
 
-    public Map<String, Integer> getCart() throws ErrorHandler{
+    public Map<String, Integer> getCart() throws ErrorHandler {
         if(isEmpty){
             throw new ErrorHandler("Error: There is nothing to show in your cart!");
         }

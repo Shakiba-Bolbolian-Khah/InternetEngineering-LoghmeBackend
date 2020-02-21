@@ -1,7 +1,5 @@
 package Model;
 
-import com.google.gson.annotations.SerializedName;
-
 public class PartyFood extends Food {
     String restaurantId;
     String restaurantName;

@@ -1,22 +1,34 @@
 package Model;
 
+import Exceptions.*;
+import Repository.APIReader;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class CommandHandler {
     private static CommandHandler instance;
     private Loghme loghme;
 
-    private CommandHandler() {
+    private CommandHandler() throws IOException {
         this.loghme = Loghme.getInstance();
+        String restaurantsData = APIReader.getInstance().getDataFromAPI("restaurants");
+        setLoghmeRestaurants(restaurantsData);
     }
 
-    public static CommandHandler getInstance(){
-        if(instance == null)
+    public static CommandHandler getInstance() throws IOException {
+        if(instance == null) {
             instance = new CommandHandler();
+        }
         return instance;
+    }
+
+    public void setLoghmeRestaurants(String restaurantsData){
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        ArrayList<Restaurant> restaurants = gson.fromJson(restaurantsData, new TypeToken<ArrayList<Restaurant>>(){}.getType());
+        loghme.setRestaurants(restaurants);
     }
 
     public void addRestaurant(String newRestaurantInfo){
@@ -50,15 +62,8 @@ public class CommandHandler {
         }
     }
 
-    public void getRestaurants(){
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String restaurantsInfo = null;
-        try {
-            restaurantsInfo = gson.toJson(loghme.getRestaurants());
-        } catch (ErrorHandler errorHandler) {
-            System.err.print(errorHandler);
-        }
-        System.out.println(restaurantsInfo);
+    public ArrayList<Restaurant> getRestaurants() throws ErrorHandler {
+        return loghme.getRestaurants();
     }
 
     public void getRestaurant(String JsonRestaurantName) {

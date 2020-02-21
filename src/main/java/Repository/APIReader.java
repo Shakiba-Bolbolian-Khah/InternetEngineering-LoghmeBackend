@@ -16,41 +16,22 @@ public class APIReader {
         return instance;
     }
 
-    public String getRestaurantsFromAPI() throws IOException {
-        URL url = new URL("http://138.197.181.131:8080/restaurants");
+    public String getDataFromAPI(String path) throws IOException {
+        URL url = new URL("http://138.197.181.131:8080/" + path);
         HttpURLConnection conn = (HttpURLConnection)url.openConnection();
         conn.setRequestMethod("GET");
         conn.connect();
         int responsecode = conn.getResponseCode();
-        String restaurantsInfo = "";
+        String data = "";
         if(responsecode != 200)
             throw new RuntimeException("HttpResponseCode: " + responsecode);
         else {
             Scanner sc = new Scanner(url.openStream());
             while(sc.hasNext()) {
-                restaurantsInfo += sc.nextLine();
+                data += sc.nextLine();
             }
             sc.close();
-            return restaurantsInfo;
-        }
-    }
-
-    public String getDeliveriesFromAPI() throws IOException {
-        URL url = new URL("http://138.197.181.131:8080/deliveries");
-        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.connect();
-        int responsecode = conn.getResponseCode();
-        String deliveriesInfo = "";
-        if(responsecode != 200)
-            throw new RuntimeException("HttpResponseCode: " + responsecode);
-        else {
-            Scanner sc = new Scanner(url.openStream());
-            while(sc.hasNext()) {
-                deliveriesInfo += sc.nextLine();
-            }
-            sc.close();
-            return deliveriesInfo;
+            return data;
         }
     }
 

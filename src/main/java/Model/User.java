@@ -1,5 +1,7 @@
 package Model;
 
+import Exceptions.*;
+
 import java.util.ArrayList;
 import java.util.Map;
 
