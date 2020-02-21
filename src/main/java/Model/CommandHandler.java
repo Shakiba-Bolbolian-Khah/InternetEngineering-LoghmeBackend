@@ -62,7 +62,7 @@ public class CommandHandler {
         }
     }
 
-    public ArrayList<Restaurant> getRestaurants() throws ErrorHandler {
+    public ArrayList<Restaurant> getRestaurants() throws Error404 {
         return loghme.getRestaurants();
     }
 
@@ -92,7 +92,7 @@ public class CommandHandler {
         }
     }
 
-    public void addToCart(String newFoodInfo){
+    public void addToCart(String newFoodInfo) throws Error404 {
         String restaurantName = "", foodName ="";
         try {
             restaurantName = new JsonParser().parse(newFoodInfo).getAsJsonObject().get("restaurantName").getAsString();

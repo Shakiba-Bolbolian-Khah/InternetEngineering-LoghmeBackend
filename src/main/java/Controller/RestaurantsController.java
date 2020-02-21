@@ -1,4 +1,5 @@
 package Controller;
+import Exceptions.Error404;
 import Exceptions.ErrorHandler;
 import Model.*;
 import javax.servlet.RequestDispatcher;
@@ -19,10 +20,10 @@ public class RestaurantsController extends HttpServlet {
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("restaurants", restaurants);
             requestDispatcher.forward(request, response);
-        } catch (ErrorHandler errorHandler) {
+        } catch (Error404 error404) {
             responsePageName = "Error404.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
-            request.setAttribute("errorMsg", errorHandler.getMessage());
+            request.setAttribute("errorMsg", error404.getMessage());
             requestDispatcher.forward(request, response);
         }
     }

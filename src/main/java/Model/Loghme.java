@@ -66,10 +66,10 @@ public class Loghme {
         return sqrt(pow(xDistance, 2) + pow(yDistance, 2));
     }
 
-    public ArrayList<Restaurant> findNearestRestaurantsForUser() throws ErrorHandler {
+    public ArrayList<Restaurant> findNearestRestaurantsForUser() throws Error404 {
         ArrayList<Restaurant> nearRestaurants = new ArrayList<>();
         if(restaurants.size() == 0){
-            throw new ErrorHandler("Sorry! There is no restaurant around you in Loghme at this time!");
+            throw new Error404("Sorry! There is no restaurant around you in Loghme at this time!");
         }
         for (Restaurant restaurant : restaurants) {
             Double distance = calculateDistance(restaurant.getLocation(), user.getLocation());
@@ -80,9 +80,9 @@ public class Loghme {
         return nearRestaurants;
     }
 
-    public ArrayList<Restaurant> getRestaurants() throws ErrorHandler {
+    public ArrayList<Restaurant> getRestaurants() throws Error404 {
         if(restaurants.size()==0){
-            throw new ErrorHandler("Error: Sorry there is no restaurant in Loghme at this time!");
+            throw new Error404("Error: Sorry there is no restaurant in Loghme at this time!");
         }
         return this.findNearestRestaurantsForUser();
     }
@@ -116,7 +116,7 @@ public class Loghme {
         throw new ErrorHandler("Error: No \"" + restaurantId +"\" restaurant exists!");
     }
 
-    public String addToCart(String restaurantId, String foodName) throws ErrorHandler{
+    public String addToCart(String restaurantId, String foodName) throws ErrorHandler, Error404 {
         if (!user.getShoppingCart().isEmpty()) {
             if (!(user.getShoppingCart().getRestaurantId().equals(restaurantId))) {
                 throw new ErrorHandler("403");
@@ -136,7 +136,7 @@ public class Loghme {
         throw new ErrorHandler("403");
     }
 
-    public String addPartyFoodToCart(String restaurantId, String partyFoodName) throws ErrorHandler {
+    public String addPartyFoodToCart(String restaurantId, String partyFoodName) throws ErrorHandler, Error404 {
         if (!user.getShoppingCart().isEmpty()) {
             if (!(user.getShoppingCart().getRestaurantId().equals(restaurantId))) {
                 throw new ErrorHandler("403");
