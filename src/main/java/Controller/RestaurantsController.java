@@ -19,11 +19,13 @@ public class RestaurantsController extends HttpServlet {
             responsePageName = "restaurants.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("restaurants", restaurants);
+            response.setStatus(HttpServletResponse.SC_OK);
             requestDispatcher.forward(request, response);
         } catch (Error404 error404) {
-            responsePageName = "Error404.jsp";
+            responsePageName = "404Error.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("errorMsg", error404.getMessage());
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             requestDispatcher.forward(request, response);
         }
     }
