@@ -1,6 +1,8 @@
 package Model;
 
 import Exceptions.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.*;
 
@@ -115,13 +117,18 @@ public class ShoppingCart {
             throw new Error403("Error: You ordered from food party! Food party time is over!!");
         }
         if (userCredit >= totalPayment){
-            ShoppingCart order = this;
+            ShoppingCart order = copyCart(this);
             clearCart();
-            System.out.println(order.getItems().get(0).getFood().getName());
             return order;
         }
         else
             throw new Error400("Error: Not enough credit!");
+    }
+
+    private static ShoppingCart copyCart(ShoppingCart cart) {
+        Gson gson = new GsonBuilder().create();
+        String orderInStringForm = gson.toJson(cart);
+        return gson.fromJson(orderInStringForm, ShoppingCart.class);
     }
 
     public void clearCart(){
