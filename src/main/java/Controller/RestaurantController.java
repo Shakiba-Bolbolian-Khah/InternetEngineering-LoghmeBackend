@@ -41,7 +41,6 @@ public class RestaurantController  extends HttpServlet {
         try {
             String foodName = request.getParameter("foodName");
             String restaurantId = request.getPathInfo().replace("/", "");
-            System.out.println(foodName+"~~~"+restaurantId);
             String msg = CommandHandler.getInstance().addToCart(restaurantId, foodName);
             String responsePageName = "/restaurant.jsp";
             Restaurant restaurant= CommandHandler.getInstance().getRestaurant(restaurantId);
@@ -63,7 +62,5 @@ public class RestaurantController  extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             requestDispatcher.forward(request, response);
         }
-
-
     }
 }

@@ -26,7 +26,9 @@ public class FoodParty {
 
     public boolean isPartyFinished(){
         LocalDateTime now = LocalDateTime.now();
-        return (enteredDate.until( now, ChronoUnit.SECONDS) > 1800);
+        if(enteredDate != null)
+            return (enteredDate.until( now, ChronoUnit.SECONDS) > 1800);
+        return false;
     }
 
     public PartyFood getOrderedFood(String restaurantId, String foodName){

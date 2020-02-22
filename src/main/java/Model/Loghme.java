@@ -19,7 +19,7 @@ public class Loghme {
         this.restaurants = new ArrayList<>();
         this.deliveries = new ArrayList<>();
         this.foodParty = new FoodParty();
-        this.user = new User("1","Ehsan","Khames Paneh","09123456789","ekhamespanah@yahoo.com",new Location(0,0),1000,new ShoppingCart(true));
+        this.user = new User("1","Ehsan","Khames Paneh","09123456789","ekhamespanah@yahoo.com",new Location(0,0),1000000,new ShoppingCart(true));
     }
 
     public static Loghme getInstance(){
@@ -161,9 +161,10 @@ public class Loghme {
         return user.getCart();
     }
 
-    public void finalizeOrder() throws ErrorHandler, Error404 {
-        int orderId = user.finalizeOrder(this.foodParty.isPartyFinished());
-        findDelivery(orderId);
+    public Order finalizeOrder() throws Error404, Error400, Error403 {
+        Order order = user.finalizeOrder(this.foodParty.isPartyFinished());
+        findDelivery(order.getId());
+        return order;
     }
 
     public void findDelivery(int orderId){

@@ -4,6 +4,8 @@ import Exceptions.*;
 import Repository.APIReader;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import com.sun.org.apache.xpath.internal.operations.Or;
+import org.graalvm.compiler.nodes.calc.IntegerTestNode;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -93,17 +95,8 @@ public class CommandHandler {
         return loghme.getCart();
     }
 
-    public void finalizeOrder() throws Error404 {
-        String finalizationResult = "";
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try{
-            finalizationResult = gson.toJson(loghme.getCart());
-            loghme.finalizeOrder();
-            finalizationResult += "\nOrder finalization done successfully!";
-            System.out.println(finalizationResult);
-        } catch (ErrorHandler errorHandler){
-            System.err.print(errorHandler);
-        }
+    public Order finalizeOrder() throws Error404, Error403, Error400 {
+        return loghme.finalizeOrder();
     }
 
     public String getCartRestaurant(){

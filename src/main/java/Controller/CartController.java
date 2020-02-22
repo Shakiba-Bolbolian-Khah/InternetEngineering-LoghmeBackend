@@ -1,7 +1,10 @@
 package Controller;
 
+import Exceptions.Error400;
+import Exceptions.Error403;
 import Exceptions.Error404;
 import Model.CommandHandler;
+import Model.Order;
 import Model.Restaurant;
 
 import javax.servlet.RequestDispatcher;
@@ -22,7 +25,7 @@ public class CartController extends HttpServlet {
         String responsePageName;
         try {
             Map<String, Integer> cart = CommandHandler.getInstance().getCart();
-            responsePageName = "cart.jsp";
+            responsePageName = "/cart.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("cart", cart);
             String restaurantName = CommandHandler.getInstance().getCartRestaurant();
@@ -30,7 +33,7 @@ public class CartController extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_OK);
             requestDispatcher.forward(request, response);
         } catch (Error404 error404) {
-            responsePageName = "404Error.jsp";
+            responsePageName = "/404Error.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("errorMsg", error404.getMessage());
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -41,18 +44,28 @@ public class CartController extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String responsePageName;
         try {
-            Map<String, Integer> cart = CommandHandler.getInstance().getCart();
-            responsePageName = "cart.jsp";
+            Order order = CommandHandler.getInstance().finalizeOrder();
+            responsePageName = "/order.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
-            request.setAttribute("cart", cart);
-            String restaurantName = CommandHandler.getInstance().getCartRestaurant();
-            request.setAttribute("restaurantName", restaurantName);
+            request.setAttribute("order", order);
             response.setStatus(HttpServletResponse.SC_OK);
             requestDispatcher.forward(request, response);
         } catch (Error404 error404) {
-            responsePageName = "404Error.jsp";
+            responsePageName = "/404Error.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("errorMsg", error404.getMessage());
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            requestDispatcher.forward(request, response);
+        } catch (Error400 error400) {
+            responsePageName = "/400Error.jsp";
+            RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
+            request.setAttribute("errorMsg", error400.getMessage());
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            requestDispatcher.forward(request, response);
+        } catch (Error403 error403) {
+            responsePageName = "/403Error.jsp";
+            RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
+            request.setAttribute("errorMsg", error403.getMessage());
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             requestDispatcher.forward(request, response);
         }

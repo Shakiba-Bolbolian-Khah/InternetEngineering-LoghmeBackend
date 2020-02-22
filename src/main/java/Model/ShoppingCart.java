@@ -106,21 +106,22 @@ public class ShoppingCart {
         totalPayment += newPrice;
     }
 
-    public ShoppingCart finalizeOrder(int userCredit, boolean isFoodPartyFinished) throws ErrorHandler {
+    public ShoppingCart finalizeOrder(int userCredit, boolean isFoodPartyFinished) throws Error403, Error400 {
         if(isEmpty){
-            throw new ErrorHandler("400-1");
+            throw new Error400("Error: There is nothing in your cart to be finalized!");
         }
         if(isFoodParty && isFoodPartyFinished){
             clearCart();
-            throw new ErrorHandler("403");
+            throw new Error403("Error: You ordered from food party! Food party time is over!!");
         }
         if (userCredit >= totalPayment){
             ShoppingCart order = this;
             clearCart();
+            System.out.println(order.getItems().get(0).getFood().getName());
             return order;
         }
         else
-            throw new ErrorHandler("400-2");
+            throw new Error400("Error: Not enough credit!");
     }
 
     public void clearCart(){

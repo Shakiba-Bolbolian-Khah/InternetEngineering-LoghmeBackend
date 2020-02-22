@@ -96,17 +96,17 @@ public class User {
         return shoppingCart.getCart();
     }
 
-    public int finalizeOrder(boolean isFoodPartyFinished) throws ErrorHandler, Error404 {
+    public Order finalizeOrder(boolean isFoodPartyFinished) throws Error403, Error404, Error400 {
         int totalPayment = shoppingCart.getTotalPayment();
-        Map<String, Integer> result = getCart();
         ShoppingCart order = shoppingCart.finalizeOrder(this.credit, isFoodPartyFinished);
         this.credit -= totalPayment;
         orders.ensureCapacity(orders.size()+1);
         int orderId = orders.size();
-        orders.add(new Order(order.getRestaurantId(),order.getRestaurantName(),order.getTotalPayment(),order.isFoodParty()
-                ,order.getItems(),orderId, State.Searching));
+        Order newOrder = new Order(order.getRestaurantId(),order.getRestaurantName(),order.getTotalPayment(),order.isFoodParty()
+                ,order.getItems(),orderId, State.Searching);
+        orders.add(newOrder);
 
-        return orderId;
+        return newOrder;
     }
 
     public String getId() {

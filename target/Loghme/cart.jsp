@@ -16,7 +16,7 @@
     <% String restaurantName = (String) request.getAttribute("restaurantName");
        Map<String,Integer> cart = (Map<String,Integer>) request.getAttribute("cart");
     %>
-    <div><%=restaurantName></div>
+    <div><%=restaurantName%></div>
     <ul>
     <%for (Map.Entry<String,Integer> entry : cart.entrySet()){ %>
         <li><%=entry.getKey()%>:‌ <%=entry.getValue()%></li>

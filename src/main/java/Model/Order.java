@@ -3,7 +3,7 @@ package Model;
 import java.util.ArrayList;
 
 enum State{
-    Searching, OnWay, Delivered;
+    Searching, Delivering, Done;
 }
 
 public class Order extends ShoppingCart {
@@ -18,4 +18,25 @@ public class Order extends ShoppingCart {
         this.state = state;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public String getDeliveryId() {
+        return deliveryId;
+    }
+
+    public String getStateString(){
+        switch (state){
+            case Searching:
+                return "Searching";
+            case Delivering:
+                return "Delivering";
+            case Done:
+                return "Done";
+            default:
+                return "";
+        }
+
+    }
 }
