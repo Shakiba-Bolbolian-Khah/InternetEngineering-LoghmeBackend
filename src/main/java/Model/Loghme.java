@@ -87,16 +87,16 @@ public class Loghme {
         return this.findNearestRestaurantsForUser();
     }
 
-    public Restaurant getRestaurant(String restaurantId) throws ErrorHandler{
+    public Restaurant getRestaurant(String restaurantId) throws Error403, Error404 {
         for (Restaurant restaurant : restaurants) {
             if (restaurant.getId().equals(restaurantId)) {
                 if (calculateDistance(restaurant.getLocation(), user.getLocation()) <= 170)
                     return restaurant;
                 else
-                    throw new ErrorHandler("403");
+                    throw new Error403("Error: Restaurant with ID "+restaurantId+" is not close enough to you!");
             }
         }
-        throw new ErrorHandler("404");
+        throw new Error404("Error: Restaurant with ID "+restaurantId+" does not exist in system!");
     }
 
     public boolean hasResraurant(String restaurantId){
@@ -116,24 +116,24 @@ public class Loghme {
         throw new ErrorHandler("Error: No \"" + restaurantId +"\" restaurant exists!");
     }
 
-    public String addToCart(String restaurantId, String foodName) throws ErrorHandler, Error404 {
+    public String addToCart(String restaurantId, String foodName) throws Error403, Error404 {
         if (!user.getShoppingCart().isEmpty()) {
             if (!(user.getShoppingCart().getRestaurantId().equals(restaurantId))) {
-                throw new ErrorHandler("403");
+                throw new Error403("Error: You chose your restaurant before! Choosing 2 restaurants is invalid!");
             }
         }
         for (Restaurant restaurant : getRestaurants()) {
             if (restaurant.getId().equals(restaurantId)) {
-                user.setShoppingCartRestaurant(restaurantId, restaurant.getName());
                 Food orderedFood = restaurant.getOrderedFood(foodName);
                 if (orderedFood != null) {
+                    user.setShoppingCartRestaurant(restaurantId, restaurant.getName());
                     return user.addToCart(orderedFood);
                 } else {
-                    throw new ErrorHandler("403");
+                    throw new Error404("Error: There is no "+foodName+" in restaurant with name: "+ restaurant.getName());
                 }
             }
         }
-        throw new ErrorHandler("403");
+        throw new Error404("Error: Restaurant with ID "+restaurantId+" does not exist in system!");
     }
 
     public String addPartyFoodToCart(String restaurantId, String partyFoodName) throws ErrorHandler, Error404 {
@@ -157,11 +157,11 @@ public class Loghme {
         throw new ErrorHandler("403");
     }
 
-    public Map<String, Integer> getCart() throws ErrorHandler {
+    public Map<String, Integer> getCart() throws Error404 {
         return user.getCart();
     }
 
-    public void finalizeOrder() throws ErrorHandler {
+    public void finalizeOrder() throws ErrorHandler, Error404 {
         int orderId = user.finalizeOrder(this.foodParty.isPartyFinished());
         findDelivery(orderId);
     }

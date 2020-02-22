@@ -1,6 +1,8 @@
 Controller/RestaurantsController.class
 Model/Loghme.class
+Controller/RestaurantController.class
 Model/ShoppingCartItem.class
+Controller/CartController.class
 Model/Order.class
 Exceptions/Error404.class
 Model/FoodParty.class
@@ -19,3 +21,4 @@ Model/User.class
 Exceptions/ErrorHandler.class
 Repository/APIReader.class
 Model/Restaurant.class
+Exceptions/Error403.class

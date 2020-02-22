@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class CommandHandler {
     private static CommandHandler instance;
@@ -66,16 +67,8 @@ public class CommandHandler {
         return loghme.getRestaurants();
     }
 
-    public void getRestaurant(String JsonRestaurantName) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try {
-            String restaurantId = new JsonParser().parse(JsonRestaurantName).getAsJsonObject().get("name").getAsString();
-            System.out.println(gson.toJson(loghme.getRestaurant(restaurantId)));
-        } catch (JsonSyntaxException e) {
-            System.out.println("Error Wrong IO Command: Wrong JSON input.");
-        } catch (ErrorHandler errorHandler){
-            System.err.print(errorHandler);
-        }
+    public Restaurant getRestaurant(String restaurantId) throws Error404, Error403 {
+        return loghme.getRestaurant(restaurantId);
     }
 
     public void getFood(String newFoodInfo){
@@ -92,29 +85,15 @@ public class CommandHandler {
         }
     }
 
-    public void addToCart(String newFoodInfo) throws Error404 {
-        String restaurantName = "", foodName ="";
-        try {
-            restaurantName = new JsonParser().parse(newFoodInfo).getAsJsonObject().get("restaurantName").getAsString();
-            foodName = new JsonParser().parse(newFoodInfo).getAsJsonObject().get("foodName").getAsString();
-            System.out.println(loghme.addToCart(restaurantName, foodName));
-        } catch (JsonSyntaxException e) {
-            System.out.println("Error Wrong IO Command: Wrong JSON input.");
-        } catch (ErrorHandler errorHandler){
-            System.err.print(errorHandler);
-        }
+    public String addToCart(String restaurantId, String foodName) throws Error404, Error403 {
+        return loghme.addToCart(restaurantId, foodName);
     }
 
-    public void getCart(){
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try{
-            System.out.println(gson.toJson(loghme.getCart()));
-        } catch (ErrorHandler errorHandler){
-            System.err.print(errorHandler);
-        }
+    public Map<String,Integer> getCart() throws Error404 {
+        return loghme.getCart();
     }
 
-    public void finalizeOrder(){
+    public void finalizeOrder() throws Error404 {
         String finalizationResult = "";
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try{
@@ -125,6 +104,10 @@ public class CommandHandler {
         } catch (ErrorHandler errorHandler){
             System.err.print(errorHandler);
         }
+    }
+
+    public String getCartRestaurant(){
+        return loghme.getUser().getShoppingCart().getRestaurantName();
     }
 
     public void getRecommendedRestaurants(){

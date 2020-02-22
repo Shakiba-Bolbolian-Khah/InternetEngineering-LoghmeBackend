@@ -92,11 +92,11 @@ public class User {
         return shoppingCart.addToCart(newFood);
     }
 
-    public Map<String, Integer> getCart() throws ErrorHandler {
+    public Map<String, Integer> getCart() throws Error404 {
         return shoppingCart.getCart();
     }
 
-    public int finalizeOrder(boolean isFoodPartyFinished) throws ErrorHandler {
+    public int finalizeOrder(boolean isFoodPartyFinished) throws ErrorHandler, Error404 {
         int totalPayment = shoppingCart.getTotalPayment();
         Map<String, Integer> result = getCart();
         ShoppingCart order = shoppingCart.finalizeOrder(this.credit, isFoodPartyFinished);

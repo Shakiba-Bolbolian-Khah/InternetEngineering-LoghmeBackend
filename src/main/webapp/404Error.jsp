@@ -1,3 +1,4 @@
+<%@ page pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,6 +10,7 @@
 </head>
 <body>
 <h1 align="center">404</h1>
+<h1 align="center">Not Found</h1>
 <%String msg = (String) request.getAttribute("errorMsg"); %>
 <h2 align="center"><%=msg%></h2>
 </body>

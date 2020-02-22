@@ -9,8 +9,8 @@
     <title>Document</title>
 </head>
 <body>
-<h1 align="center">404</h1>
-<h1 align="center">Not Found</h1>
+<h1 align="center">403</h1>
+<h1 align="center">Forbidden</h1>
 <%String msg = (String) request.getAttribute("errorMsg"); %>
 <h2 align="center"><%=msg%></h2>
 </body>

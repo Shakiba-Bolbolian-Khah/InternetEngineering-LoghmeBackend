@@ -1,6 +1,6 @@
 package Controller;
-import Exceptions.Error404;
-import Exceptions.ErrorHandler;
+
+import Exceptions.*;
 import Model.*;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -16,13 +16,13 @@ public class RestaurantsController extends HttpServlet {
         String responsePageName;
         try {
             ArrayList<Restaurant> restaurants = CommandHandler.getInstance().getRestaurants();
-            responsePageName = "restaurants.jsp";
+            responsePageName = "/restaurants.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("restaurants", restaurants);
             response.setStatus(HttpServletResponse.SC_OK);
             requestDispatcher.forward(request, response);
         } catch (Error404 error404) {
-            responsePageName = "404Error.jsp";
+            responsePageName = "/404Error.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("errorMsg", error404.getMessage());
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);

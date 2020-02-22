@@ -91,9 +91,9 @@ public class ShoppingCart {
         return "\""+newFood.getName()+"\" has been added to your cart successfully!";
     }
 
-    public Map<String, Integer> getCart() throws ErrorHandler {
+    public Map<String, Integer> getCart() throws Error404 {
         if(isEmpty){
-            throw new ErrorHandler("Error: There is nothing to show in your cart!");
+            throw new Error404("Error: There is nothing to show in your cart!");
         }
         Map<String,Integer> foods = new HashMap<>();
         for (ShoppingCartItem item : items) {

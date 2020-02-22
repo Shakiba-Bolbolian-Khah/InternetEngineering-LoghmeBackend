@@ -1,6 +1,6 @@
 <%@ page import="java.util.*" %>
 <%@ page import = "Model.*" %>
-<%@ page pageEncoding="utf-8" %>
+<%@ page pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,8 +32,8 @@
         <% ArrayList<Restaurant> restaurants = (ArrayList<Restaurant>) request.getAttribute("restaurants"); %>
         <%for (Restaurant restaurant: restaurants){ %>
                  <tr>
-                     <td><%=restaurant.getId() %></td>
-                     <td><img class="logo" src=<%=restaurant.getLogoUrl()%> alt="logo"></td>
+                     <td><%=restaurant.getId()%></td>
+                     <td><img class="logo" src="<%=restaurant.getLogoUrl()%>" alt="logo"></td>
                      <td><%=restaurant.getName()%></td>
                      <td>(<%=restaurant.getLocation().getX()%>, <%=restaurant.getLocation().getY()%>)</td>
                  </tr>

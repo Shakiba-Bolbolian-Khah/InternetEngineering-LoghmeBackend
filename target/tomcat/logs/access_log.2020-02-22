@@ -1,0 +1,13 @@
+127.0.0.1 - - [22/Feb/2020:15:52:55 +0330] "GET /Loghme HTTP/1.1" 302 - http-bio-8080-exec-1 0
+127.0.0.1 - - [22/Feb/2020:15:52:55 +0330] "GET /Loghme/ HTTP/1.1" 404 965 http-bio-8080-exec-2 15
+127.0.0.1 - - [22/Feb/2020:15:53:03 +0330] "GET /Loghme/restaurants HTTP/1.1" 200 11983 http-bio-8080-exec-3 1930
+127.0.0.1 - - [22/Feb/2020:15:53:04 +0330] "GET /favicon.ico HTTP/1.1" 404 - http-bio-8080-exec-4 0
+127.0.0.1 - - [22/Feb/2020:15:53:17 +0330] "GET /Loghme/restaurant/5e4fcf14af68ed25d5900f54 HTTP/1.1" 200 8270 http-bio-8080-exec-6 83
+127.0.0.1 - - [22/Feb/2020:15:53:19 +0330] "POST /Loghme/restaurant/5e4fcf14af68ed25d5900f54 HTTP/1.1" 500 3659 http-bio-8080-exec-7 15
+127.0.0.1 - - [22/Feb/2020:15:54:27 +0330] "GET /Loghme HTTP/1.1" 302 - http-bio-8080-exec-1 0
+127.0.0.1 - - [22/Feb/2020:15:54:27 +0330] "GET /Loghme/ HTTP/1.1" 404 965 http-bio-8080-exec-2 20
+127.0.0.1 - - [22/Feb/2020:15:54:34 +0330] "GET /Loghme/restaurants HTTP/1.1" 200 11863 http-bio-8080-exec-3 2965
+127.0.0.1 - - [22/Feb/2020:15:54:44 +0330] "GET /Loghme/restaurant/5e4fcf14af68ed25d5900f39 HTTP/1.1" 200 24737 http-bio-8080-exec-4 6
+127.0.0.1 - - [22/Feb/2020:15:54:46 +0330] "POST /Loghme/restaurant/5e4fcf14af68ed25d5900f39 HTTP/1.1" 200 24842 http-bio-8080-exec-5 2
+127.0.0.1 - - [22/Feb/2020:15:55:00 +0330] "GET /Loghme/cart HTTP/1.1" 500 6917 http-bio-8080-exec-6 671
+127.0.0.1 - - [22/Feb/2020:15:55:21 +0330] "GET /Loghme/cart HTTP/1.1" 200 441 http-bio-8080-exec-7 94
