@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User</title>
+    <title>Shopping Cart</title>
     <style>
         li, div, form {
         	padding: 5px
