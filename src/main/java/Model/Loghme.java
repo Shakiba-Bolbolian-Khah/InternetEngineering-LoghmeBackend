@@ -212,6 +212,9 @@ public class Loghme {
         return "Credit increased successfully!";
     }
 
+    public Order getOrder(int orderId) throws Error404 {
+        return user.getOrder(orderId);
+    }
     public String setFoodParty(ArrayList<PartyFood> partyFoods){
         return foodParty.setFoodParty(partyFoods);
     }

@@ -84,6 +84,35 @@ public class User {
         this.shoppingCart = shoppingCart;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public ArrayList<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(ArrayList<Order> orders) {
+        this.orders = orders;
+    }
+
+    public Order getOrder(int orderId) throws Error404 {
+        for(Order order: orders){
+            if(order.getId() == orderId){
+                return order;
+            }
+        }
+        throw new Error404("Error: There is no order with ID: "+orderId+" in system right now!");
+    }
+
+    public void setIsFoodParty(boolean state){
+        shoppingCart.setIsFoodParty(state);
+    }
+
     public void setShoppingCartRestaurant(String restaurantId, String restaurantName){
         shoppingCart.setRestaurantName(restaurantId, restaurantName);
     }
@@ -107,17 +136,5 @@ public class User {
         orders.add(newOrder);
 
         return newOrder;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setIsFoodParty(boolean state){
-        shoppingCart.setIsFoodParty(state);
     }
 }

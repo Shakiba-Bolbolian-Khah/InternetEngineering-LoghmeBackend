@@ -101,12 +101,24 @@ public class CommandHandler {
         return loghme.getUser().getShoppingCart().getRestaurantName();
     }
 
+    public User getUser(){
+        return loghme.getUser();
+    }
+
     public void getRecommendedRestaurants(){
         try {
             System.out.println(loghme.getRecommendedRestaurants());
         } catch (ErrorHandler errorHandler){
             System.err.print(errorHandler);
         }
+    }
+
+    public String increaseCredit(int addedCredit){
+        return loghme.increaseCredit(addedCredit);
+    }
+
+    public Order getOrder(int orderId) throws Error404 {
+        return loghme.getOrder(orderId);
     }
 
     public void setFoodParty(String newPartyRestaurants){

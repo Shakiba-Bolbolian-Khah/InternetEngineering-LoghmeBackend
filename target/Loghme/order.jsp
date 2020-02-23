@@ -13,7 +13,11 @@
     </style>
 </head>
 <body>
-    <% Order order = (Order) request.getAttribute("order"); %>
+    <% Order order = (Order) request.getAttribute("order");
+    %>
+    <% if(order.getId()!= null){%>
+    <div>Order ID: <%=order.getId()%></div>
+    <%}%>
     <div><%=order.getRestaurantName()%></div>
     <ul>
     <%for( ShoppingCartItem item : order.getItems()){%>
@@ -27,5 +31,9 @@
         <div>remained time : 10 min 12 sec</div>
         <%}%>
     </div>
+    <% String msg = (String) request.getAttribute("msg");
+        if(msg != null){ %>
+        <h4><%=msg%></h4>
+    <%}%>
 </body>
 </html>

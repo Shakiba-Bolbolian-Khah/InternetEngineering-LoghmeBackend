@@ -48,6 +48,7 @@ public class CartController extends HttpServlet {
             responsePageName = "/order.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("order", order);
+            request.setAttribute("msg","Your order finalized successfully!");
             response.setStatus(HttpServletResponse.SC_OK);
             requestDispatcher.forward(request, response);
         } catch (Error404 error404) {
@@ -60,13 +61,13 @@ public class CartController extends HttpServlet {
             responsePageName = "/400Error.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("errorMsg", error400.getMessage());
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             requestDispatcher.forward(request, response);
         } catch (Error403 error403) {
             responsePageName = "/403Error.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("errorMsg", error403.getMessage());
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             requestDispatcher.forward(request, response);
         }
     }
