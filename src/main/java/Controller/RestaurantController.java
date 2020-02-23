@@ -59,7 +59,7 @@ public class RestaurantController  extends HttpServlet {
             String responsePageName = "/403Error.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("errorMsg", error403.getMessage());
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             requestDispatcher.forward(request, response);
         }
     }

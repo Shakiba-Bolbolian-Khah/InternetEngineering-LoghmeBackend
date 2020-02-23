@@ -26,6 +26,9 @@ public class UserController extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             int credit = Integer.parseInt(Objects.requireNonNull(request.getParameter("credit")));
+            if (credit <= 0){
+                throw new NumberFormatException();
+            }
             User user = CommandHandler.getInstance().getUser();
             String msg = CommandHandler.getInstance().increaseCredit(credit);
             String responsePageName = "/user.jsp";

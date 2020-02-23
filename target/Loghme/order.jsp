@@ -15,8 +15,8 @@
 <body>
     <% Order order = (Order) request.getAttribute("order");
     %>
-    <% if(order.getId()!= null){%>
-    <div>Order ID: <%=order.getId()%></div>
+    <% if(order.getDeliveryId()!=null){%>
+    <div>Order ID: <%=order.getDeliveryId()%></div>
     <%}%>
     <div><%=order.getRestaurantName()%></div>
     <ul>
