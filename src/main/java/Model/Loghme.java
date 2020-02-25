@@ -167,7 +167,16 @@ public class Loghme {
         return order;
     }
 
-    public void findDelivery(int orderId){
+    public void findDelivery(int orderId) throws Error404 {
+        Order deliveringOrder = user.getOrder(orderId);
+//        String deliveriesData = APIReader.getInstance().getDataFromAPI("deliveries");
+//        System.out.println(deliveriesData);
+//        System.out.println("here!!");
+//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//        ArrayList<Delivery> deliveries = gson.fromJson(deliveriesData, new TypeToken<ArrayList<Delivery>>(){}.getType());
+//        System.out.println(deliveries.size());
+//        if(deliveriesData)
+
     }
 
     public static Map<String, Double> sortByValue(Map<String, Double> hm)
