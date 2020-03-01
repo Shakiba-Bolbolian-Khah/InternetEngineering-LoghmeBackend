@@ -1,6 +1,7 @@
 package Model;
 
-import Exceptions.*;
+
+import Exceptions.ErrorHandler;
 
 import java.util.*;
 

@@ -13,7 +13,7 @@ public class ShoppingCart {
     private String restaurantName;
     private int totalPayment;
     private boolean isFoodParty;
-    LocalDateTime firstPartyFoodEnteredTime;
+    private LocalDateTime firstPartyFoodEnteredTime;
     private ArrayList<ShoppingCartItem> items;
 
     public ShoppingCart(boolean isEmpty) {

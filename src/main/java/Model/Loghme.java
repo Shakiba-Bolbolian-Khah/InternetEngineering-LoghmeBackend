@@ -3,6 +3,7 @@ package Model;
 import Exceptions.*;
 import Scheduler.DeliveryManager;
 
+import java.time.LocalTime;
 import java.util.*;
 
 import static java.lang.Math.pow;
@@ -37,8 +38,22 @@ public class Loghme {
         this.deliveries = deliveries;
     }
 
-    public void assignDelivery(int orderId) {
-        // find best and assign it
+    public void assignDelivery(int orderId) throws Error404, Error403 {
+        Order deliveringOrder = user.getOrder(orderId);
+        double deliveringTime = 0;
+        String BestDeliveryId = null;
+        for (Delivery delivery: deliveries) {
+            double timeToDeliver = delivery.findTimeToDeliver(user.getLocation(), getRestaurant(deliveringOrder.getRestaurantId()).getLocation());
+            if (deliveringTime == 0 || timeToDeliver < deliveringTime) {
+                deliveringTime = timeToDeliver;
+                BestDeliveryId = delivery.getId();
+            }
+        }
+        int hours = (int) deliveringTime / 3600;
+        int minutes = (int) (deliveringTime % 3600) / 60;
+        int seconds = (int) deliveringTime % 60;
+        LocalTime remainingTime = LocalTime.of(hours, minutes, seconds);
+        deliveringOrder.setDeliveryForOrder(BestDeliveryId, remainingTime);
     }
 
     public User getUser() {
@@ -89,7 +104,7 @@ public class Loghme {
         if(restaurants.size()==0){
             throw new Error404("Error: Sorry there is no restaurant in Loghme at this time!");
         }
-        return this.findNearestRestaurantsForUser();
+        return findNearestRestaurantsForUser();
     }
 
     public Restaurant getRestaurant(String restaurantId) throws Error403, Error404 {
@@ -176,8 +191,7 @@ public class Loghme {
     }
 
     public void findDelivery(int orderId) {
-//        Order deliveringOrder = user.getOrder(orderId);
-        DeliveryManager deliveryManager = new DeliveryManager(5, orderId);
+        new DeliveryManager(30, orderId);
     }
 
     public static Map<String, Double> sortByValue(Map<String, Double> hm)

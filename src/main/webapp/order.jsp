@@ -13,8 +13,7 @@
     </style>
 </head>
 <body>
-    <% Order order = (Order) request.getAttribute("order");
-    %>
+    <% Order order = (Order) request.getAttribute("order"); %>
     <div>Order ID: <%=order.getId()%></div>
     <div><%=order.getRestaurantName()%></div>
     <ul>
@@ -22,11 +21,15 @@
         <li><%=item.getFood().getName()%>:‌ <%=item.getNumber()%></li>
     <%}%>
     </ul>
-    <% String state = order.getStateString(); %>
+    <% String state = order.getStateAsString(); %>
     <div>
         status : <%=state%>
-        <% if(state.equals("Delivering")){%>
-        <div>remained time : 10 min 12 sec</div>
+        <% if(state.equals("Delivering")) {
+            int hours = order.getRemainingHoursAsInteger();
+            int minutes = order.getRemainingMinutesAsInteger();
+            int seconds = order.getRemainingSecondsAsInteger();
+        %>
+        <div>remaining time: <%=hours%> hour(s) <%=minutes%> min(s) <%=seconds%> sec(s)</div>
         <%}%>
     </div>
     <% String msg = (String) request.getAttribute("msg");

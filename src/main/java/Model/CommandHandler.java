@@ -34,11 +34,11 @@ public class CommandHandler {
 
     public void setLoghmeDeliveries(String deliveriesData){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        ArrayList<Delivery> deliveries = gson.fromJson(deliveriesData, new TypeToken<ArrayList<Restaurant>>(){}.getType());
+        ArrayList<Delivery> deliveries = gson.fromJson(deliveriesData, new TypeToken<ArrayList<Delivery>>(){}.getType());
         loghme.setDeliveries(deliveries);
     }
 
-    public void assignDelivery(int orderId) {
+    public void assignDelivery(int orderId) throws Error404, Error403 {
         loghme.assignDelivery(orderId);
     }
 

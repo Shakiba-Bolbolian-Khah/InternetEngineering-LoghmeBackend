@@ -1,5 +1,7 @@
 package Scheduler;
 
+import Exceptions.Error403;
+import Exceptions.Error404;
 import Model.CommandHandler;
 import Repository.APIReader;
 
@@ -27,7 +29,7 @@ public class DeliveryManager {
                     CommandHandler.getInstance().assignDelivery(orderId);
                     cancelTimer();
                 }
-            } catch (IOException e) {
+            } catch (IOException | Error404 | Error403 e) {
                 e.printStackTrace();
             }
         }

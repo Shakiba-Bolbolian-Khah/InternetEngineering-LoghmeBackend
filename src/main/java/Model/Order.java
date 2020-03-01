@@ -1,5 +1,6 @@
 package Model;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 enum State{
@@ -9,24 +10,41 @@ enum State{
 public class Order extends ShoppingCart {
     private int id;
     private String deliveryId;
-    State state;
+    private State state;
+    private LocalTime remainingTime;
 
     public Order(String restaurantId, String restaurantName, int totalPayment, boolean isFoodParty, ArrayList<ShoppingCartItem> items, int id, State state) {
         super(true, restaurantId, restaurantName, totalPayment, isFoodParty, items);
         this.id = id;
         this.deliveryId = null;
         this.state = state;
+        this.remainingTime = null;
     }
 
     public int getId() {
         return id;
     }
 
-    public String getDeliveryId() {
-        return deliveryId;
+    public void setDeliveryForOrder(String deliveryId, LocalTime remainingTime) {
+        this.deliveryId = deliveryId;
+        this.state = State.Delivering;
+        this.remainingTime = remainingTime;
+        // timer for delivering
     }
 
-    public String getStateString(){
+    public int getRemainingHoursAsInteger() {
+        return remainingTime.getHour();
+    }
+
+    public int getRemainingMinutesAsInteger() {
+        return remainingTime.getMinute();
+    }
+
+    public int getRemainingSecondsAsInteger() {
+        return remainingTime.getSecond();
+    }
+
+    public String getStateAsString() {
         switch (state){
             case Searching:
                 return "Searching";
@@ -37,6 +55,5 @@ public class Order extends ShoppingCart {
             default:
                 return "";
         }
-
     }
 }
