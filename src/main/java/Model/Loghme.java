@@ -136,10 +136,10 @@ public class Loghme {
         throw new Error404("Error: Restaurant with ID "+restaurantId+" does not exist in system!");
     }
 
-    public String addPartyFoodToCart(String restaurantId, String partyFoodName) throws ErrorHandler, Error404 {
+    public String addPartyFoodToCart(String restaurantId, String partyFoodName) throws Error404, Error403 {
         if (!user.getShoppingCart().isEmpty()) {
             if (!(user.getShoppingCart().getRestaurantId().equals(restaurantId))) {
-                throw new ErrorHandler("403");
+                throw new Error403("Error: You chose your restaurant before! Choosing 2 restaurants is invalid!");
             }
         }
         for (Restaurant restaurant : getRestaurants()) {
@@ -150,11 +150,11 @@ public class Loghme {
                 if (orderedFood != null) {
                     return user.addToCart(orderedFood);
                 } else {
-                    throw new ErrorHandler("403");
+                    throw new Error404("Error: There is no "+partyFoodName+" in restaurant with name: "+restaurant.getName()+" in Food Party");
                 }
             }
         }
-        throw new ErrorHandler("403");
+        throw new Error404("Error: Restaurant with ID "+restaurantId+" does not exist in system!");
     }
 
     public Map<String, Integer> getCart() throws Error404 {
@@ -168,7 +168,8 @@ public class Loghme {
     }
 
     public void findDelivery(int orderId) throws Error404 {
-        Order deliveringOrder = user.getOrder(orderId);
+
+//        Order deliveringOrder = user.getOrder(orderId);
 //        String deliveriesData = APIReader.getInstance().getDataFromAPI("deliveries");
 //        System.out.println(deliveriesData);
 //        System.out.println("here!!");
@@ -224,6 +225,7 @@ public class Loghme {
     public Order getOrder(int orderId) throws Error404 {
         return user.getOrder(orderId);
     }
+
     public String setFoodParty(ArrayList<PartyFood> partyFoods){
         return foodParty.setFoodParty(partyFoods);
     }

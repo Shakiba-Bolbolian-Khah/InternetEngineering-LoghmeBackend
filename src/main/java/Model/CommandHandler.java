@@ -89,6 +89,10 @@ public class CommandHandler {
         return loghme.addToCart(restaurantId, foodName);
     }
 
+    public String addPartyFoodToCart(String restaurantId, String partyFoodName) throws Error404, Error403 {
+        return loghme.addPartyFoodToCart(restaurantId, partyFoodName);
+    }
+
     public Map<String,Integer> getCart() throws Error404 {
         return loghme.getCart();
     }
@@ -159,10 +163,7 @@ public class CommandHandler {
         loghme.setFoodParty(partyFoods);
     }
 
-    public void showFoodParty(){
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String foodPartyInfo = null;
-        foodPartyInfo = gson.toJson(loghme.getFoodParty());
-        System.out.println(foodPartyInfo);
+    public ArrayList<PartyFood> getFoodParty(){
+        return loghme.getFoodParty();
     }
 }
