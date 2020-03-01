@@ -21,7 +21,7 @@ public class FoodPartyManager implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent event) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduler.scheduleAtFixedRate(new PartyFoodFinder(), 0, 5, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(new PartyFoodFinder(), 0, 60, TimeUnit.SECONDS);
     }
 
     @Override

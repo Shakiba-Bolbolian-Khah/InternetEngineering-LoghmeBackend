@@ -107,7 +107,7 @@ public class CommandHandler {
         return loghme.getCart();
     }
 
-    public Order finalizeOrder() throws Error404, Error403, Error400 {
+    public Order finalizeOrder() throws Error403, Error400 {
         return loghme.finalizeOrder();
     }
 

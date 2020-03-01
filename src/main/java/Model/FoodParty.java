@@ -1,5 +1,8 @@
 package Model;
 
+import Exceptions.Error400;
+import Exceptions.Error403;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -24,14 +27,18 @@ public class FoodParty {
         return partyFoods;
     }
 
-    public boolean isPartyFinished(){
+    public LocalDateTime getEnteredDate() {
+        return enteredDate;
+    }
+
+    public boolean isPartyFinished(LocalDateTime shoppingCartTime){
         LocalDateTime now = LocalDateTime.now();
-        if(enteredDate != null)
-            return (enteredDate.until( now, ChronoUnit.SECONDS) > 1800);
+        if(enteredDate != null && shoppingCartTime != null)
+            return (shoppingCartTime.until( now, ChronoUnit.SECONDS) > 60);
         return false;
     }
 
-    public PartyFood getOrderedFood(String restaurantId, String foodName){
+    public PartyFood getOrderedFood(String restaurantId, String foodName) throws Error403 {
         for (PartyFood partyFood : partyFoods) {
             if ((partyFood.getRestaurantId().equals(restaurantId)) && (partyFood.getName().equals(foodName))) {
                 if(partyFood.getCount() > 0){
@@ -39,7 +46,7 @@ public class FoodParty {
                     return partyFood;
                 }
                 else {
-                    return null;
+                    throw new Error403("Error: Sorry! "+foodName+" is over!");
                 }
             }
         }

@@ -2,6 +2,7 @@ package Model;
 
 import Exceptions.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -113,6 +114,18 @@ public class User {
         shoppingCart.setIsFoodParty(state);
     }
 
+    public boolean isFoodParty(){
+        return shoppingCart.isFoodParty();
+    }
+
+    public void setTimeForShoppingCart(LocalDateTime enteredTime){
+        shoppingCart.setFirstPartyFoodEnteredTime(enteredTime);
+    }
+
+    public LocalDateTime getShoppingCartTime(){
+        return shoppingCart.getFirstPartyFoodEnteredTime();
+    }
+
     public void setShoppingCartRestaurant(String restaurantId, String restaurantName){
         shoppingCart.setRestaurantName(restaurantId, restaurantName);
     }
@@ -125,7 +138,7 @@ public class User {
         return shoppingCart.getCart();
     }
 
-    public Order finalizeOrder(boolean isFoodPartyFinished) throws Error403, Error404, Error400 {
+    public Order finalizeOrder(boolean isFoodPartyFinished) throws Error403, Error400 {
         int totalPayment = shoppingCart.getTotalPayment();
         ShoppingCart order = shoppingCart.finalizeOrder(this.credit, isFoodPartyFinished);
         this.credit -= totalPayment;

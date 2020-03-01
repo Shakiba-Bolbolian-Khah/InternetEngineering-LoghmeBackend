@@ -149,10 +149,13 @@ public class Loghme {
         }
         for (Restaurant restaurant : getRestaurants()) {
             if (restaurant.getId().equals(restaurantId)) {
-                user.setShoppingCartRestaurant(restaurantId, restaurant.getName());
-                user.setIsFoodParty(true);
                 PartyFood orderedFood = foodParty.getOrderedFood(restaurantId, partyFoodName);
                 if (orderedFood != null) {
+                    if(!user.isFoodParty()) {
+                        user.setTimeForShoppingCart(foodParty.getEnteredDate());
+                        user.setIsFoodParty(true);
+                    }
+                    user.setShoppingCartRestaurant(restaurantId, restaurant.getName());
                     return user.addToCart(orderedFood);
                 } else {
                     throw new Error404("Error: There is no "+partyFoodName+" in restaurant with name: "+restaurant.getName()+" in Food Party");
@@ -166,8 +169,8 @@ public class Loghme {
         return user.getCart();
     }
 
-    public Order finalizeOrder() throws Error404, Error400, Error403 {
-        Order order = user.finalizeOrder(this.foodParty.isPartyFinished());
+    public Order finalizeOrder() throws Error400, Error403 {
+        Order order = user.finalizeOrder(this.foodParty.isPartyFinished(user.getShoppingCartTime()));
         findDelivery(order.getId());
         return order;
     }

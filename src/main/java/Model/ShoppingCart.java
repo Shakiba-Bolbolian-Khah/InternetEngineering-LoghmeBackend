@@ -4,6 +4,7 @@ import Exceptions.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class ShoppingCart {
@@ -12,6 +13,7 @@ public class ShoppingCart {
     private String restaurantName;
     private int totalPayment;
     private boolean isFoodParty;
+    LocalDateTime firstPartyFoodEnteredTime;
     private ArrayList<ShoppingCartItem> items;
 
     public ShoppingCart(boolean isEmpty) {
@@ -28,6 +30,15 @@ public class ShoppingCart {
         this.totalPayment = totalPayment;
         this.isFoodParty = isFoodParty;
         this.items = items;
+        this.firstPartyFoodEnteredTime = null;
+    }
+
+    public LocalDateTime getFirstPartyFoodEnteredTime() {
+        return firstPartyFoodEnteredTime;
+    }
+
+    public void setFirstPartyFoodEnteredTime(LocalDateTime firstPartyFoodEnteredTime) {
+        this.firstPartyFoodEnteredTime = firstPartyFoodEnteredTime;
     }
 
     public boolean isFoodParty() {
@@ -136,5 +147,6 @@ public class ShoppingCart {
         totalPayment = 0;
         isEmpty = true;
         isFoodParty = false;
+        firstPartyFoodEnteredTime = null;
     }
 }
