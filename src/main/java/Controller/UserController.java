@@ -1,7 +1,9 @@
 package Controller;
 
-import Exceptions.*;
-import Model.*;
+import Exceptions.Error400;
+import Model.CommandHandler;
+import Model.User;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,7 +29,7 @@ public class UserController extends HttpServlet {
         try {
             int credit = Integer.parseInt(Objects.requireNonNull(request.getParameter("credit")));
             if (credit <= 0){
-                throw new NumberFormatException();
+                throw new Error400("You should enter the credit you want to increase in right format!");
             }
             User user = CommandHandler.getInstance().getUser();
             String msg = CommandHandler.getInstance().increaseCredit(credit);
@@ -37,7 +39,7 @@ public class UserController extends HttpServlet {
             request.setAttribute("msg", msg);
             response.setStatus(HttpServletResponse.SC_OK);
             requestDispatcher.forward(request, response);
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException | Error400 e){
             String responsePageName = "/400Error.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("errorMsg", "You should enter the credit you want to increase in right format!");

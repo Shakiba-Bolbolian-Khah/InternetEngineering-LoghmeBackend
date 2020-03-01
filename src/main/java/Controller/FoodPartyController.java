@@ -4,7 +4,6 @@ import Exceptions.Error403;
 import Exceptions.Error404;
 import Model.CommandHandler;
 import Model.PartyFood;
-import Model.Restaurant;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -32,7 +31,7 @@ public class FoodPartyController extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         try {
             String foodInfo = request.getParameter("foodInfo");
-            String foodData[] = foodInfo.split("\\*");
+            String[] foodData = foodInfo.split("\\*");
             String msg = CommandHandler.getInstance().addPartyFoodToCart(foodData[1], foodData[0]);
             String responsePageName = "/foodparty.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);

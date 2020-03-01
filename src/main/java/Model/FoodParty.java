@@ -1,6 +1,5 @@
 package Model;
 
-import Exceptions.Error400;
 import Exceptions.Error403;
 
 import java.time.LocalDateTime;
@@ -52,5 +51,4 @@ public class FoodParty {
         }
         return null;
     }
-
 }

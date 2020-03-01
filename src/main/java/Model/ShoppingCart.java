@@ -21,6 +21,7 @@ public class ShoppingCart {
         this.items = new ArrayList<>();
         this.totalPayment = 0;
         this.isFoodParty = false;
+        this.firstPartyFoodEnteredTime = null;
     }
 
     public ShoppingCart(boolean isEmpty, String restaurantId, String restaurantName, int totalPayment, boolean isFoodParty, ArrayList<ShoppingCartItem> items) {

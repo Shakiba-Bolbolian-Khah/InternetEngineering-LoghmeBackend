@@ -1,7 +1,9 @@
 package Controller;
 
-import Exceptions.*;
-import Model.*;
+import Exceptions.Error404;
+import Model.CommandHandler;
+import Model.Restaurant;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

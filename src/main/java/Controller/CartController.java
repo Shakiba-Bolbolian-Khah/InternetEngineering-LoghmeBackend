@@ -5,7 +5,6 @@ import Exceptions.Error403;
 import Exceptions.Error404;
 import Model.CommandHandler;
 import Model.Order;
-import Model.Restaurant;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
 
 
@@ -50,12 +48,6 @@ public class CartController extends HttpServlet {
             request.setAttribute("order", order);
             request.setAttribute("msg","Your order finalized successfully!");
             response.setStatus(HttpServletResponse.SC_OK);
-            requestDispatcher.forward(request, response);
-        } catch (Error404 error404) {
-            responsePageName = "/404Error.jsp";
-            RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
-            request.setAttribute("errorMsg", error404.getMessage());
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             requestDispatcher.forward(request, response);
         } catch (Error400 error400) {
             responsePageName = "/400Error.jsp";

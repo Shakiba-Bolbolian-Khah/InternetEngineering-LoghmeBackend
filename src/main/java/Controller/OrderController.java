@@ -1,7 +1,8 @@
 package Controller;
 
 import Exceptions.Error404;
-import Model.*;
+import Model.CommandHandler;
+import Model.Order;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -19,9 +20,7 @@ public class OrderController extends HttpServlet {
         try {
             String id = request.getPathInfo().replace("/", "");
             int orderId = Integer.parseInt(Objects.requireNonNull(id));
-            System.out.println(orderId);
             Order order = CommandHandler.getInstance().getOrder(orderId);
-            System.out.println(order.getId());
             String responsePageName = "/order.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("order", order);
