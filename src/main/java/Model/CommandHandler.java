@@ -32,6 +32,16 @@ public class CommandHandler {
         loghme.setRestaurants(restaurants);
     }
 
+    public void setLoghmeDeliveries(String deliveriesData){
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        ArrayList<Delivery> deliveries = gson.fromJson(deliveriesData, new TypeToken<ArrayList<Restaurant>>(){}.getType());
+        loghme.setDeliveries(deliveries);
+    }
+
+    public void assignDelivery(int orderId) {
+        loghme.assignDelivery(orderId);
+    }
+
     public void addRestaurant(String newRestaurantInfo){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Restaurant newRestaurant = null;

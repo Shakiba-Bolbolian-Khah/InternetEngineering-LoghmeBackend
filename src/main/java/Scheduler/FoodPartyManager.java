@@ -13,9 +13,8 @@ public class FoodPartyManager implements ServletContextListener {
     private ScheduledExecutorService scheduler;
 
     public static FoodPartyManager getInstance() {
-        if(instance == null) {
+        if(instance == null)
             instance = new FoodPartyManager();
-        }
         return instance;
     }
 

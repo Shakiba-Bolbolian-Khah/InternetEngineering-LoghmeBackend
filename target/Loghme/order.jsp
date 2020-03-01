@@ -15,9 +15,7 @@
 <body>
     <% Order order = (Order) request.getAttribute("order");
     %>
-    <% if(Integer.toString(order.getId()) != null){%>
     <div>Order ID: <%=order.getId()%></div>
-    <%}%>
     <div><%=order.getRestaurantName()%></div>
     <ul>
     <%for( ShoppingCartItem item : order.getItems()){%>
