@@ -2,6 +2,7 @@ package Controller;
 
 import Exceptions.*;
 import Model.CommandHandler;
+import Model.Location;
 import Model.Restaurant;
 
 import javax.servlet.RequestDispatcher;
@@ -16,10 +17,12 @@ public class RestaurantController  extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             String restaurantId = request.getPathInfo().replace("/", "");
-            Restaurant restaurant= CommandHandler.getInstance().getRestaurant(restaurantId);
             String responsePageName = "/restaurant.jsp";
+            Restaurant restaurant= CommandHandler.getInstance().getRestaurant(restaurantId);
+            Location userLocation = CommandHandler.getInstance().getUser().getLocation();
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("restaurant", restaurant);
+            request.setAttribute("userLocation", userLocation);
             response.setStatus(HttpServletResponse.SC_OK);
             requestDispatcher.forward(request, response);
         } catch (Error404 error404) {
@@ -45,8 +48,10 @@ public class RestaurantController  extends HttpServlet {
             String msg = CommandHandler.getInstance().addToCart(restaurantId, foodName);
             String responsePageName = "/restaurant.jsp";
             Restaurant restaurant= CommandHandler.getInstance().getRestaurant(restaurantId);
+            Location userLocation = CommandHandler.getInstance().getUser().getLocation();
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("restaurant", restaurant);
+            request.setAttribute("userLocation", userLocation);
             request.setAttribute("msg", msg);
             response.setStatus(HttpServletResponse.SC_OK);
             requestDispatcher.forward(request, response);

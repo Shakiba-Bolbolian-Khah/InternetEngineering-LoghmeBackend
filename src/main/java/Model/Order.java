@@ -49,15 +49,7 @@ public class Order extends ShoppingCart {
         return remainingTime.getHour()*3600 + remainingTime.getMinute()*60 + remainingTime.getSecond();
     }
 
-    public int getRemainingHoursAsInteger() {
-        return remainingTime.getHour();
-    }
-
-    public int getRemainingMinutesAsInteger() {
-        return remainingTime.getMinute();
-    }
-
-    public int getRemainingSecondsAsInteger() {
-        return remainingTime.getSecond();
+    public LocalTime getRemainingTime() {
+        return remainingTime;
     }
 }

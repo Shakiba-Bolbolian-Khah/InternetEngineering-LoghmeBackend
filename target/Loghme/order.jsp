@@ -26,9 +26,9 @@
     <div>
         status : <%=state.getStateAsString(state)%>
         <% if(state.equals(OrderState.Delivering)) {
-            int hours = order.getRemainingHoursAsInteger();
-            int minutes = order.getRemainingMinutesAsInteger();
-            int seconds = order.getRemainingSecondsAsInteger();
+            int hours = order.getRemainingTime().getHour();
+            int minutes = order.getRemainingTime().getMinute();
+            int seconds = order.getRemainingTime().getSecond();
         %>
         <div>remaining time: <%=hours%> hour(s) <%=minutes%> min(s) <%=seconds%> sec(s)</div>
         <%}%>

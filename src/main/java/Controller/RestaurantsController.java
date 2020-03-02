@@ -2,6 +2,7 @@ package Controller;
 
 import Exceptions.Error404;
 import Model.CommandHandler;
+import Model.Location;
 import Model.Restaurant;
 
 import javax.servlet.RequestDispatcher;
@@ -18,9 +19,11 @@ public class RestaurantsController extends HttpServlet {
         String responsePageName;
         try {
             ArrayList<Restaurant> restaurants = CommandHandler.getInstance().getRestaurants();
+            Location userLocation = CommandHandler.getInstance().getUser().getLocation();
             responsePageName = "/restaurants.jsp";
             RequestDispatcher requestDispatcher = request.getRequestDispatcher(responsePageName);
             request.setAttribute("restaurants", restaurants);
+            request.setAttribute("userLocation", userLocation);
             response.setStatus(HttpServletResponse.SC_OK);
             requestDispatcher.forward(request, response);
         } catch (Error404 error404) {

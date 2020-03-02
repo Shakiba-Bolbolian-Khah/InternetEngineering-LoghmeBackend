@@ -1,9 +1,12 @@
 package Model;
 
-
 import Exceptions.ErrorHandler;
 
-import java.util.*;
+import java.time.LocalTime;
+import java.util.ArrayList;
+
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 
 public class Restaurant{
     private String name;
@@ -24,10 +27,6 @@ public class Restaurant{
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getId() {
@@ -80,7 +79,7 @@ public class Restaurant{
     }
 
     public Double getScore(){
-        Double score = 0.0;
+        double score = 0.0;
         for (Food food : menu) {
             score += food.getPopularity();
         }
@@ -88,5 +87,23 @@ public class Restaurant{
             score = score / menu.size();
         }
         return score;
+    }
+
+    public LocalTime estimateDeliveryTime(Location userLocation) {
+        double estimatedTime = calculateEstimatedTimeToDeliver(userLocation);
+        int hours = (int) estimatedTime / 3600;
+        int minutes = (int) (estimatedTime % 3600) / 60;
+        int seconds = (int) estimatedTime % 60;
+        return LocalTime.of(hours, minutes, seconds);
+    }
+
+    public double calculateEstimatedTimeToDeliver(Location userLoc) {
+        int estimatedVelocity = 5;
+        int estimatedDeliveryFindingTime = 60;
+        int restaurantToUserDistanceX = location.getX() - userLoc.getX();
+        int restaurantToUserDistanceY = location.getY() - userLoc.getY();
+        double restaurantToUserDistance = sqrt(pow(restaurantToUserDistanceX, 2) + pow(restaurantToUserDistanceY, 2));
+        double distance = 1.5 * restaurantToUserDistance;
+        return distance/estimatedVelocity + estimatedDeliveryFindingTime;
     }
 }
