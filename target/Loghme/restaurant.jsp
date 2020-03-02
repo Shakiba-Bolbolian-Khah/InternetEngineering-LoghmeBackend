@@ -1,5 +1,7 @@
-<%@ page import="java.util.*" %>
-<%@ page import = "Model.*" %>
+<%@ page import="java.time.LocalTime" %>
+<%@ page import="Model.Restaurant" %>
+<%@ page import="Model.Location" %>
+<%@ page import="Model.Food" %>
 <%@ page pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,15 +25,14 @@
 </head>
 <body>
     <ul>
-    <% Restaurant restaurant = (Restaurant) request.getAttribute("restaurant"); %>
+    <% Restaurant restaurant = (Restaurant) request.getAttribute("restaurant");
+        Location userLocation = (Location) request.getAttribute("userLocation");
+        LocalTime estimatedTime = restaurant.estimateDeliveryTime(userLocation); %>
         <li>id: <%=restaurant.getId()%></li>
         <li>name: <%=restaurant.getName()%></li>
         <li>location: (<%=restaurant.getLocation().getX()%>, <%=restaurant.getLocation().getY()%>)</li>
         <li>logo: <img src="<%=restaurant.getLogoUrl()%>" alt="logo"></li>
-
-        <!-- IN CASE YOU WANT SOME BONUS : -->
-        <!-- <li>estimated delivery time: 10 min 2 sec </li> -->
-
+        <li>estimated delivery time: <%=estimatedTime.getHour()%> hour(s) <%=estimatedTime.getMinute()%> min(s) <%=estimatedTime.getSecond()%> sec(s)</li>
         <li>menu:
         	<ul>
                 <%for (Food food: restaurant.getMenu()){ %>
