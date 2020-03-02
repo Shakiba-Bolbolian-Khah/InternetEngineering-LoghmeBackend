@@ -1,8 +1,9 @@
 package Model;
 
 import Exceptions.*;
-import Scheduler.DeliveryManager;
+import Scheduler.DeliveryFindingManager;
 
+import java.io.IOException;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -38,7 +39,7 @@ public class Loghme {
         this.deliveries = deliveries;
     }
 
-    public void assignDelivery(int orderId) throws Error404, Error403 {
+    public void assignDelivery(int orderId) throws Error404, Error403, IOException {
         Order deliveringOrder = user.getOrder(orderId);
         double deliveringTime = 0;
         String BestDeliveryId = null;
@@ -191,7 +192,7 @@ public class Loghme {
     }
 
     public void findDelivery(int orderId) {
-        new DeliveryManager(30, orderId);
+        new DeliveryFindingManager(30, orderId);
     }
 
     public static Map<String, Double> sortByValue(Map<String, Double> hm)

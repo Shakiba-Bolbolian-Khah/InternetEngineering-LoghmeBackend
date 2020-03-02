@@ -1,6 +1,7 @@
 package Model;
 
 import Exceptions.*;
+import Repository.OrderState;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -113,7 +114,7 @@ public class User {
         orders.ensureCapacity(orders.size()+1);
         int orderId = orders.size();
         Order newOrder = new Order(order.getRestaurantId(),order.getRestaurantName(),order.getTotalPayment(),order.isFoodParty()
-                ,order.getItems(),orderId, State.Searching);
+                ,order.getItems(),orderId, OrderState.Searching);
         orders.add(newOrder);
 
         return newOrder;

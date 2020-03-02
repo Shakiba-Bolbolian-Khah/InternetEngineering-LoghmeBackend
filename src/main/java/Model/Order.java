@@ -1,19 +1,20 @@
 package Model;
 
+import Exceptions.Error404;
+import Repository.OrderState;
+import Scheduler.DeliveringTimeManager;
+
+import java.io.IOException;
 import java.time.LocalTime;
 import java.util.ArrayList;
-
-enum State{
-    Searching, Delivering, Done;
-}
 
 public class Order extends ShoppingCart {
     private int id;
     private String deliveryId;
-    private State state;
+    private OrderState state;
     private LocalTime remainingTime;
 
-    public Order(String restaurantId, String restaurantName, int totalPayment, boolean isFoodParty, ArrayList<ShoppingCartItem> items, int id, State state) {
+    public Order(String restaurantId, String restaurantName, int totalPayment, boolean isFoodParty, ArrayList<ShoppingCartItem> items, int id, OrderState state) {
         super(true, restaurantId, restaurantName, totalPayment, isFoodParty, items);
         this.id = id;
         this.deliveryId = null;
@@ -21,15 +22,31 @@ public class Order extends ShoppingCart {
         this.remainingTime = null;
     }
 
+    public void setDeliveryForOrder(String deliveryId, LocalTime remainingTime) throws IOException, Error404 {
+        this.deliveryId = deliveryId;
+        this.state = OrderState.Delivering;
+        this.remainingTime = remainingTime;
+        new DeliveringTimeManager(id);
+    }
+
     public int getId() {
         return id;
     }
 
-    public void setDeliveryForOrder(String deliveryId, LocalTime remainingTime) {
-        this.deliveryId = deliveryId;
-        this.state = State.Delivering;
-        this.remainingTime = remainingTime;
-        // timer for delivering
+    public OrderState getState() {
+        return state;
+    }
+
+    public void setState(OrderState state) {
+        this.state = state;
+    }
+
+    public void decreaseRemainingTime(int seconds) {
+        this.remainingTime = this.remainingTime.minusSeconds(seconds);
+    }
+
+    public int getRemainingTimeInSeconds() {
+        return remainingTime.getHour()*3600 + remainingTime.getMinute()*60 + remainingTime.getSecond();
     }
 
     public int getRemainingHoursAsInteger() {
@@ -42,18 +59,5 @@ public class Order extends ShoppingCart {
 
     public int getRemainingSecondsAsInteger() {
         return remainingTime.getSecond();
-    }
-
-    public String getStateAsString() {
-        switch (state){
-            case Searching:
-                return "Searching";
-            case Delivering:
-                return "Delivering";
-            case Done:
-                return "Done";
-            default:
-                return "";
-        }
     }
 }

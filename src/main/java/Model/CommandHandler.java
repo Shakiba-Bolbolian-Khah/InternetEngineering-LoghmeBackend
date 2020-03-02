@@ -38,13 +38,13 @@ public class CommandHandler {
         loghme.setDeliveries(deliveries);
     }
 
-    public void assignDelivery(int orderId) throws Error404, Error403 {
+    public void assignDelivery(int orderId) throws Error404, Error403, IOException {
         loghme.assignDelivery(orderId);
     }
 
     public void addRestaurant(String newRestaurantInfo){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        Restaurant newRestaurant = null;
+        Restaurant newRestaurant;
         try {
             newRestaurant = gson.fromJson(newRestaurantInfo, Restaurant.class);
             System.out.println(loghme.addRestaurant(newRestaurant));
@@ -83,7 +83,7 @@ public class CommandHandler {
 
     public void getFood(String newFoodInfo){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String restaurantName = null, foodName = null;
+        String restaurantName, foodName;
         try {
             restaurantName = new JsonParser().parse(newFoodInfo).getAsJsonObject().get("restaurantName").getAsString();
             foodName = new JsonParser().parse(newFoodInfo).getAsJsonObject().get("foodName").getAsString();

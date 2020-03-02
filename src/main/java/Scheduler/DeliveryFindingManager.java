@@ -9,11 +9,11 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class DeliveryManager {
+public class DeliveryFindingManager {
     private Timer timer;
     private int orderId;
 
-    public DeliveryManager(int seconds, int orderId) {
+    public DeliveryFindingManager(int seconds, int orderId) {
         this.orderId = orderId;
         timer = new Timer();
         timer.scheduleAtFixedRate(new DeliveryFinder(), 0, seconds*1000);

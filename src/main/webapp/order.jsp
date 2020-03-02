@@ -1,5 +1,6 @@
-<%@ page import="java.util.*" %>
-<%@ page import = "Model.*" %>
+<%@ page import="Model.Order" %>
+<%@ page import="Model.ShoppingCartItem" %>
+<%@ page import="Repository.OrderState" %>
 <%@ page pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,10 +22,10 @@
         <li><%=item.getFood().getName()%>:‌ <%=item.getNumber()%></li>
     <%}%>
     </ul>
-    <% String state = order.getStateAsString(); %>
+    <% OrderState state = order.getState(); %>
     <div>
-        status : <%=state%>
-        <% if(state.equals("Delivering")) {
+        status : <%=state.getStateAsString(state)%>
+        <% if(state.equals(OrderState.Delivering)) {
             int hours = order.getRemainingHoursAsInteger();
             int minutes = order.getRemainingMinutesAsInteger();
             int seconds = order.getRemainingSecondsAsInteger();
