@@ -1,0 +1,9 @@
+0:0:0:0:0:0:0:1 - - [05/Apr/2020:06:11:11 +0430] "GET /Loghme HTTP/1.1" 302 - http-bio-8080-exec-2 0
+0:0:0:0:0:0:0:1 - - [05/Apr/2020:06:11:14 +0430] "GET /Loghme/ HTTP/1.1" 404 965 http-bio-8080-exec-3 198
+0:0:0:0:0:0:0:1 - - [05/Apr/2020:06:11:14 +0430] "GET /favicon.ico HTTP/1.1" 404 - http-bio-8080-exec-4 0
+0:0:0:0:0:0:0:1 - - [05/Apr/2020:06:11:20 +0430] "GET /Loghme/restaurants HTTP/1.1" 200 175607 http-bio-8080-exec-7 1007
+0:0:0:0:0:0:0:1 - - [05/Apr/2020:06:12:28 +0430] "GET /Loghme HTTP/1.1" 302 - http-bio-8080-exec-2 0
+0:0:0:0:0:0:0:1 - - [05/Apr/2020:06:12:28 +0430] "GET /Loghme/ HTTP/1.1" 404 965 http-bio-8080-exec-3 20
+0:0:0:0:0:0:0:1 - - [05/Apr/2020:06:12:30 +0430] "GET /Loghme/restaurants HTTP/1.1" 404 8584 http-bio-8080-exec-5 133
+0:0:0:0:0:0:0:1 - - [05/Apr/2020:06:12:44 +0430] "GET /Loghme/restaurants HTTP/1.1" 404 8584 http-bio-8080-exec-9 11
+0:0:0:0:0:0:0:1 - - [05/Apr/2020:06:18:18 +0430] "GET /Loghme/restaurants HTTP/1.1" 404 4 http-bio-8080-exec-2 102

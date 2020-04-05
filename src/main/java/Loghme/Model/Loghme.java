@@ -245,7 +245,7 @@ public class Loghme {
         return foodParty.setFoodParty(partyFoods);
     }
 
-    public ArrayList<PartyFood> getFoodParty(){
-        return foodParty.getPartyFoods();
+    public FoodParty getFoodParty(){
+        return foodParty;
     }
 }

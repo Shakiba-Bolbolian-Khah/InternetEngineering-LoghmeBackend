@@ -14,13 +14,15 @@ import java.io.IOException;
 public class RestaurantService {
 
     @RequestMapping(value = "/restaurant/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getRestaurant(@PathVariable(value = "id") String id) {
+    public ResponseEntity<?> getRestaurant(@PathVariable(value = "id") String restaurantId) {
         try {
-            return new ResponseEntity<>(CommandHandler.getInstance().getRestaurant(id), HttpStatus.OK);
-        } catch (Error404 | IOException error) {
-            return new ResponseEntity<>(error.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(CommandHandler.getInstance().getRestaurant(restaurantId), HttpStatus.OK);
+        } catch (Error404 error404) {
+            return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Error403 error403) {
             return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
+        } catch (IOException error) {
+            return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 }

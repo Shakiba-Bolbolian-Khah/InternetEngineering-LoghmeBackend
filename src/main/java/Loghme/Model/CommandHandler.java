@@ -173,7 +173,7 @@ public class CommandHandler {
         loghme.setFoodParty(partyFoods);
     }
 
-    public ArrayList<PartyFood> getFoodParty(){
+    public FoodParty getFoodParty(){
         return loghme.getFoodParty();
     }
 }

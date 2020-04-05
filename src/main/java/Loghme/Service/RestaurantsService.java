@@ -16,8 +16,10 @@ public class RestaurantsService {
     public ResponseEntity<?> getRestaurants() {
         try {
             return new ResponseEntity<>(CommandHandler.getInstance().getRestaurants(), HttpStatus.OK);
-        } catch (Error404 | IOException error) {
-            return new ResponseEntity<>(error.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Error404 error404) {
+            return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IOException error) {
+            return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 }
