@@ -99,8 +99,16 @@ public class CommandHandler {
         return loghme.addToCart(restaurantId, foodName);
     }
 
+    public String deleteFromCart(String restaurantId, String foodName) throws Error403, Error404 {
+        return loghme.deleteFromCart(restaurantId, foodName);
+    }
+
     public String addPartyFoodToCart(String restaurantId, String partyFoodName) throws Error404, Error403 {
         return loghme.addPartyFoodToCart(restaurantId, partyFoodName);
+    }
+
+    public String deletePartyFoodFromCart(String restaurantId, String partyFoodName) throws Error404, Error403 {
+        return loghme.deletePartyFoodFromCart(restaurantId, partyFoodName);
     }
 
     public Map<String,Integer> getCart() throws Error404 {

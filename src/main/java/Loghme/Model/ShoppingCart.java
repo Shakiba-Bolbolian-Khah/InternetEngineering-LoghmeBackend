@@ -93,16 +93,42 @@ public class ShoppingCart {
         return -1;
     }
 
+    public int contains(String foodName){
+        for(int i = 0; i < items.size(); i++){
+            if(items.get(i).getFood().getName().equals(foodName)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public String addToCart(Food newFood){
         int foodIndex = contain(newFood);
         if(foodIndex == -1){
             items.add(new ShoppingCartItem(newFood,1));
         }
         else{
-            items.get(foodIndex).IncreaseNumber();
+            items.get(foodIndex).increaseNumber();
         }
         calculateTotalPayment(newFood.getPrice());
         return "\""+newFood.getName()+"\" has been added to your cart successfully!";
+    }
+
+    public String deleteFromCart(String foodName) throws Error404 {
+        int foodIndex = contains(foodName);
+        if(foodIndex == -1){
+            throw new Error404("Error: There is no food with name "+foodName+" in your cart to delete.");
+        }
+        else {
+            items.get(foodIndex).decreaseNumber();
+            if (items.get(foodIndex).getNumber() == 0){
+                items.remove(foodIndex);
+                return "\""+foodName+"\" has been deleted from your cart successfully!";
+            }
+            else{
+                return "\""+foodName+"\" number has been decreased in your cart successfully!";
+            }
+        }
     }
 
     public Map<String, Integer> getCart() throws Error404 {

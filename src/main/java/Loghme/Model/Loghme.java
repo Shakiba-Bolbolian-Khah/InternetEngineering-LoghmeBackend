@@ -157,6 +157,16 @@ public class Loghme {
         throw new Error404("Error: Restaurant with ID "+restaurantId+" does not exist in system!");
     }
 
+    public String deleteFromCart(String restaurantId, String foodName) throws Error403, Error404 {
+        if (user.getShoppingCart().isEmpty()) {
+            throw new Error403("Error: There is nothing in your cart to delete.");
+        }
+        if (user.getShoppingCart().getRestaurantId().equals(restaurantId))
+            return user.deleteFromCart(foodName);
+        else
+            throw new Error403("Error: You had not ordered food from this restaurant!");
+    }
+
     public String addPartyFoodToCart(String restaurantId, String partyFoodName) throws Error404, Error403 {
         if (!user.getShoppingCart().isEmpty()) {
             if (!(user.getShoppingCart().getRestaurantId().equals(restaurantId))) {
@@ -179,6 +189,24 @@ public class Loghme {
             }
         }
         throw new Error404("Error: Restaurant with ID "+restaurantId+" does not exist in system!");
+    }
+
+    public String deletePartyFoodFromCart(String restaurantId, String partyFoodName) throws Error403, Error404 {
+        if (user.getShoppingCart().isEmpty()) {
+            throw new Error403("Error: There is nothing in your cart to delete.");
+        }
+        if (user.getShoppingCart().getRestaurantId().equals(restaurantId)) {
+            if (!user.isFoodParty())
+                throw new Error403("Error: You had not selected any food from food party!");
+            else {
+                if (!this.foodParty.isPartyFinished(user.getShoppingCartTime()))
+                    return user.deleteFromCart(partyFoodName);
+                else
+                    throw new Error403("Error: Food party time is over!");
+            }
+        }
+        else
+            throw new Error403("Error: You had not ordered food from this restaurant!");
     }
 
     public Map<String, Integer> getCart() throws Error404 {

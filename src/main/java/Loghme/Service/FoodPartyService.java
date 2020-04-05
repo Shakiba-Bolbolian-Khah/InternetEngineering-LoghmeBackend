@@ -22,8 +22,8 @@ public class FoodPartyService {
         }
     }
 
-    @RequestMapping(value = "/foodparty", method = RequestMethod.POST)
-    public ResponseEntity<?> buyPartyFood(
+    @RequestMapping(value = "/foodparty", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> addPartyFoodToCart(
             @RequestParam(value = "userId", required = true) String userId,
             @RequestParam(value = "id", required = true) String restaurantId,
             @RequestParam(value = "name", required = true) String partyFoodName) {
@@ -37,4 +37,20 @@ public class FoodPartyService {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
+
+    @RequestMapping(value = "/foodparty", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> deleteFromCart(@RequestParam(value = "userId", required = true) String id,
+                                            @RequestParam(value = "id", required = true) String restaurantId,
+                                            @RequestParam(value = "name", required = true) String foodName){
+        try {
+            return new ResponseEntity<>(CommandHandler.getInstance().deletePartyFoodFromCart(restaurantId, foodName), HttpStatus.OK);
+        } catch (Error404 error404) {
+            return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Error403 error403) {
+            return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
+        } catch (IOException error) {
+            return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        }
+    }
+
 }

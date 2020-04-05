@@ -25,7 +25,11 @@ public class ShoppingCartItem {
         this.number = number;
     }
 
-    public void IncreaseNumber(){
+    public void increaseNumber(){
         number++;
+    }
+
+    public void decreaseNumber(){
+        number--;
     }
 }

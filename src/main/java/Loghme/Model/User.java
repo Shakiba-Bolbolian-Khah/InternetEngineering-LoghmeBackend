@@ -103,6 +103,10 @@ public class User {
         return shoppingCart.addToCart(newFood);
     }
 
+    public String deleteFromCart(String foodName) throws Error404 {
+        return shoppingCart.deleteFromCart(foodName);
+    }
+
     public Map<String, Integer> getCart() throws Error404 {
         return shoppingCart.getCart();
     }
