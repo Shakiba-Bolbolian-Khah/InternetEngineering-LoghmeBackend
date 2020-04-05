@@ -111,7 +111,7 @@ public class CommandHandler {
         return loghme.deletePartyFoodFromCart(restaurantId, partyFoodName);
     }
 
-    public Map<String,Integer> getCart() throws Error404 {
+    public ArrayList<ShoppingCartItem> getCart() throws Error404 {
         return loghme.getCart();
     }
 

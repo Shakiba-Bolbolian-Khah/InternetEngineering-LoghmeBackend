@@ -3,6 +3,21 @@ package Loghme.Model;
 public class ShoppingCartItem {
     private Food food;
     private int number;
+    private int price;
+
+    public ShoppingCartItem(Food food, int number, int price) {
+        this.food = food;
+        this.number = number;
+        this.price = price;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
 
     public int getNumber() {
         return number;
@@ -18,11 +33,6 @@ public class ShoppingCartItem {
 
     public void setFood(Food food) {
         this.food = food;
-    }
-
-    public ShoppingCartItem(Food food, int number) {
-        this.food = food;
-        this.number = number;
     }
 
     public void increaseNumber(){

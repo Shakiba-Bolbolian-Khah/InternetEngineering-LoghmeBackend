@@ -209,8 +209,8 @@ public class Loghme {
             throw new Error403("Error: You had not ordered food from this restaurant!");
     }
 
-    public Map<String, Integer> getCart() throws Error404 {
-        return user.getCart();
+    public ArrayList<ShoppingCartItem> getCart() throws Error404 {
+        return user.doGetCart();
     }
 
     public Order finalizeOrder() throws Error400, Error403 {

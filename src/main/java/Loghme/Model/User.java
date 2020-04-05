@@ -5,7 +5,6 @@ import Loghme.Repository.OrderState;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class User {
     private String id;
@@ -107,8 +106,8 @@ public class User {
         return shoppingCart.deleteFromCart(foodName);
     }
 
-    public Map<String, Integer> getCart() throws Error404 {
-        return shoppingCart.getCart();
+    public ArrayList<ShoppingCartItem> doGetCart() throws Error404 {
+        return shoppingCart.doGetCart();
     }
 
     public Order finalizeOrder(boolean isFoodPartyFinished) throws Error403, Error400 {

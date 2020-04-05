@@ -16,7 +16,7 @@ public class UserService {
     @RequestMapping(value = "/users/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getUser(@PathVariable(value = "userId") String id) {
         try {
-            return new ResponseEntity<>(CommandHandler.getInstance().getUser().getEmail(), HttpStatus.OK);
+            return new ResponseEntity<>(CommandHandler.getInstance().getUser(), HttpStatus.OK);
         } catch (IOException error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }

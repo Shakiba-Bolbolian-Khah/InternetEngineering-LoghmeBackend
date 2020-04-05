@@ -105,7 +105,7 @@ public class ShoppingCart {
     public String addToCart(Food newFood){
         int foodIndex = contain(newFood);
         if(foodIndex == -1){
-            items.add(new ShoppingCartItem(newFood,1));
+            items.add(new ShoppingCartItem(newFood,1, newFood.getPrice()));
         }
         else{
             items.get(foodIndex).increaseNumber();
@@ -131,15 +131,10 @@ public class ShoppingCart {
         }
     }
 
-    public Map<String, Integer> getCart() throws Error404 {
-        if(isEmpty){
+    public ArrayList<ShoppingCartItem> doGetCart() throws Error404 {
+        if(isEmpty)
             throw new Error404("Error: There is nothing to show in your cart!");
-        }
-        Map<String,Integer> foods = new HashMap<>();
-        for (ShoppingCartItem item : items) {
-            foods.put(item.getFood().getName(), item.getNumber());
-        }
-        return foods;
+        return items;
     }
 
     public void calculateTotalPayment(int newPrice) {
