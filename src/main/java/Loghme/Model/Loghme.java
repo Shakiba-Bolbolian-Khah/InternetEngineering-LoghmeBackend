@@ -22,7 +22,7 @@ public class Loghme {
         this.restaurants = new ArrayList<>();
         this.deliveries = new ArrayList<>();
         this.foodParty = new FoodParty();
-        this.user = new User("1","Ehsan","Khames Paneh","09123456789","ekhamespanah@yahoo.com",new Location(0,0),1000000,new ShoppingCart(true));
+        this.user = new User("1","احسان","خامس‌پناه","۰۹۱۲۳۴۵۶۷۸۹","ekhamespanah@yahoo.com",new Location(0,0),100000,new ShoppingCart(true));
     }
 
     public static Loghme getInstance(){
@@ -209,7 +209,7 @@ public class Loghme {
             throw new Error403("Error: You had not ordered food from this restaurant!");
     }
 
-    public ArrayList<ShoppingCartItem> getCart() throws Error404 {
+    public ArrayList<ShoppingCartItem> doGetCart() throws Error404 {
         return user.doGetCart();
     }
 

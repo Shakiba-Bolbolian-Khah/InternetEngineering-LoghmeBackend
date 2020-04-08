@@ -25,7 +25,7 @@ public class UserService {
     @RequestMapping(value = "/users/cart", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getCart(@RequestParam(value = "userId", required = true) String id) {
         try {
-            return new ResponseEntity<>(CommandHandler.getInstance().getCart(), HttpStatus.OK);
+            return new ResponseEntity<>(CommandHandler.getInstance().doGetCart(), HttpStatus.OK);
         } catch (Error404 error404) {
             return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IOException error){
@@ -33,9 +33,10 @@ public class UserService {
         }
     }
 
-    @RequestMapping(value = "/users/{userId}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/users/{userId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> increaseCreadit(@PathVariable(value = "userId") String id,
                                              @RequestParam(value = "credit", required = true) int newCredit){
+        System.out.println("credit"+ newCredit);
         try {
             return new ResponseEntity<>(CommandHandler.getInstance().increaseCredit(newCredit), HttpStatus.OK);
         } catch (IOException error) {

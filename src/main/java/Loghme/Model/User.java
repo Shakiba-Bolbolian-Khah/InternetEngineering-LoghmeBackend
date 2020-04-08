@@ -27,6 +27,7 @@ public class User {
         this.credit = credit;
         this.shoppingCart = shoppingCart;
         this.orders = new ArrayList<>();
+        orders.add(new Order("1","jafar",10,true, new ArrayList<ShoppingCartItem>(),2, OrderState.Searching));
     }
 
     public String getFirstName() {
