@@ -1,5 +1,6 @@
 package Loghme.Service;
 
+import Loghme.Exceptions.Error400;
 import Loghme.Exceptions.Error403;
 import Loghme.Exceptions.Error404;
 import Loghme.Model.CommandHandler;
@@ -22,35 +23,29 @@ public class FoodPartyService {
         }
     }
 
-    @RequestMapping(value = "/foodparty", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/foodparty", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addPartyFoodToCart(
             @RequestParam(value = "userId", required = true) String userId,
             @RequestParam(value = "id", required = true) String restaurantId,
-            @RequestParam(value = "name", required = true) String partyFoodName) {
+            @RequestParam(value = "name", required = true) String partyFoodName,
+            @RequestParam(value = "action", required = true) String action) {
         try {
-            return new ResponseEntity<>(CommandHandler.getInstance().addPartyFoodToCart(restaurantId, partyFoodName), HttpStatus.OK);
+            switch (action) {
+                case "add":
+                    return new ResponseEntity<>(CommandHandler.getInstance().addPartyFoodToCart(restaurantId, partyFoodName), HttpStatus.OK);
+                case "delete":
+                    return new ResponseEntity<>(CommandHandler.getInstance().deletePartyFoodFromCart(restaurantId, partyFoodName), HttpStatus.OK);
+                default:
+                    throw new Error400("Error: You can just add or delete a food.");
+            }
         } catch (Error404 error404) {
             return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Error403 error403) {
             return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
+        } catch (Error400 error400) {
+            return new ResponseEntity<>(error400.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (IOException error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
-
-    @RequestMapping(value = "/foodparty", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> deleteFromCart(@RequestParam(value = "userId", required = true) String id,
-                                            @RequestParam(value = "id", required = true) String restaurantId,
-                                            @RequestParam(value = "name", required = true) String foodName){
-        try {
-            return new ResponseEntity<>(CommandHandler.getInstance().deletePartyFoodFromCart(restaurantId, foodName), HttpStatus.OK);
-        } catch (Error404 error404) {
-            return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (Error403 error403) {
-            return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
-        } catch (IOException error) {
-            return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
-        }
-    }
-
 }
