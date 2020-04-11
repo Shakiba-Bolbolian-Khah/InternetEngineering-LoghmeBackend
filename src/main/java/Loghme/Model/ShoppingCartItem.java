@@ -4,11 +4,20 @@ public class ShoppingCartItem {
     private Food food;
     private int number;
     private int price;
-
-    public ShoppingCartItem(Food food, int number, int price) {
+    private boolean isPartyFood;
+    public ShoppingCartItem(Food food, int number, int price, boolean isPartyFood) {
         this.food = food;
         this.number = number;
         this.price = price;
+        this.isPartyFood = isPartyFood;
+    }
+
+    public boolean isPartyFood() {
+        return isPartyFood;
+    }
+
+    public void setPartyFood(boolean partyFood) {
+        isPartyFood = partyFood;
     }
 
     public int getPrice() {

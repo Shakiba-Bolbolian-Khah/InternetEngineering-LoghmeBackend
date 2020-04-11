@@ -102,10 +102,10 @@ public class ShoppingCart {
         return -1;
     }
 
-    public String addToCart(Food newFood){
+    public String addToCart(Food newFood, boolean isPartyFood){
         int foodIndex = contain(newFood);
         if(foodIndex == -1){
-            items.add(new ShoppingCartItem(newFood,1, newFood.getPrice()));
+            items.add(new ShoppingCartItem(newFood,1, newFood.getPrice(), isPartyFood));
         }
         else{
             items.get(foodIndex).increaseNumber();

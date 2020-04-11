@@ -37,7 +37,6 @@ public class UserService {
     @RequestMapping(value = "/users/{userId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> increaseCreadit(@PathVariable(value = "userId") String id,
                                              @RequestParam(value = "credit", required = true) int newCredit){
-        System.out.println("credit"+ newCredit);
         try {
             return new ResponseEntity<>(CommandHandler.getInstance().increaseCredit(newCredit), HttpStatus.OK);
         } catch (IOException error) {
@@ -50,12 +49,19 @@ public class UserService {
             @RequestParam(value = "userId", required = true) String id,
             @RequestParam(value = "id", required = true) String restaurantId,
             @RequestParam(value = "name", required = true) String foodName,
-            @RequestParam(value = "action", required = true) String action){
+            @RequestParam(value = "action", required = true) String action,
+            @RequestParam(value = "count", required = true) int count){
         try {
             switch (action) {
                 case "add":
+                    for(int i = 0; i < count-1; i++){
+                        CommandHandler.getInstance().addToCart(restaurantId, foodName);
+                    }
                     return new ResponseEntity<>(CommandHandler.getInstance().addToCart(restaurantId, foodName), HttpStatus.OK);
                 case "delete":
+                    for(int i = 0; i < count-1; i++){
+                        CommandHandler.getInstance().deleteFromCart(restaurantId, foodName);
+                    }
                     return new ResponseEntity<>(CommandHandler.getInstance().deleteFromCart(restaurantId, foodName), HttpStatus.OK);
                 default:
                     throw new Error400("Error: You can just add or delete a food.");

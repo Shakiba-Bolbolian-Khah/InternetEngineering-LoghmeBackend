@@ -148,7 +148,7 @@ public class Loghme {
                 Food orderedFood = restaurant.getOrderedFood(foodName);
                 if (orderedFood != null) {
                     user.setShoppingCartRestaurant(restaurantId, restaurant.getName());
-                    return user.addToCart(orderedFood);
+                    return user.addToCart(orderedFood, false);
                 } else {
                     throw new Error404("Error: There is no "+foodName+" in restaurant with name: "+ restaurant.getName());
                 }
@@ -182,7 +182,7 @@ public class Loghme {
                         user.setIsFoodParty(true);
                     }
                     user.setShoppingCartRestaurant(restaurantId, restaurant.getName());
-                    return user.addToCart(orderedFood);
+                    return user.addToCart(orderedFood, true);
                 } else {
                     throw new Error404("Error: There is no "+partyFoodName+" in restaurant with name: "+restaurant.getName()+" in Food Party");
                 }

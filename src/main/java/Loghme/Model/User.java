@@ -98,8 +98,8 @@ public class User {
         shoppingCart.setRestaurantName(restaurantId, restaurantName);
     }
 
-    public String addToCart(Food newFood){
-        return shoppingCart.addToCart(newFood);
+    public String addToCart(Food newFood, boolean isPartyFood){
+        return shoppingCart.addToCart(newFood, isPartyFood);
     }
 
     public String deleteFromCart(String foodName) throws Error404 {

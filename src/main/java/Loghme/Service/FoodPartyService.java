@@ -28,12 +28,19 @@ public class FoodPartyService {
             @RequestParam(value = "userId", required = true) String userId,
             @RequestParam(value = "id", required = true) String restaurantId,
             @RequestParam(value = "name", required = true) String partyFoodName,
-            @RequestParam(value = "action", required = true) String action) {
+            @RequestParam(value = "action", required = true) String action,
+            @RequestParam(value = "count", required = true) int count){
         try {
             switch (action) {
                 case "add":
+                    for(int i = 0; i < count-1; i++){
+                        CommandHandler.getInstance().addPartyFoodToCart(restaurantId, partyFoodName);
+                    }
                     return new ResponseEntity<>(CommandHandler.getInstance().addPartyFoodToCart(restaurantId, partyFoodName), HttpStatus.OK);
                 case "delete":
+                    for(int i = 0; i < count-1; i++){
+                        CommandHandler.getInstance().deletePartyFoodFromCart(restaurantId, partyFoodName);
+                    }
                     return new ResponseEntity<>(CommandHandler.getInstance().deletePartyFoodFromCart(restaurantId, partyFoodName), HttpStatus.OK);
                 default:
                     throw new Error400("Error: You can just add or delete a food.");
