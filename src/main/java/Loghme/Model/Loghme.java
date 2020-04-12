@@ -31,11 +31,12 @@ public class Loghme {
         return instance;
     }
 
-    public void setRestaurants(ArrayList<Restaurant> restaurants) {
-        this.restaurants = restaurants;
+    public void doSetRestaurants(ArrayList<Restaurant> restaurants) {
+        if (this.restaurants.size() == 0)
+            this.restaurants = restaurants;
     }
 
-    public void setDeliveries(ArrayList<Delivery> deliveries) {
+    public void doSetDeliveries(ArrayList<Delivery> deliveries) {
         this.deliveries = deliveries;
     }
 
@@ -44,7 +45,7 @@ public class Loghme {
         double deliveringTime = 0;
         String BestDeliveryId = null;
         for (Delivery delivery: deliveries) {
-            double timeToDeliver = delivery.findTimeToDeliver(user.getLocation(), getRestaurant(deliveringOrder.getRestaurantId()).getLocation());
+            double timeToDeliver = delivery.findTimeToDeliver(user.getLocation(), doGetRestaurant(deliveringOrder.getRestaurantId()).getLocation());
             if (deliveringTime == 0 || timeToDeliver < deliveringTime) {
                 deliveringTime = timeToDeliver;
                 BestDeliveryId = delivery.getId();
@@ -62,18 +63,18 @@ public class Loghme {
     }
 
     public String addRestaurant(Restaurant newRestaurant) throws ErrorHandler {
-        for (Restaurant restaurant : restaurants) {
+        for (Restaurant restaurant : this.restaurants) {
             if (restaurant.getId().equals(newRestaurant.getId())) {
                 throw new ErrorHandler("Error: \"" + newRestaurant.getName() + "\" restaurant was added before!");
             }
         }
-        restaurants.ensureCapacity(restaurants.size()+1);
-        restaurants.add(newRestaurant);
+        this.restaurants.ensureCapacity(this.restaurants.size()+1);
+        this.restaurants.add(newRestaurant);
         return "\"" + newRestaurant.getName() + "\" restaurant has been added successfully!";
     }
 
     public String addFood(Food newFood, String restaurantId) throws ErrorHandler {
-        for (Restaurant restaurant : restaurants) {
+        for (Restaurant restaurant : this.restaurants) {
             if (restaurant.getId().equals(restaurantId)) {
                 return restaurant.addFood(newFood);
             }
@@ -89,10 +90,10 @@ public class Loghme {
 
     public ArrayList<Restaurant> findNearestRestaurantsForUser() throws Error404 {
         ArrayList<Restaurant> nearRestaurants = new ArrayList<>();
-        if(restaurants.size() == 0){
+        if(this.restaurants.size() == 0){
             throw new Error404("Sorry! There is no restaurant around you in Loghme at this time!");
         }
-        for (Restaurant restaurant : restaurants) {
+        for (Restaurant restaurant : this.restaurants) {
             Double distance = calculateDistance(restaurant.getLocation(), user.getLocation());
             if (distance <= 170) {
                 nearRestaurants.add(restaurant);
@@ -101,15 +102,15 @@ public class Loghme {
         return nearRestaurants;
     }
 
-    public ArrayList<Restaurant> getRestaurants() throws Error404 {
-        if(restaurants.size()==0){
+    public ArrayList<Restaurant> doGetRestaurants() throws Error404 {
+        if(this.restaurants.size()==0){
             throw new Error404("Error: Sorry there is no restaurant in Loghme at this time!");
         }
         return findNearestRestaurantsForUser();
     }
 
-    public Restaurant getRestaurant(String restaurantId) throws Error403, Error404 {
-        for (Restaurant restaurant : restaurants) {
+    public Restaurant doGetRestaurant(String restaurantId) throws Error403, Error404 {
+        for (Restaurant restaurant : this.restaurants) {
             if (restaurant.getId().equals(restaurantId)) {
                 if (calculateDistance(restaurant.getLocation(), user.getLocation()) <= 170)
                     return restaurant;
@@ -121,7 +122,7 @@ public class Loghme {
     }
 
     public boolean hasResraurant(String restaurantId){
-        for (Restaurant restaurant : restaurants) {
+        for (Restaurant restaurant : this.restaurants) {
             if (restaurant.getId().equals(restaurantId))
                 return true;
         }
@@ -129,7 +130,7 @@ public class Loghme {
     }
 
     public Food getFood(String restaurantId, String foodName) throws ErrorHandler {
-        for (Restaurant restaurant : restaurants) {
+        for (Restaurant restaurant : this.restaurants) {
             if (restaurant.getId().equals(restaurantId)) {
                 return restaurant.getFood(foodName);
             }
@@ -143,7 +144,7 @@ public class Loghme {
                 throw new Error403("Error: You chose your restaurant before! Choosing 2 restaurants is invalid!");
             }
         }
-        for (Restaurant restaurant : getRestaurants()) {
+        for (Restaurant restaurant : doGetRestaurants()) {
             if (restaurant.getId().equals(restaurantId)) {
                 Food orderedFood = restaurant.getOrderedFood(foodName);
                 if (orderedFood != null) {
@@ -173,7 +174,11 @@ public class Loghme {
                 throw new Error403("Error: You chose your restaurant before! Choosing 2 restaurants is invalid!");
             }
         }
-        for (Restaurant restaurant : getRestaurants()) {
+        System.out.println(this.restaurants.size());
+        for (Restaurant restaurant : this.restaurants) {
+            System.out.println(restaurant.getId());
+            System.out.println(restaurantId);
+            System.out.println("=========");
             if (restaurant.getId().equals(restaurantId)) {
                 PartyFood orderedFood = foodParty.getOrderedFood(restaurantId, partyFoodName);
                 if (orderedFood != null) {
@@ -238,12 +243,12 @@ public class Loghme {
         return temp;
     }
 
-    public String getRecommendedRestaurants() throws ErrorHandler {
+    public String doGetRecommendedRestaurants() throws ErrorHandler {
         Map<String,Double> scores = new HashMap<>();
-        if(restaurants.size() == 0){
+        if(this.restaurants.size() == 0){
             throw new ErrorHandler("Error: Sorry there is no restaurant in Loghme at this time!");
         }
-        for (Restaurant restaurant : restaurants) {
+        for (Restaurant restaurant : this.restaurants) {
             int xDistance = restaurant.getLocation().getX() - user.getLocation().getX();
             int yDistance = restaurant.getLocation().getY() - user.getLocation().getY();
             Double distance = sqrt(pow(xDistance, 2) + pow(yDistance, 2));

@@ -16,7 +16,7 @@ public class CommandHandler {
     private CommandHandler() throws IOException {
         this.loghme = Loghme.getInstance();
         String restaurantsData = APIReader.getInstance().getDataFromAPI("restaurants");
-        setLoghmeRestaurants(restaurantsData);
+        doSetLoghmeRestaurants(restaurantsData);
     }
 
     public static CommandHandler getInstance() throws IOException {
@@ -26,16 +26,16 @@ public class CommandHandler {
         return instance;
     }
 
-    public void setLoghmeRestaurants(String restaurantsData){
+    public void doSetLoghmeRestaurants(String restaurantsData){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         ArrayList<Restaurant> restaurants = gson.fromJson(restaurantsData, new TypeToken<ArrayList<Restaurant>>(){}.getType());
-        loghme.setRestaurants(restaurants);
+        loghme.doSetRestaurants(restaurants);
     }
 
-    public void setLoghmeDeliveries(String deliveriesData){
+    public void doSetLoghmeDeliveries(String deliveriesData){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         ArrayList<Delivery> deliveries = gson.fromJson(deliveriesData, new TypeToken<ArrayList<Delivery>>(){}.getType());
-        loghme.setDeliveries(deliveries);
+        loghme.doSetDeliveries(deliveries);
     }
 
     public void assignDelivery(int orderId) throws Error404, Error403, IOException {
@@ -73,12 +73,12 @@ public class CommandHandler {
         }
     }
 
-    public ArrayList<Restaurant> getRestaurants() throws Error404 {
-        return loghme.getRestaurants();
+    public ArrayList<Restaurant> doGetRestaurants() throws Error404 {
+        return loghme.doGetRestaurants();
     }
 
-    public Restaurant getRestaurant(String restaurantId) throws Error404, Error403 {
-        return loghme.getRestaurant(restaurantId);
+    public Restaurant doGetRestaurant(String restaurantId) throws Error404, Error403 {
+        return loghme.doGetRestaurant(restaurantId);
     }
 
     public void getFood(String newFoodInfo){
@@ -129,7 +129,7 @@ public class CommandHandler {
 
     public void getRecommendedRestaurants(){
         try {
-            System.out.println(loghme.getRecommendedRestaurants());
+            System.out.println(loghme.doGetRecommendedRestaurants());
         } catch (ErrorHandler errorHandler){
             System.err.print(errorHandler);
         }
@@ -143,14 +143,14 @@ public class CommandHandler {
         return loghme.getOrder(orderId);
     }
 
-    public void setFoodParty(String newPartyRestaurants){
+    public void doSetFoodParty(String newPartyRestaurants){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         ArrayList<Restaurant> partyRestaurants = gson.fromJson(newPartyRestaurants, new TypeToken<ArrayList<Restaurant>>(){}.getType());
-        setPartyRestaurants(partyRestaurants);
-        setPartyFoods(newPartyRestaurants);
+        doSetPartyRestaurants(partyRestaurants);
+        doSetPartyFoods(newPartyRestaurants);
     }
 
-    public void setPartyRestaurants(ArrayList<Restaurant> partyRestaurants){
+    public void doSetPartyRestaurants(ArrayList<Restaurant> partyRestaurants){
         for(Restaurant restaurant: partyRestaurants){
             if(!loghme.hasResraurant(restaurant.getId())){
                 restaurant.clearMenu();
@@ -163,7 +163,7 @@ public class CommandHandler {
         }
     }
 
-    public void setPartyFoods(String newPartyRestaurants){
+    public void doSetPartyFoods(String newPartyRestaurants){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonArray restaurantsArray = new JsonParser().parse(newPartyRestaurants).getAsJsonArray();
         ArrayList<PartyFood> partyFoods = new ArrayList<>();

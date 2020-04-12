@@ -25,7 +25,7 @@ public class DeliveryFindingManager {
             try {
                 String deliveriesInfo = APIReader.getInstance().getDataFromAPI("deliveries");
                 if (!deliveriesInfo.equals("[]")) {
-                    CommandHandler.getInstance().setLoghmeDeliveries(deliveriesInfo);
+                    CommandHandler.getInstance().doSetLoghmeDeliveries(deliveriesInfo);
                     CommandHandler.getInstance().assignDelivery(orderId);
                     cancelTimer();
                 }

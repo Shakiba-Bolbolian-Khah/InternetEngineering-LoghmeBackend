@@ -10,7 +10,7 @@ public class PartyFoodFinder implements Runnable {
     public void run() {
         try {
             String foodPartyInfo = APIReader.getInstance().getDataFromAPI("foodparty");
-            CommandHandler.getInstance().setFoodParty(foodPartyInfo);
+            CommandHandler.getInstance().doSetFoodParty(foodPartyInfo);
         } catch (IOException e) {
             e.printStackTrace();
         }

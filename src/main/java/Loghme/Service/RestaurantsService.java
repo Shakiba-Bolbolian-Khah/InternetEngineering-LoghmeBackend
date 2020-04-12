@@ -16,7 +16,7 @@ public class RestaurantsService {
     @RequestMapping(value = "/restaurants", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getRestaurants() {
         try {
-            return new ResponseEntity<>(CommandHandler.getInstance().getRestaurants(), HttpStatus.OK);
+            return new ResponseEntity<>(CommandHandler.getInstance().doGetRestaurants(), HttpStatus.OK);
         } catch (Error404 error404) {
             return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IOException error) {
@@ -27,7 +27,7 @@ public class RestaurantsService {
     @RequestMapping(value = "/restaurants/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getRestaurant(@PathVariable(value = "id") String restaurantId) {
         try {
-            return new ResponseEntity<>(CommandHandler.getInstance().getRestaurant(restaurantId), HttpStatus.OK);
+            return new ResponseEntity<>(CommandHandler.getInstance().doGetRestaurant(restaurantId), HttpStatus.OK);
         } catch (Error404 error404) {
             return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Error403 error403) {
