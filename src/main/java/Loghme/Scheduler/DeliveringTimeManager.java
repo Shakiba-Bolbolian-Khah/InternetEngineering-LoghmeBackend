@@ -22,7 +22,7 @@ public class DeliveringTimeManager {
     public class TimeCountDown extends TimerTask {
         @Override
         public void run() {
-            if (order.getRemainingTimeInSeconds() == 0) {
+            if (order.doGetRemainingTimeInSeconds() == 0) {
                 order.setState(OrderState.Done);
                 cancelTimer();
             }

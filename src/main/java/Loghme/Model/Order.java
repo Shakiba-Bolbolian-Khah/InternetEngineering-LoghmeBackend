@@ -45,7 +45,7 @@ public class Order extends ShoppingCart {
         this.remainingTime = this.remainingTime.minusSeconds(seconds);
     }
 
-    public int getRemainingTimeInSeconds() {
+    public int doGetRemainingTimeInSeconds() {
         return remainingTime.getHour()*3600 + remainingTime.getMinute()*60 + remainingTime.getSecond();
     }
 

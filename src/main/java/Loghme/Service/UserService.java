@@ -22,7 +22,6 @@ public class UserService {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
-
     @RequestMapping(value = "/users/cart", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getCart(@RequestParam(value = "userId", required = true) String id) {
         try {
@@ -33,7 +32,18 @@ public class UserService {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
-
+    @RequestMapping(value = "/users/finalize", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> finalizeCart(@RequestParam(value = "userId", required = true) String id) {
+        try {
+            return new ResponseEntity<>(CommandHandler.getInstance().finalizeOrder(), HttpStatus.OK);
+        } catch (IOException error){
+            return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (Error400 error400) {
+            return new ResponseEntity<>(error400.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Error403 error403) {
+            return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
+        }
+    }
     @RequestMapping(value = "/users/{userId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> increaseCreadit(@PathVariable(value = "userId") String id,
                                              @RequestParam(value = "credit", required = true) int newCredit){
