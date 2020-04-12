@@ -111,7 +111,7 @@ public class CommandHandler {
         return loghme.deletePartyFoodFromCart(restaurantId, partyFoodName);
     }
 
-    public ArrayList<ShoppingCartItem> doGetCart() throws Error404 {
+    public ShoppingCart doGetCart() throws Error404 {
         return loghme.doGetCart();
     }
 

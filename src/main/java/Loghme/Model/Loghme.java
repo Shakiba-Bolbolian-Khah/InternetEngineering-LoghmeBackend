@@ -176,9 +176,6 @@ public class Loghme {
         }
         System.out.println(this.restaurants.size());
         for (Restaurant restaurant : this.restaurants) {
-            System.out.println(restaurant.getId());
-            System.out.println(restaurantId);
-            System.out.println("=========");
             if (restaurant.getId().equals(restaurantId)) {
                 PartyFood orderedFood = foodParty.getOrderedFood(restaurantId, partyFoodName);
                 if (orderedFood != null) {
@@ -214,7 +211,7 @@ public class Loghme {
             throw new Error403("Error: You had not ordered food from this restaurant!");
     }
 
-    public ArrayList<ShoppingCartItem> doGetCart() throws Error404 {
+    public ShoppingCart doGetCart() throws Error404 {
         return user.doGetCart();
     }
 

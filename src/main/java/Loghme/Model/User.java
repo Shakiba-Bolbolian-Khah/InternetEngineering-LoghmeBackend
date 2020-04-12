@@ -106,8 +106,8 @@ public class User {
         return shoppingCart.deleteFromCart(foodName);
     }
 
-    public ArrayList<ShoppingCartItem> doGetCart() throws Error404 {
-        return shoppingCart.doGetCart();
+    public ShoppingCart doGetCart() throws Error404 {
+        return this.shoppingCart;
     }
 
     public Order finalizeOrder(boolean isFoodPartyFinished) throws Error403, Error400 {

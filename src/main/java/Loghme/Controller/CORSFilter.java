@@ -14,11 +14,15 @@ import javax.servlet.http.HttpServletResponse;
 
 @ WebFilter(asyncSupported = true, urlPatterns = { "/*" })
 public class CORSFilter implements Filter {
-        public void destroy() {
+    public void destroy() {
 
-        }
+    }
 
-        public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
+
+        // Server delay
+        try {
+            Thread.sleep(3000);
 
             // Authorize (allow) all domains to consume the content
             ((HttpServletResponse) servletResponse).setHeader("Access-Control-Allow-Origin","*");
@@ -33,9 +37,12 @@ public class CORSFilter implements Filter {
 
             // pass the request along the filter chain
             chain.doFilter(servletRequest, servletResponse);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+    }
 
-        public void init(FilterConfig fConfig) throws ServletException {
+    public void init(FilterConfig fConfig) throws ServletException {
 
-        }
+    }
 }
