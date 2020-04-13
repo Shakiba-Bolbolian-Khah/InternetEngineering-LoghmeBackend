@@ -49,4 +49,8 @@ public class PartyFood extends Food {
     public void decreaseCount(){
         this.count--;
     }
+
+    public void increaseCount() {
+        this.count++;
+    }
 }

@@ -33,11 +33,19 @@ public class FoodParty {
     public boolean isPartyFinished(LocalDateTime shoppingCartTime){
         LocalDateTime now = LocalDateTime.now();
         if(enteredDate != null && shoppingCartTime != null)
-            return (shoppingCartTime.until( now, ChronoUnit.SECONDS) > 60);
+            return (shoppingCartTime.until( now, ChronoUnit.SECONDS) > 30*60);
         return false;
     }
 
-    public PartyFood getOrderedFood(String restaurantId, String foodName) throws Error403 {
+    public void increaseFoodCount(String restaurantId, String foodName) {
+        for (PartyFood partyFood : partyFoods) {
+            if((partyFood.getRestaurantId().equals(restaurantId))&&(partyFood.getName().equals(foodName))) {
+                partyFood.increaseCount();
+            }
+        }
+    }
+
+    public PartyFood doGetOrderedFood(String restaurantId, String foodName) throws Error403 {
         for (PartyFood partyFood : partyFoods) {
             if ((partyFood.getRestaurantId().equals(restaurantId)) && (partyFood.getName().equals(foodName))) {
                 if(partyFood.getCount() > 0){

@@ -174,10 +174,9 @@ public class Loghme {
                 throw new Error403("Error: You chose your restaurant before! Choosing 2 restaurants is invalid!");
             }
         }
-        System.out.println(this.restaurants.size());
         for (Restaurant restaurant : this.restaurants) {
             if (restaurant.getId().equals(restaurantId)) {
-                PartyFood orderedFood = foodParty.getOrderedFood(restaurantId, partyFoodName);
+                PartyFood orderedFood = foodParty.doGetOrderedFood(restaurantId, partyFoodName);
                 if (orderedFood != null) {
                     if(!user.isFoodParty()) {
                         user.setTimeForShoppingCart(foodParty.getEnteredDate());
@@ -201,8 +200,10 @@ public class Loghme {
             if (!user.isFoodParty())
                 throw new Error403("Error: You had not selected any food from food party!");
             else {
-                if (!this.foodParty.isPartyFinished(user.getShoppingCartTime()))
+                if (!this.foodParty.isPartyFinished(user.getShoppingCartTime())) {
+                    this.foodParty.increaseFoodCount(restaurantId, partyFoodName);
                     return user.deleteFromCart(partyFoodName);
+                }
                 else
                     throw new Error403("Error: Food party time is over!");
             }

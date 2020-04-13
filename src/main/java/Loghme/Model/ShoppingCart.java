@@ -121,6 +121,7 @@ public class ShoppingCart {
         }
         else {
             items.get(foodIndex).decreaseNumber();
+            totalPayment -= items.get(foodIndex).getPrice();
             if (items.get(foodIndex).getNumber() == 0){
                 items.remove(foodIndex);
                 if(items.size() == 0)
