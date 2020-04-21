@@ -85,12 +85,6 @@
       <version>2.4</version>
     </dependency>
     <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.10</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
       <version>1.4</version>
