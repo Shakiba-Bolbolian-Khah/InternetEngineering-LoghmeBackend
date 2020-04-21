@@ -1,4 +1,4 @@
-package Loghme.Model;
+package Loghme.Domain.Logic;
 
 import Loghme.Exceptions.Error403;
 
@@ -33,7 +33,7 @@ public class FoodParty {
     public boolean isPartyFinished(LocalDateTime shoppingCartTime){
         LocalDateTime now = LocalDateTime.now();
         if(enteredDate != null && shoppingCartTime != null)
-            return (shoppingCartTime.until( now, ChronoUnit.SECONDS) > 30*60);
+            return (shoppingCartTime.until(now, ChronoUnit.MINUTES) > 30);
         return false;
     }
 

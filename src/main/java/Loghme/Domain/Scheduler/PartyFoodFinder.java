@@ -1,7 +1,7 @@
-package Loghme.Scheduler;
+package Loghme.Domain.Scheduler;
 
-import Loghme.Model.CommandHandler;
-import Loghme.Repository.APIReader;
+import Loghme.Domain.Logic.CommandHandler;
+import Loghme.DataSource.APIReader;
 
 import java.io.IOException;
 

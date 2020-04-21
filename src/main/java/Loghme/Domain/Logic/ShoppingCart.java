@@ -1,4 +1,4 @@
-package Loghme.Model;
+package Loghme.Domain.Logic;
 
 import Loghme.Exceptions.*;
 import com.google.gson.Gson;
@@ -105,7 +105,7 @@ public class ShoppingCart {
     public String addToCart(Food newFood, boolean isPartyFood){
         int foodIndex = contain(newFood);
         if(foodIndex == -1){
-            items.add(new ShoppingCartItem(newFood,1, newFood.getPrice(), isPartyFood));
+            items.add(new ShoppingCartItem(newFood,1, isPartyFood));
         }
         else{
             items.get(foodIndex).increaseNumber();
@@ -121,7 +121,7 @@ public class ShoppingCart {
         }
         else {
             items.get(foodIndex).decreaseNumber();
-            totalPayment -= items.get(foodIndex).getPrice();
+            totalPayment -= items.get(foodIndex).getFood().getPrice();
             if (items.get(foodIndex).getNumber() == 0){
                 items.remove(foodIndex);
                 if(items.size() == 0)

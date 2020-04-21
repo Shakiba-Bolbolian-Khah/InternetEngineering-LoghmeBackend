@@ -1,4 +1,4 @@
-package Loghme.Model;
+package Loghme.Domain.Logic;
 
 import Loghme.Exceptions.ErrorHandler;
 
@@ -11,15 +11,13 @@ import static java.lang.Math.sqrt;
 public class Restaurant{
     private String name;
     private String id;
-    private String description;
     private Location location;
     private ArrayList<Food> menu;
     private String logo;
 
-    public Restaurant(String name, String id, String description, Location location, ArrayList<Food> menu, String logo) {
+    public Restaurant(String name, String id, Location location, ArrayList<Food> menu, String logo) {
         this.name = name;
         this.id = id;
-        this.description = description;
         this.location = location;
         this.menu = menu;
         this.logo = logo;
@@ -78,7 +76,7 @@ public class Restaurant{
         return null;
     }
 
-    public Double getScore(){
+    public Double calculateScore(){
         double score = 0.0;
         for (Food food : menu) {
             score += food.getPopularity();

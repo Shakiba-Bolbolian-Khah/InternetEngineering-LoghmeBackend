@@ -1,7 +1,6 @@
-package Loghme.Model;
+package Loghme.Domain.Logic;
 
 import Loghme.Exceptions.*;
-import Loghme.Repository.OrderState;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package Loghme.Model;
+package Loghme.Domain.Logic;
 
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;

@@ -1,4 +1,4 @@
-package Loghme.Repository;
+package Loghme.Domain.Logic;
 
 public enum OrderState{
     Searching, Delivering, Done;

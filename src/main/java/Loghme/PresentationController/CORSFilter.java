@@ -1,4 +1,4 @@
-package Loghme.Controller;
+package Loghme.PresentationController;
 
 import java.io.IOException;
 import javax.servlet.Filter;

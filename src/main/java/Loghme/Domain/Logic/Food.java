@@ -1,13 +1,13 @@
-package Loghme.Model;
+package Loghme.Domain.Logic;
 
 public class Food {
     private String name;
     private String description;
     private float popularity;
-    private Integer price;
+    private int price;
     private String image;
 
-    public Food(String name, String description, float popularity, Integer price, String imageUrl) {
+    public Food(String name, String description, float popularity, int price, String imageUrl) {
         this.name = name;
         this.description = description;
         this.popularity = popularity;
@@ -43,7 +43,7 @@ public class Food {
         return price;
     }
 
-    public void setPrice(Integer price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 

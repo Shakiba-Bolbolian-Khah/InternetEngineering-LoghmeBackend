@@ -1,13 +1,12 @@
-package Loghme.Model;
+package Loghme.Domain.Logic;
 
 import Loghme.Exceptions.*;
-import Loghme.Repository.APIReader;
+import Loghme.DataSource.APIReader;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class CommandHandler {
     private static CommandHandler instance;
@@ -38,8 +37,8 @@ public class CommandHandler {
         loghme.doSetDeliveries(deliveries);
     }
 
-    public void assignDelivery(int orderId) throws Error404, Error403, IOException {
-        loghme.assignDelivery(orderId);
+    public void assignDelivery(Order order) throws Error404, Error403, IOException {
+        loghme.assignDelivery(order);
     }
 
     public void addRestaurant(String newRestaurantInfo){

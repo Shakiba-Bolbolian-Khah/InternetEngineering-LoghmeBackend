@@ -1,9 +1,9 @@
-package Loghme.Service;
+package Loghme.PresentationController;
 
 import Loghme.Exceptions.Error400;
 import Loghme.Exceptions.Error403;
 import Loghme.Exceptions.Error404;
-import Loghme.Model.CommandHandler;
+import Loghme.Domain.Logic.CommandHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

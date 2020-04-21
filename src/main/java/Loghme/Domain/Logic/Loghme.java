@@ -1,7 +1,7 @@
-package Loghme.Model;
+package Loghme.Domain.Logic;
 
 import Loghme.Exceptions.*;
-import Loghme.Scheduler.DeliveryFindingManager;
+import Loghme.Domain.Scheduler.DeliveryFindingManager;
 
 import java.io.IOException;
 import java.time.LocalTime;
@@ -22,7 +22,7 @@ public class Loghme {
         this.restaurants = new ArrayList<>();
         this.deliveries = new ArrayList<>();
         this.foodParty = new FoodParty();
-        this.user = new User("1","احسان","خامس‌پناه","۰۹۱۲۳۴۵۶۷۸۹","ekhamespanah@yahoo.com",new Location(0,0),100000,new ShoppingCart(true));
+        this.user = new User("0","احسان","خامس‌پناه","۰۹۱۲۳۴۵۶۷۸۹","ekhamespanah@yahoo.com",new Location(0,0),100000,new ShoppingCart(true));
     }
 
     public static Loghme getInstance(){
@@ -40,8 +40,7 @@ public class Loghme {
         this.deliveries = deliveries;
     }
 
-    public void assignDelivery(int orderId) throws Error404, Error403, IOException {
-        Order deliveringOrder = user.getOrder(orderId);
+    public void assignDelivery(Order deliveringOrder) throws Error404, Error403, IOException {
         double deliveringTime = 0;
         String BestDeliveryId = null;
         for (Delivery delivery: deliveries) {
@@ -218,12 +217,12 @@ public class Loghme {
 
     public Order finalizeOrder() throws Error400, Error403 {
         Order order = user.finalizeOrder(this.foodParty.isPartyFinished(user.getShoppingCartTime()));
-        findDelivery(order.getId());
+        findDelivery(order);
         return order;
     }
 
-    public void findDelivery(int orderId) {
-        new DeliveryFindingManager(30, orderId);
+    public void findDelivery(Order order) {
+        new DeliveryFindingManager(30, order);
     }
 
     public static Map<String, Double> sortByValue(Map<String, Double> hm)
@@ -250,7 +249,7 @@ public class Loghme {
             int xDistance = restaurant.getLocation().getX() - user.getLocation().getX();
             int yDistance = restaurant.getLocation().getY() - user.getLocation().getY();
             Double distance = sqrt(pow(xDistance, 2) + pow(yDistance, 2));
-            scores.put(restaurant.getName(), restaurant.getScore() / distance);
+            scores.put(restaurant.getName(), restaurant.calculateScore() / distance);
         }
         String recommended = "Recommended restaurant(s) based on your location:\n";
         scores = sortByValue(scores);

@@ -1,14 +1,13 @@
-package Loghme.Model;
+package Loghme.Domain.Logic;
 
 public class ShoppingCartItem {
     private Food food;
     private int number;
-    private int price;
     private boolean isPartyFood;
-    public ShoppingCartItem(Food food, int number, int price, boolean isPartyFood) {
+
+    public ShoppingCartItem(Food food, int number, boolean isPartyFood) {
         this.food = food;
         this.number = number;
-        this.price = price;
         this.isPartyFood = isPartyFood;
     }
 
@@ -18,14 +17,6 @@ public class ShoppingCartItem {
 
     public void setPartyFood(boolean partyFood) {
         isPartyFood = partyFood;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
     }
 
     public int getNumber() {

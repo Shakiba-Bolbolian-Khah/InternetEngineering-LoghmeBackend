@@ -1,4 +1,4 @@
-package Loghme.Repository;
+package Loghme.DataSource;
 
 import java.io.*;
 import java.net.HttpURLConnection;

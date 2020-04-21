@@ -1,4 +1,4 @@
-package Loghme.Model;
+package Loghme.Domain.Logic;
 
 public class PartyFood extends Food {
     String restaurantId;

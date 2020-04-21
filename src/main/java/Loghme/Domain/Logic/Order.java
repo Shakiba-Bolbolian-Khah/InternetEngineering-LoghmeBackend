@@ -1,10 +1,10 @@
-package Loghme.Model;
+package Loghme.Domain.Logic;
 
 import Loghme.Exceptions.Error404;
-import Loghme.Repository.OrderState;
-import Loghme.Scheduler.DeliveringTimeManager;
+import Loghme.Domain.Scheduler.DeliveringTimeManager;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
@@ -12,21 +12,23 @@ public class Order extends ShoppingCart {
     private int id;
     private String deliveryId;
     private OrderState state;
-    private LocalTime remainingTime;
+    private LocalDateTime finalizationTime;
+    private LocalTime deliveringTime;
 
     public Order(String restaurantId, String restaurantName, int totalPayment, boolean isFoodParty, ArrayList<ShoppingCartItem> items, int id, OrderState state) {
         super(true, restaurantId, restaurantName, totalPayment, isFoodParty, items);
         this.id = id;
         this.deliveryId = null;
         this.state = state;
-        this.remainingTime = null;
+        this.finalizationTime = LocalDateTime.now();
+        this.deliveringTime = null;
     }
 
-    public void setDeliveryForOrder(String deliveryId, LocalTime remainingTime) throws IOException, Error404 {
+    public void setDeliveryForOrder(String deliveryId, LocalTime deliveringTime) throws IOException, Error404 {
         this.deliveryId = deliveryId;
         this.state = OrderState.Delivering;
-        this.remainingTime = remainingTime;
-        new DeliveringTimeManager(id);
+        this.deliveringTime = deliveringTime;
+        new DeliveringTimeManager(this);
     }
 
     public int getId() {
@@ -41,15 +43,15 @@ public class Order extends ShoppingCart {
         this.state = state;
     }
 
-    public void decreaseRemainingTime(int seconds) {
-        this.remainingTime = this.remainingTime.minusSeconds(seconds);
+    public int doGetDeliveringTimeInSeconds() {
+        return deliveringTime.getHour()*3600 + deliveringTime.getMinute()*60 + deliveringTime.getSecond();
     }
 
-    public int doGetRemainingTimeInSeconds() {
-        return remainingTime.getHour()*3600 + remainingTime.getMinute()*60 + remainingTime.getSecond();
+    public LocalDateTime getFinalizationTime() {
+        return finalizationTime;
     }
 
-    public LocalTime getRemainingTime() {
-        return remainingTime;
+    public LocalTime getDeliveringTime() {
+        return deliveringTime;
     }
 }
