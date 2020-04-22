@@ -16,22 +16,24 @@ public class ShoppingCart {
     private LocalDateTime firstPartyFoodEnteredTime;
     private ArrayList<ShoppingCartItem> items;
 
-    public ShoppingCart(boolean isEmpty) {
-        this.isEmpty = isEmpty;
-        this.items = new ArrayList<>();
-        this.totalPayment = 0;
-        this.isFoodParty = false;
-        this.firstPartyFoodEnteredTime = null;
-    }
-
     public ShoppingCart(boolean isEmpty, String restaurantId, String restaurantName, int totalPayment, boolean isFoodParty, ArrayList<ShoppingCartItem> items) {
         this.isEmpty = isEmpty;
         this.restaurantId = restaurantId;
         this.restaurantName = restaurantName;
         this.totalPayment = totalPayment;
         this.isFoodParty = isFoodParty;
-        this.items = items;
         this.firstPartyFoodEnteredTime = null;
+        this.items = items;
+    }
+
+    public ShoppingCart(boolean isEmpty, String restaurantId, String restaurantName, int totalPayment, boolean isFoodParty, LocalDateTime firstPartyFoodEnteredTime, ArrayList<ShoppingCartItem> items) {
+        this.isEmpty = isEmpty;
+        this.restaurantId = restaurantId;
+        this.restaurantName = restaurantName;
+        this.totalPayment = totalPayment;
+        this.isFoodParty = isFoodParty;
+        this.firstPartyFoodEnteredTime = firstPartyFoodEnteredTime;
+        this.items = items;
     }
 
     public LocalDateTime getFirstPartyFoodEnteredTime() {

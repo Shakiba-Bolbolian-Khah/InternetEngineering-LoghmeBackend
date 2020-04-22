@@ -11,7 +11,16 @@ public class UserDAO {
     private int x;
     private int y;
     private int credit;
+    private CartDAO shoppingCart;
     private ArrayList<OrderDAO> orders = new ArrayList<>();
+
+    public CartDAO getShoppingCart() {
+        return shoppingCart;
+    }
+
+    public void setShoppingCart(CartDAO shoppingCart) {
+        this.shoppingCart = shoppingCart;
+    }
 
     public int getId() {
         return id;

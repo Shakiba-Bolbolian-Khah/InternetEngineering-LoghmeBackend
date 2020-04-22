@@ -11,6 +11,26 @@ create table Users(
     credit int,
     primary key(id)
 );
+create table ShoppingCarts(
+	userId int,
+    isEmpty boolean,
+    restaurantId varchar(30),
+    restaurantName varchar(50),
+    totalPayment int,
+    isFoodParty boolean,
+    firstPartyFoodEnteredTime timestamp not null,
+    primary key(userId),
+    foreign key(userId) references users(id) on delete cascade on update cascade
+);
+create table CartItems(
+	userId int,
+    foodName varchar(60),
+    price int not null,
+    number int not null,
+    isPartyFood boolean,
+    primary key(userId, foodName),
+    foreign key(userId) references ShoppingCarts(userId) on delete cascade on update cascade
+);
 create table Orders(
 	userId int,
     id int,

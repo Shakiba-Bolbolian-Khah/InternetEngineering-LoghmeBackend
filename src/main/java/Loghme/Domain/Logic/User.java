@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class User {
-    private String id;
+    private int id;
     private String firstName;
     private String lastName;
     private String phoneNumber;
@@ -16,7 +16,7 @@ public class User {
     private ShoppingCart shoppingCart;
     private ArrayList<Order> orders;
 
-    public User(String id, String firstName, String lastName, String phoneNumber, String email, Location location, int credit, ShoppingCart shoppingCart, ArrayList<Order> orders) {
+    public User(int id, String firstName, String lastName, String phoneNumber, String email, Location location, int credit, ShoppingCart shoppingCart, ArrayList<Order> orders) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -60,7 +60,7 @@ public class User {
         return shoppingCart;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 

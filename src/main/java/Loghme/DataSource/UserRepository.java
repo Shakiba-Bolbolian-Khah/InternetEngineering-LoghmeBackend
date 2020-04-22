@@ -19,6 +19,8 @@ public class UserRepository {
         Statement userStatement = connection.createStatement();
         Statement orderStatement = connection.createStatement();
         Statement itemStatement = connection.createStatement();
+        Statement cartStatement = connection.createStatement();
+        Statement cartItemStatement = connection.createStatement();
         ResultSet userResult = userStatement.executeQuery("select * from users where id =" + userId);
         if (!userResult.next())
             throw new Error404("Error: There is no user with id: " + userId);
@@ -61,10 +63,36 @@ public class UserRepository {
 
             userDAO.addOrder(orderDAO);
         }
+
+        ResultSet cartResult = cartStatement.executeQuery("select * from shoppingCarts where userId =" + userId);
+        cartResult.next();
+        CartDAO cartDAO = new CartDAO();
+        cartDAO.setEmpty(cartResult.getBoolean("isEmpty"));
+        cartDAO.setRestaurantId(cartResult.getString("restaurantId"));
+        cartDAO.setRestaurantName(cartResult.getString("restaurantName"));
+        cartDAO.setTotalPayment(cartResult.getInt("totalpayment"));
+        cartDAO.setFoodParty(cartResult.getBoolean("isFoodParty"));
+        cartDAO.setFirstPartyFoodEnteredTime(cartResult.getTimestamp("firstPartyFoodEnteredTime").toLocalDateTime());
+
+        ResultSet cartItemResult = cartItemStatement.executeQuery("select * from cartItems where userId = " + userId);
+        while(cartItemResult.next()) {
+            CartItemDAO cartItemDAO = new CartItemDAO();
+            cartItemDAO.setFoodName(cartItemResult.getString("foodName"));
+            cartItemDAO.setPrice(cartItemResult.getInt("price"));
+            cartItemDAO.setNumber(cartItemResult.getInt("number"));
+            cartItemDAO.setPartyFood(cartItemResult.getBoolean("isPartyFood"));
+            cartDAO.addItem(cartItemDAO);
+        }
+        userDAO.setShoppingCart(cartDAO);
+
+        cartItemResult.close();
+        cartResult.close();
         orderResult.close();
         userStatement.close();
         orderStatement.close();
         itemStatement.close();
+        cartStatement.close();
+        cartItemStatement.close();
         connection.close();
         return userDAO;
     }
@@ -82,4 +110,6 @@ public class UserRepository {
 
 //    public void insertOrder()
 //    public void updateOrder()
+//    public void addToCart()
+//    public void deleteFromCart()
 }

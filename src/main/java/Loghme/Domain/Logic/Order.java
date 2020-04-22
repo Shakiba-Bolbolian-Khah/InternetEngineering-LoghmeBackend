@@ -15,13 +15,22 @@ public class Order extends ShoppingCart {
     private LocalDateTime finalizationTime;
     private LocalTime deliveringTime;
 
-    public Order(String restaurantId, String restaurantName, int totalPayment, boolean isFoodParty, ArrayList<ShoppingCartItem> items, int id, OrderState state) {
-        super(true, restaurantId, restaurantName, totalPayment, isFoodParty, items);
+//    public Order(String restaurantId, String restaurantName, int totalPayment, boolean isFoodParty, ArrayList<ShoppingCartItem> items, int id, OrderState state) {
+//        super(false, restaurantId, restaurantName, totalPayment, isFoodParty, items);
+//        this.id = id;
+//        this.deliveryId = null;
+//        this.state = state;
+//        this.finalizationTime = LocalDateTime.now();
+//        this.deliveringTime = null;
+//    }
+
+    public Order(String restaurantId, String restaurantName, int totalPayment, boolean isFoodParty, ArrayList<ShoppingCartItem> items, int id, String deliveryId, OrderState state, LocalDateTime finalizationTime, LocalTime deliveringTime) {
+        super(false, restaurantId, restaurantName, totalPayment, isFoodParty, items);
         this.id = id;
-        this.deliveryId = null;
+        this.deliveryId = deliveryId;
         this.state = state;
-        this.finalizationTime = LocalDateTime.now();
-        this.deliveringTime = null;
+        this.finalizationTime = finalizationTime;
+        this.deliveringTime = deliveringTime;
     }
 
     public void setDeliveryForOrder(String deliveryId, LocalTime deliveringTime) throws IOException, Error404 {

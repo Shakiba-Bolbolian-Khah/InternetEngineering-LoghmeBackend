@@ -2,6 +2,8 @@ package Loghme.Domain.Logic;
 
 import Loghme.DataSource.*;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class DataConverter {
@@ -49,14 +51,31 @@ public class DataConverter {
 
     public User DAOtoUser(UserDAO userDAO){
         return new User(userDAO.getId(), userDAO.getFirstName(), userDAO.getLastName(), userDAO.getPhoneNumber(),
-                userDAO.getEmail(), userDAO.getCredit(), userDAO.getCart(), DAOtoOrderList(userDAO.getOrders()));
+                userDAO.getEmail(), new Location(userDAO.getX(), userDAO.getY()), userDAO.getCredit(),
+                DAOtoCart(userDAO.getShoppingCart()), DAOtoOrderList(userDAO.getOrders()));
+    }
+
+    public ShoppingCart DAOtoCart(CartDAO cartDAO){
+        return new ShoppingCart(cartDAO.isEmpty(), cartDAO.getRestaurantId(), cartDAO.getRestaurantName(),
+                cartDAO.getTotalPayment(), cartDAO.isFoodParty(), cartDAO.getFirstPartyFoodEnteredTime(),
+                DAOtoCartItems(cartDAO.getItems()));
+    }
+
+    public ArrayList<ShoppingCartItem> DAOtoCartItems(ArrayList<CartItemDAO> cartItemDAOS){
+        ArrayList<ShoppingCartItem> items = new ArrayList<>();
+        for(CartItemDAO cartItemDAO: cartItemDAOS){
+            Food orderedFood = new Food(cartItemDAO.getFoodName(),"",0, cartItemDAO.getPrice(),"");
+            items.add(new ShoppingCartItem(orderedFood, cartItemDAO.getNumber(), cartItemDAO.isPartyFood()));
+        }
+        return items;
     }
 
     public ArrayList<Order> DAOtoOrderList(ArrayList<OrderDAO> orderDAOS){
         ArrayList<Order> orders = new ArrayList<Order>();
         for(OrderDAO orderDAO: orderDAOS){
             orders.add(new Order(orderDAO.getRestaurantId(), orderDAO.getRestaurantName(), orderDAO.getTotalPayment(), orderDAO.isFoodParty(),
-                    DAOtoOrderItemList(orderDAO.getOrderItems()),orderDAO.getId(), OrderState.valueOf(orderDAO.getState())));
+                    DAOtoOrderItemList(orderDAO.getOrderItems()),orderDAO.getId(), orderDAO.getDeliveryId(), OrderState.valueOf(orderDAO.getState()),
+                    orderDAO.getFinalizationTime(), orderDAO.getDeliveringTime()));
         }
         return orders;
     }
@@ -64,7 +83,7 @@ public class DataConverter {
     public ArrayList<ShoppingCartItem> DAOtoOrderItemList(ArrayList<OrderItemDAO> orderItemDAOS){
         ArrayList<ShoppingCartItem> orderItems = new ArrayList<>();
         for(OrderItemDAO orderItemDAO: orderItemDAOS){
-            Food orderedFood = new Food(orderItemDAO.getFoodName(),"",0,orderItemDAO.getPrice(),"");
+            Food orderedFood = new Food(orderItemDAO.getFoodName(),"",0, orderItemDAO.getPrice(),"");
             orderItems.add(new ShoppingCartItem(orderedFood, orderItemDAO.getNumber(), false));
         }
         return orderItems;
