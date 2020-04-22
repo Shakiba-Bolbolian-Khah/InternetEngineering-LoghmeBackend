@@ -6,7 +6,7 @@ public class PartyFood extends Food {
     int count;
     int oldPrice;
 
-    public PartyFood(String name, String description, float popularity, Integer price, String imageUrl, String restaurantId, String restaurantName, int count, int oldPrice) {
+    public PartyFood(String name, String description, float popularity, int price, String imageUrl, String restaurantId, String restaurantName, int count, int oldPrice) {
         super(name, description, popularity, price, imageUrl);
         this.restaurantId = restaurantId;
         this.restaurantName = restaurantName;

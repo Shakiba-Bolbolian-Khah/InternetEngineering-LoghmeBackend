@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class FoodPartyDAO {
     LocalDateTime enteredTime;
-    ArrayList<PartyFoodDAO> partyFoodDAOS;
+    ArrayList<PartyFoodDAO> partyFoodDAOS = new ArrayList<>();
 
     public LocalDateTime getEnteredTime() {
         return enteredTime;

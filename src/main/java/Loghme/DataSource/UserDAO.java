@@ -11,7 +11,7 @@ public class UserDAO {
     private int x;
     private int y;
     private int credit;
-    private ArrayList<OrderDAO> orders;
+    private ArrayList<OrderDAO> orders = new ArrayList<>();
 
     public int getId() {
         return id;

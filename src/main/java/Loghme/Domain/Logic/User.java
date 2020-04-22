@@ -16,7 +16,7 @@ public class User {
     private ShoppingCart shoppingCart;
     private ArrayList<Order> orders;
 
-    public User(String id, String firstName, String lastName, String phoneNumber, String email, Location location, int credit, ShoppingCart shoppingCart) {
+    public User(String id, String firstName, String lastName, String phoneNumber, String email, Location location, int credit, ShoppingCart shoppingCart, ArrayList<Order> orders) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -25,7 +25,7 @@ public class User {
         this.location = location;
         this.credit = credit;
         this.shoppingCart = shoppingCart;
-        this.orders = new ArrayList<>();
+        this.orders = orders;
     }
 
     public String getFirstName() {

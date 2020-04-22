@@ -10,9 +10,9 @@ public class FoodParty {
     ArrayList<PartyFood> partyFoods;
     LocalDateTime enteredDate;
 
-    public FoodParty() {
-        this.partyFoods = new ArrayList<>();
-        this.enteredDate = null;
+    public FoodParty(LocalDateTime enteredDate, ArrayList<PartyFood> partyFoods) {
+        this.partyFoods = partyFoods;
+        this.enteredDate = enteredDate;
     }
 
     public String setFoodParty(ArrayList<PartyFood> newPartyFoods){

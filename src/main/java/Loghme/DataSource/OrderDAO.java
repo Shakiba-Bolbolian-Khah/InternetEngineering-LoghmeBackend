@@ -14,7 +14,7 @@ public class OrderDAO {
     private String state;
     private LocalDateTime finalizationTime;
     private LocalTime deliveringTime;
-    private ArrayList<OrderItemDAO> orderItems;
+    private ArrayList<OrderItemDAO> orderItems = new ArrayList<>();
 
     public int getId() {
         return id;

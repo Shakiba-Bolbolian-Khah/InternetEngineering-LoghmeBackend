@@ -8,7 +8,7 @@ public class RestaurantDAO {
     private int x;
     private int y;
     private String logo;
-    private ArrayList<FoodDAO> menu;
+    private ArrayList<FoodDAO> menu = new ArrayList<>();
 
     public ArrayList<FoodDAO> getMenu() {
         return menu;
