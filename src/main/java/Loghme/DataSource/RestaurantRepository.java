@@ -1,5 +1,6 @@
 package Loghme.DataSource;
 
+import Loghme.Domain.Logic.Food;
 import Loghme.Exceptions.Error404;
 
 import java.sql.*;
@@ -72,13 +73,46 @@ public class RestaurantRepository {
     public void insertRestaurants(ArrayList<RestaurantDAO> restaurantDAOS) throws SQLException {
         Connection connection;
         connection = ConnectionPool.getConnection();
+        connection.setAutoCommit(false);
         PreparedStatement searchStatement = connection.prepareStatement("select id from restaurants where id = ?");
-        PreparedStatement insertStatement = connection.prepareStatement("into Users(id, firstName, lastName, phoneNumber, email, x, y, credit)\n" +
-                "values (0, \"احسان\", \"خامس\u200Cپناه\", \"09123456789\", \"ekhamespanah@yahoo.com\", 0, 0, 100000)")
-        pStatement.setInt(1, addedCredit);
-        pStatement.setInt(2, userId);
-        pStatement.executeUpdate();
-        pStatement.close();
+        PreparedStatement insertResStatement = connection.prepareStatement(
+                "insert into restaurants (id, name, x, y, logo) values (?, ?, ?, ?, ?)");
+        PreparedStatement insertFoodStatement = connection.prepareStatement(
+                "insert into foods (restaurantId, name, price, description, image, popularity) values (?, ?, ?, ?, ?, ?)");
+        try {
+            for (RestaurantDAO restaurantDAO : restaurantDAOS) {
+                searchStatement.setString(1, restaurantDAO.getId());
+                ResultSet searchResult = searchStatement.executeQuery();
+                if (searchResult.next()) {
+                    searchResult.close();
+                    continue;
+                }
+                insertResStatement.setString(1, restaurantDAO.getId());
+                insertResStatement.setString(2, restaurantDAO.getName());
+                insertResStatement.setInt(3, restaurantDAO.getX());
+                insertResStatement.setInt(4, restaurantDAO.getY());
+                insertResStatement.setString(5, restaurantDAO.getLogo());
+                insertResStatement.executeUpdate();
+                for (FoodDAO foodDAO : restaurantDAO.getMenu()) {
+                    insertFoodStatement.setString(1, restaurantDAO.getId());
+                    insertFoodStatement.setString(2, foodDAO.getName());
+                    insertFoodStatement.setInt(3, foodDAO.getPrice());
+                    insertFoodStatement.setString(4, foodDAO.getDescription());
+                    insertFoodStatement.setString(5, foodDAO.getImage());
+                    insertFoodStatement.setFloat(6, foodDAO.getPopularity());
+                    insertFoodStatement.addBatch();
+                }
+                insertFoodStatement.executeBatch();
+                searchResult.close();
+            }
+        } catch (SQLException e){
+            if(connection!= null){
+                connection.rollback();
+            }
+        }
+        searchStatement.close();
+        insertResStatement.close();
+        insertFoodStatement.close();
         connection.close();
     }
 }
