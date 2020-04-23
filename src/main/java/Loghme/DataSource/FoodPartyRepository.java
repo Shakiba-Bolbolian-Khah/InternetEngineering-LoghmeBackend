@@ -55,6 +55,7 @@ public class FoodPartyRepository {
         connection = ConnectionPool.getConnection();
         connection.setAutoCommit(false);
         connection.setTransactionIsolation(TRANSACTION_SERIALIZABLE);
+
         Statement delTimeStatement = connection.createStatement();
         Statement delFoodStatement = connection.createStatement();
         PreparedStatement insertTimeStatement = connection.prepareStatement("insert into foodParty (enteredDate) values (?)");

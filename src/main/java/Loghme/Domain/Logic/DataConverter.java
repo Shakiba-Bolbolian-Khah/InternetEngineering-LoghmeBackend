@@ -73,7 +73,7 @@ public class DataConverter {
     public ArrayList<Order> DAOtoOrderList(ArrayList<OrderDAO> orderDAOS){
         ArrayList<Order> orders = new ArrayList<Order>();
         for(OrderDAO orderDAO: orderDAOS){
-            orders.add(new Order(orderDAO.getRestaurantId(), orderDAO.getRestaurantName(), orderDAO.getTotalPayment(), orderDAO.isFoodParty(),
+            orders.add(new Order(orderDAO.getRestaurantId(), orderDAO.getRestaurantName(), orderDAO.getTotalPayment(), 0,
                     DAOtoOrderItemList(orderDAO.getOrderItems()),orderDAO.getId(), orderDAO.getDeliveryId(), OrderState.valueOf(orderDAO.getState()),
                     orderDAO.getFinalizationTime(), orderDAO.getDeliveringTime()));
         }

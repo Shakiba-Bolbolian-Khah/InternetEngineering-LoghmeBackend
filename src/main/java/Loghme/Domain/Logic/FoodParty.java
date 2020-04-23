@@ -36,27 +36,4 @@ public class FoodParty {
             return (shoppingCartTime.until(now, ChronoUnit.MINUTES) > 30);
         return false;
     }
-
-    public void increaseFoodCount(String restaurantId, String foodName) {
-        for (PartyFood partyFood : partyFoods) {
-            if((partyFood.getRestaurantId().equals(restaurantId))&&(partyFood.getName().equals(foodName))) {
-                partyFood.increaseCount();
-            }
-        }
-    }
-
-    public PartyFood doGetOrderedFood(String restaurantId, String foodName) throws Error403 {
-        for (PartyFood partyFood : partyFoods) {
-            if ((partyFood.getRestaurantId().equals(restaurantId)) && (partyFood.getName().equals(foodName))) {
-                if(partyFood.getCount() > 0){
-                    partyFood.decreaseCount();
-                    return partyFood;
-                }
-                else {
-                    throw new Error403("Error: Sorry! "+foodName+" is over!");
-                }
-            }
-        }
-        return null;
-    }
 }

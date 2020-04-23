@@ -8,7 +8,7 @@ public class CartDAO {
     private String restaurantId;
     private String restaurantName;
     private int totalPayment;
-    private boolean isFoodParty;
+    private int isFoodParty;
     private LocalDateTime firstPartyFoodEnteredTime;
     private ArrayList<CartItemDAO> items = new ArrayList<>();
 
@@ -44,11 +44,11 @@ public class CartDAO {
         this.totalPayment = totalPayment;
     }
 
-    public boolean isFoodParty() {
+    public int isFoodParty() {
         return isFoodParty;
     }
 
-    public void setFoodParty(boolean foodParty) {
+    public void setFoodParty(int foodParty) {
         isFoodParty = foodParty;
     }
 

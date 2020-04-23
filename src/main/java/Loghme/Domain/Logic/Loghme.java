@@ -94,14 +94,14 @@ public class Loghme {
         return restaurant.getFood(foodName);
     }
 
-    public String addToCart(String restaurantId, String foodName) throws Error403, Error404, SQLException {
+    public String addToCart(String restaurantId, String foodName, boolean isPartyFood) throws Error403, SQLException {
         ShoppingCart userCart = doGetCart();
         if (!userCart.isEmpty()) {
             if (!(userCart.getRestaurantId().equals(restaurantId))) {
                 throw new Error403("Error: You chose your restaurant before! Choosing 2 restaurants is invalid!");
             }
         }
-        return userCart.addToCart(foodName, restaurantId, false);
+        return userCart.addToCart(foodName, restaurantId, isPartyFood);
     }
 
     public String deleteFromCart(String restaurantId, String foodName) throws Error403, Error404 {
@@ -116,35 +116,6 @@ public class Loghme {
 //        ToDo:User repository calling delete from cart
         return "ok"; //Just in order to avoid error -_-
 
-    }
-
-    public String addPartyFoodToCart(String restaurantId, String partyFoodName) throws Error404, Error403, SQLException {
-        ShoppingCart userCart = doGetCart();
-        if (!userCart.isEmpty()) {
-            if (!(userCart.getRestaurantId().equals(restaurantId))) {
-                throw new Error403("Error: You chose your restaurant before! Choosing 2 restaurants is invalid!");
-            }
-        }
-//        ArrayList<Restaurant> restaurants = DataConverter.getInstance().DAOtoRestaurantList(RestaurantRepository.getInstance().getRestaurants());
-//        for (Restaurant restaurant : restaurants) {
-//            if (restaurant.getId().equals(restaurantId)) {
-//                PartyFood orderedFood = foodParty.doGetOrderedFood(restaurantId, partyFoodName);
-//                if (orderedFood != null) {
-//                    if(!user.isFoodParty()) {
-//                        user.setTimeForShoppingCart(foodParty.getEnteredDate());
-//                        user.setIsFoodParty(true);
-//                    }
-//                    user.setShoppingCartRestaurant(restaurantId, restaurant.getName());
-//                    return user.addToCart(orderedFood, true);
-//                } else {
-//                    throw new Error404("Error: There is no "+partyFoodName+" in restaurant with name: "+restaurant.getName()+" in Food Party");
-//                }
-//            }
-//        }
-//        throw new Error404("Error: Restaurant with ID "+restaurantId+" does not exist in system!");
-        //        ToDo:User repository calling insert foodparty to cart
-
-        return userCart.addToCart(partyFoodName, restaurantId, true);
     }
 
     public String deletePartyFoodFromCart(String restaurantId, String partyFoodName) throws Error403, Error404 {

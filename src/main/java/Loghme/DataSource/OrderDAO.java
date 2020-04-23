@@ -9,7 +9,6 @@ public class OrderDAO {
     private String restaurantId;
     private String restaurantName;
     private int totalPayment;
-    private boolean isFoodParty;
     private String deliveryId;
     private String state;
     private LocalDateTime finalizationTime;
@@ -46,14 +45,6 @@ public class OrderDAO {
 
     public void setTotalPayment(int totalPayment) {
         this.totalPayment = totalPayment;
-    }
-
-    public boolean isFoodParty() {
-        return isFoodParty;
-    }
-
-    public void setFoodParty(boolean foodParty) {
-        isFoodParty = foodParty;
     }
 
     public String getDeliveryId() {

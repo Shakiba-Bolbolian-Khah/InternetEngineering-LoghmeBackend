@@ -77,11 +77,11 @@ public class User {
         throw new Error404("Error: There is no order with ID: "+orderId+" in system right now!");
     }
 
-    public void setIsFoodParty(boolean state){
+    public void setIsFoodParty(int state){
         shoppingCart.setIsFoodParty(state);
     }
 
-    public boolean isFoodParty(){
+    public int isFoodParty(){
         return shoppingCart.isFoodParty();
     }
 
@@ -95,10 +95,6 @@ public class User {
 
     public void setShoppingCartRestaurant(String restaurantId, String restaurantName){
         shoppingCart.setRestaurantName(restaurantId, restaurantName);
-    }
-
-    public String deleteFromCart(String foodName) throws Error404 {
-        return shoppingCart.deleteFromCart(foodName);
     }
 
     public ShoppingCart doGetCart() throws Error404 {

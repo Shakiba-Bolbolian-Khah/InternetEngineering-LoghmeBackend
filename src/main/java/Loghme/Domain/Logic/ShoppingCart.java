@@ -14,11 +14,11 @@ public class ShoppingCart {
     private String restaurantId;
     private String restaurantName;
     private int totalPayment;
-    private boolean isFoodParty;
+    private int isFoodParty;
     private LocalDateTime firstPartyFoodEnteredTime;
     private ArrayList<ShoppingCartItem> items;
 
-    public ShoppingCart(boolean isEmpty, String restaurantId, String restaurantName, int totalPayment, boolean isFoodParty, ArrayList<ShoppingCartItem> items) {
+    public ShoppingCart(boolean isEmpty, String restaurantId, String restaurantName, int totalPayment, int isFoodParty, ArrayList<ShoppingCartItem> items) {
         this.isEmpty = isEmpty;
         this.restaurantId = restaurantId;
         this.restaurantName = restaurantName;
@@ -28,7 +28,7 @@ public class ShoppingCart {
         this.items = items;
     }
 
-    public ShoppingCart(boolean isEmpty, String restaurantId, String restaurantName, int totalPayment, boolean isFoodParty, LocalDateTime firstPartyFoodEnteredTime, ArrayList<ShoppingCartItem> items) {
+    public ShoppingCart(boolean isEmpty, String restaurantId, String restaurantName, int totalPayment, int isFoodParty, LocalDateTime firstPartyFoodEnteredTime, ArrayList<ShoppingCartItem> items) {
         this.isEmpty = isEmpty;
         this.restaurantId = restaurantId;
         this.restaurantName = restaurantName;
@@ -46,11 +46,11 @@ public class ShoppingCart {
         this.firstPartyFoodEnteredTime = firstPartyFoodEnteredTime;
     }
 
-    public boolean isFoodParty() {
+    public int isFoodParty() {
         return isFoodParty;
     }
 
-    public void setIsFoodParty(boolean foodParty) {
+    public void setIsFoodParty(int foodParty) {
         isFoodParty = foodParty;
     }
 
@@ -97,16 +97,21 @@ public class ShoppingCart {
         return -1;
     }
 
-    public String addToCart(String foodName, String restaurantId, boolean isPartyFood) throws SQLException {
+    public String addToCart(String foodName, String restaurantId, boolean isPartyFood) throws SQLException, Error403 {
         int foodIndex = contain(foodName, isPartyFood);
         if(foodIndex == -1){
             if(!isPartyFood)
                 UserRepository.getInstance().insertInCart(foodName, restaurantId, 0);
+            else {
+                UserRepository.getInstance().insertPartyFoodInCart(foodName, restaurantId, 0);
 //            ToDo: for foodparty should be added later
+            }
         }
         else{
             if(!isPartyFood)
-                UserRepository.getInstance().updateInCart(foodName,restaurantId,0);
+                UserRepository.getInstance().updateInCart(foodName,0);
+            else
+                UserRepository.getInstance().updatePartyFoodInCart(foodName, restaurantId, 0);
 //            ToDo: for foodparty should be added later
         }
         return "\""+ foodName +"\" has been added to your cart successfully!";
@@ -139,15 +144,11 @@ public class ShoppingCart {
         return items;
     }
 
-    public void calculateTotalPayment(int newPrice) {
-        totalPayment += newPrice;
-    }
-
     public ShoppingCart finalizeOrder(int userCredit, boolean isFoodPartyFinished) throws Error403, Error400 {
         if(isEmpty){
             throw new Error400("Error: There is nothing in your cart to be finalized!");
         }
-        if(isFoodParty && isFoodPartyFinished){
+        if(isFoodParty != 0 && isFoodPartyFinished){
             clearCart();
             throw new Error403("Error: You ordered from food party! Food party time is over!!");
         }
@@ -170,7 +171,7 @@ public class ShoppingCart {
         items.clear();
         totalPayment = 0;
         isEmpty = true;
-        isFoodParty = false;
+        isFoodParty = 0;
         firstPartyFoodEnteredTime = null;
     }
 }
