@@ -97,10 +97,6 @@ public class User {
         shoppingCart.setRestaurantName(restaurantId, restaurantName);
     }
 
-    public String addToCart(Food newFood, boolean isPartyFood){
-        return shoppingCart.addToCart(newFood, isPartyFood);
-    }
-
     public String deleteFromCart(String foodName) throws Error404 {
         return shoppingCart.deleteFromCart(foodName);
     }

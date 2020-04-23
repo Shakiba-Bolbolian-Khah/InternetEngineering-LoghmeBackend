@@ -29,7 +29,7 @@ public class DataConverter {
             menu.add(DAOtoFood(foodDAO));
         }
         return new Restaurant(restaurantDAO.getName(), restaurantDAO.getId(),
-                new Location(restaurantDAO.getX(), restaurantDAO.getY()), menu, restaurantDAO.getLogo());
+                restaurantDAO.getLocation(), menu, restaurantDAO.getLogo());
     }
 
     public Food DAOtoFood(FoodDAO foodDAO){
@@ -51,7 +51,7 @@ public class DataConverter {
 
     public User DAOtoUser(UserDAO userDAO){
         return new User(userDAO.getId(), userDAO.getFirstName(), userDAO.getLastName(), userDAO.getPhoneNumber(),
-                userDAO.getEmail(), new Location(userDAO.getX(), userDAO.getY()), userDAO.getCredit(),
+                userDAO.getEmail(), userDAO.getLocation(), userDAO.getCredit(),
                 DAOtoCart(userDAO.getShoppingCart()), DAOtoOrderList(userDAO.getOrders()));
     }
 

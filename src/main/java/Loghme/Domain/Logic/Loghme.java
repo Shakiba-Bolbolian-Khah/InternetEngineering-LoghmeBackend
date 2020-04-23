@@ -1,9 +1,14 @@
 package Loghme.Domain.Logic;
 
+import Loghme.DataSource.RestaurantDAO;
+import Loghme.DataSource.RestaurantRepository;
+import Loghme.DataSource.UserRepository;
 import Loghme.Exceptions.*;
 import Loghme.Domain.Scheduler.DeliveryFindingManager;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -13,16 +18,12 @@ import static java.lang.Math.sqrt;
 public class Loghme {
     private static Loghme instance;
 
-    private ArrayList<Restaurant> restaurants;
     private ArrayList<Delivery> deliveries;
     private FoodParty foodParty;
-    private User user;
 
     private Loghme() {
-        this.restaurants = new ArrayList<>();
         this.deliveries = new ArrayList<>();
-        this.foodParty = new FoodParty();
-        this.user = new User("0","احسان","خامس‌پناه","۰۹۱۲۳۴۵۶۷۸۹","ekhamespanah@yahoo.com",new Location(0,0),100000,new ShoppingCart(true));
+        this.foodParty = new FoodParty(LocalDateTime.now(),new ArrayList<>());
     }
 
     public static Loghme getInstance(){
@@ -31,16 +32,16 @@ public class Loghme {
         return instance;
     }
 
-    public void doSetRestaurants(ArrayList<Restaurant> restaurants) {
-        if (this.restaurants.size() == 0)
-            this.restaurants = restaurants;
+    public void insertRestaurants(ArrayList<RestaurantDAO> restaurantDAOS) throws SQLException {
+        RestaurantRepository.getInstance().insertRestaurants(restaurantDAOS);
     }
 
     public void doSetDeliveries(ArrayList<Delivery> deliveries) {
         this.deliveries = deliveries;
     }
 
-    public void assignDelivery(Order deliveringOrder) throws Error404, Error403, IOException {
+    public void assignDelivery(Order deliveringOrder) throws Error404, Error403, IOException, SQLException {
+        User user = getUser();
         double deliveringTime = 0;
         String BestDeliveryId = null;
         for (Delivery delivery: deliveries) {
@@ -55,30 +56,11 @@ public class Loghme {
         int seconds = (int) deliveringTime % 60;
         LocalTime remainingTime = LocalTime.of(hours, minutes, seconds);
         deliveringOrder.setDeliveryForOrder(BestDeliveryId, remainingTime);
+        //ToDo: update order function in DB must be called
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public String addRestaurant(Restaurant newRestaurant) throws ErrorHandler {
-        for (Restaurant restaurant : this.restaurants) {
-            if (restaurant.getId().equals(newRestaurant.getId())) {
-                throw new ErrorHandler("Error: \"" + newRestaurant.getName() + "\" restaurant was added before!");
-            }
-        }
-        this.restaurants.ensureCapacity(this.restaurants.size()+1);
-        this.restaurants.add(newRestaurant);
-        return "\"" + newRestaurant.getName() + "\" restaurant has been added successfully!";
-    }
-
-    public String addFood(Food newFood, String restaurantId) throws ErrorHandler {
-        for (Restaurant restaurant : this.restaurants) {
-            if (restaurant.getId().equals(restaurantId)) {
-                return restaurant.addFood(newFood);
-            }
-        }
-        throw new ErrorHandler("Error: No \"" + restaurantId + "\" restaurant exists!");
+    public User getUser() throws Error404, SQLException {
+        return DataConverter.getInstance().DAOtoUser(UserRepository.getInstance().getUser(0));
     }
 
     public Double calculateDistance(Location restaurantLocation, Location userLocation) {
@@ -87,12 +69,14 @@ public class Loghme {
         return sqrt(pow(xDistance, 2) + pow(yDistance, 2));
     }
 
-    public ArrayList<Restaurant> findNearestRestaurantsForUser() throws Error404 {
+    public ArrayList<Restaurant> findNearestRestaurantsForUser() throws Error404, SQLException {
+        User user = getUser();
+        ArrayList<Restaurant> restaurants = DataConverter.getInstance().DAOtoRestaurantList(RestaurantRepository.getInstance().getRestaurants());
         ArrayList<Restaurant> nearRestaurants = new ArrayList<>();
-        if(this.restaurants.size() == 0){
+        if(restaurants.size() == 0){
             throw new Error404("Sorry! There is no restaurant around you in Loghme at this time!");
         }
-        for (Restaurant restaurant : this.restaurants) {
+        for (Restaurant restaurant : restaurants) {
             Double distance = calculateDistance(restaurant.getLocation(), user.getLocation());
             if (distance <= 170) {
                 nearRestaurants.add(restaurant);
@@ -101,124 +85,100 @@ public class Loghme {
         return nearRestaurants;
     }
 
-    public ArrayList<Restaurant> doGetRestaurants() throws Error404 {
-        if(this.restaurants.size()==0){
-            throw new Error404("Error: Sorry there is no restaurant in Loghme at this time!");
-        }
-        return findNearestRestaurantsForUser();
+    public Restaurant doGetRestaurant(String restaurantId) throws Error404, SQLException {
+        return DataConverter.getInstance().DAOtoRestaurant(RestaurantRepository.getInstance().getRestaurant(restaurantId));
     }
 
-    public Restaurant doGetRestaurant(String restaurantId) throws Error403, Error404 {
-        for (Restaurant restaurant : this.restaurants) {
-            if (restaurant.getId().equals(restaurantId)) {
-                if (calculateDistance(restaurant.getLocation(), user.getLocation()) <= 170)
-                    return restaurant;
-                else
-                    throw new Error403("Error: Restaurant with ID "+restaurantId+" is not close enough to you!");
-            }
-        }
-        throw new Error404("Error: Restaurant with ID "+restaurantId+" does not exist in system!");
+    public Food getFood(String restaurantId, String foodName) throws ErrorHandler, SQLException, Error404 {
+       Restaurant restaurant = doGetRestaurant(restaurantId);
+        return restaurant.getFood(foodName);
     }
 
-    public boolean hasResraurant(String restaurantId){
-        for (Restaurant restaurant : this.restaurants) {
-            if (restaurant.getId().equals(restaurantId))
-                return true;
-        }
-        return false;
-    }
-
-    public Food getFood(String restaurantId, String foodName) throws ErrorHandler {
-        for (Restaurant restaurant : this.restaurants) {
-            if (restaurant.getId().equals(restaurantId)) {
-                return restaurant.getFood(foodName);
-            }
-        }
-        throw new ErrorHandler("Error: No \"" + restaurantId +"\" restaurant exists!");
-    }
-
-    public String addToCart(String restaurantId, String foodName) throws Error403, Error404 {
-        if (!user.getShoppingCart().isEmpty()) {
-            if (!(user.getShoppingCart().getRestaurantId().equals(restaurantId))) {
+    public String addToCart(String restaurantId, String foodName) throws Error403, Error404, SQLException {
+        ShoppingCart userCart = doGetCart();
+        if (!userCart.isEmpty()) {
+            if (!(userCart.getRestaurantId().equals(restaurantId))) {
                 throw new Error403("Error: You chose your restaurant before! Choosing 2 restaurants is invalid!");
             }
         }
-        for (Restaurant restaurant : doGetRestaurants()) {
-            if (restaurant.getId().equals(restaurantId)) {
-                Food orderedFood = restaurant.getOrderedFood(foodName);
-                if (orderedFood != null) {
-                    user.setShoppingCartRestaurant(restaurantId, restaurant.getName());
-                    return user.addToCart(orderedFood, false);
-                } else {
-                    throw new Error404("Error: There is no "+foodName+" in restaurant with name: "+ restaurant.getName());
-                }
-            }
-        }
-        throw new Error404("Error: Restaurant with ID "+restaurantId+" does not exist in system!");
+        return userCart.addToCart(foodName, restaurantId, false);
     }
 
     public String deleteFromCart(String restaurantId, String foodName) throws Error403, Error404 {
-        if (user.getShoppingCart().isEmpty()) {
-            throw new Error403("Error: There is nothing in your cart to delete.");
-        }
-        if (user.getShoppingCart().getRestaurantId().equals(restaurantId))
-            return user.deleteFromCart(foodName);
-        else
-            throw new Error403("Error: You had not ordered food from this restaurant!");
+//        if (user.getShoppingCart().isEmpty()) {
+//            throw new Error403("Error: There is nothing in your cart to delete.");
+//        }
+//        if (user.getShoppingCart().getRestaurantId().equals(restaurantId))
+//            return user.deleteFromCart(foodName);
+//        else
+//            throw new Error403("Error: You had not ordered food from this restaurant!");
+
+//        ToDo:User repository calling delete from cart
+        return "ok"; //Just in order to avoid error -_-
+
     }
 
-    public String addPartyFoodToCart(String restaurantId, String partyFoodName) throws Error404, Error403 {
-        if (!user.getShoppingCart().isEmpty()) {
-            if (!(user.getShoppingCart().getRestaurantId().equals(restaurantId))) {
+    public String addPartyFoodToCart(String restaurantId, String partyFoodName) throws Error404, Error403, SQLException {
+        ShoppingCart userCart = doGetCart();
+        if (!userCart.isEmpty()) {
+            if (!(userCart.getRestaurantId().equals(restaurantId))) {
                 throw new Error403("Error: You chose your restaurant before! Choosing 2 restaurants is invalid!");
             }
         }
-        for (Restaurant restaurant : this.restaurants) {
-            if (restaurant.getId().equals(restaurantId)) {
-                PartyFood orderedFood = foodParty.doGetOrderedFood(restaurantId, partyFoodName);
-                if (orderedFood != null) {
-                    if(!user.isFoodParty()) {
-                        user.setTimeForShoppingCart(foodParty.getEnteredDate());
-                        user.setIsFoodParty(true);
-                    }
-                    user.setShoppingCartRestaurant(restaurantId, restaurant.getName());
-                    return user.addToCart(orderedFood, true);
-                } else {
-                    throw new Error404("Error: There is no "+partyFoodName+" in restaurant with name: "+restaurant.getName()+" in Food Party");
-                }
-            }
-        }
-        throw new Error404("Error: Restaurant with ID "+restaurantId+" does not exist in system!");
+//        ArrayList<Restaurant> restaurants = DataConverter.getInstance().DAOtoRestaurantList(RestaurantRepository.getInstance().getRestaurants());
+//        for (Restaurant restaurant : restaurants) {
+//            if (restaurant.getId().equals(restaurantId)) {
+//                PartyFood orderedFood = foodParty.doGetOrderedFood(restaurantId, partyFoodName);
+//                if (orderedFood != null) {
+//                    if(!user.isFoodParty()) {
+//                        user.setTimeForShoppingCart(foodParty.getEnteredDate());
+//                        user.setIsFoodParty(true);
+//                    }
+//                    user.setShoppingCartRestaurant(restaurantId, restaurant.getName());
+//                    return user.addToCart(orderedFood, true);
+//                } else {
+//                    throw new Error404("Error: There is no "+partyFoodName+" in restaurant with name: "+restaurant.getName()+" in Food Party");
+//                }
+//            }
+//        }
+//        throw new Error404("Error: Restaurant with ID "+restaurantId+" does not exist in system!");
+        //        ToDo:User repository calling insert foodparty to cart
+
+        return userCart.addToCart(partyFoodName, restaurantId, true);
     }
 
     public String deletePartyFoodFromCart(String restaurantId, String partyFoodName) throws Error403, Error404 {
-        if (user.getShoppingCart().isEmpty()) {
-            throw new Error403("Error: There is nothing in your cart to delete.");
-        }
-        if (user.getShoppingCart().getRestaurantId().equals(restaurantId)) {
-            if (!user.isFoodParty())
-                throw new Error403("Error: You had not selected any food from food party!");
-            else {
-                if (!this.foodParty.isPartyFinished(user.getShoppingCartTime())) {
-                    this.foodParty.increaseFoodCount(restaurantId, partyFoodName);
-                    return user.deleteFromCart(partyFoodName);
-                }
-                else
-                    throw new Error403("Error: Food party time is over!");
-            }
-        }
-        else
-            throw new Error403("Error: You had not ordered food from this restaurant!");
+//        if (user.getShoppingCart().isEmpty()) {
+//            throw new Error403("Error: There is nothing in your cart to delete.");
+//        }
+//        if (user.getShoppingCart().getRestaurantId().equals(restaurantId)) {
+//            if (!user.isFoodParty())
+//                throw new Error403("Error: You had not selected any food from food party!");
+//            else {
+//                if (!this.foodParty.isPartyFinished(user.getShoppingCartTime())) {
+//                    this.foodParty.increaseFoodCount(restaurantId, partyFoodName);
+//                    return user.deleteFromCart(partyFoodName);
+//                }
+//                else
+//                    throw new Error403("Error: Food party time is over!");
+//            }
+//        }
+//        else
+//            throw new Error403("Error: You had not ordered food from this restaurant!");
+        //        ToDo:User repository calling delete foodParty from cart
+        return "ok"; //Just in order to avoid error -_-
     }
 
-    public ShoppingCart doGetCart() throws Error404 {
-        return user.doGetCart();
+    public ShoppingCart doGetCart() throws SQLException {
+        return DataConverter.getInstance().DAOtoCart(UserRepository.getInstance().getCart(0));
     }
 
-    public Order finalizeOrder() throws Error400, Error403 {
+    public Order finalizeOrder() throws Error400, Error403, Error404, SQLException {
+        User user = DataConverter.getInstance().DAOtoUser(UserRepository.getInstance().getUser(0));
         Order order = user.finalizeOrder(this.foodParty.isPartyFinished(user.getShoppingCartTime()));
         findDelivery(order);
         return order;
+        //ToDo: User rep. calling insert and finalize order. I just added user here to avoid errors.
     }
 
     public void findDelivery(Order order) {
@@ -240,12 +200,14 @@ public class Loghme {
         return temp;
     }
 
-    public String doGetRecommendedRestaurants() throws ErrorHandler {
+    public String doGetRecommendedRestaurants() throws ErrorHandler, SQLException, Error404 {
+        User user = getUser();
         Map<String,Double> scores = new HashMap<>();
-        if(this.restaurants.size() == 0){
+        ArrayList<Restaurant> restaurants = DataConverter.getInstance().DAOtoRestaurantList(RestaurantRepository.getInstance().getRestaurants());
+        if(restaurants.size() == 0){
             throw new ErrorHandler("Error: Sorry there is no restaurant in Loghme at this time!");
         }
-        for (Restaurant restaurant : this.restaurants) {
+        for (Restaurant restaurant : restaurants) {
             int xDistance = restaurant.getLocation().getX() - user.getLocation().getX();
             int yDistance = restaurant.getLocation().getY() - user.getLocation().getY();
             Double distance = sqrt(pow(xDistance, 2) + pow(yDistance, 2));
@@ -262,13 +224,9 @@ public class Loghme {
         return recommended.substring(0, recommended.length()-1);
     }
 
-    public String increaseCredit(int addedCredit) {
-        user.setCredit(user.getCredit() + addedCredit);
+    public String increaseCredit(int addedCredit) throws SQLException {
+        UserRepository.getInstance().increaseCredit(0, addedCredit);
         return "Credit increased successfully!";
-    }
-
-    public Order getOrder(int orderId) throws Error404 {
-        return user.getOrder(orderId);
     }
 
     public String setFoodParty(ArrayList<PartyFood> partyFoods){

@@ -3,6 +3,8 @@ package Loghme.DataSource;
 import java.sql.*;
 import java.time.LocalDateTime;
 
+import static java.sql.Connection.TRANSACTION_SERIALIZABLE;
+
 public class FoodPartyRepository {
     private static FoodPartyRepository instance;
 
@@ -52,6 +54,7 @@ public class FoodPartyRepository {
         Connection connection;
         connection = ConnectionPool.getConnection();
         connection.setAutoCommit(false);
+        connection.setTransactionIsolation(TRANSACTION_SERIALIZABLE);
         Statement delTimeStatement = connection.createStatement();
         Statement delFoodStatement = connection.createStatement();
         PreparedStatement insertTimeStatement = connection.prepareStatement("insert into foodParty (enteredDate) values (?)");

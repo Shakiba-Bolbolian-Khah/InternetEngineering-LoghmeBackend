@@ -1,5 +1,7 @@
 package Loghme.DataSource;
 
+import Loghme.Domain.Logic.Location;
+
 import java.util.ArrayList;
 
 public class UserDAO {
@@ -8,8 +10,9 @@ public class UserDAO {
     private String lastName;
     private String phoneNumber;
     private String email;
-    private int x;
-    private int y;
+    private Location location;
+//    private int x;
+//    private int y;
     private int credit;
     private CartDAO shoppingCart;
     private ArrayList<OrderDAO> orders = new ArrayList<>();
@@ -62,20 +65,12 @@ public class UserDAO {
         this.email = email;
     }
 
-    public int getX() {
-        return x;
+    public Location getLocation() {
+        return location;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public int getCredit() {

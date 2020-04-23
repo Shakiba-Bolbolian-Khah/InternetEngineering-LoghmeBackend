@@ -1,6 +1,7 @@
 package Loghme.DataSource;
 
 import Loghme.Domain.Logic.Food;
+import Loghme.Domain.Logic.Location;
 import Loghme.Exceptions.Error404;
 
 import java.sql.*;
@@ -25,8 +26,7 @@ public class RestaurantRepository {
             RestaurantDAO restaurantDAO = new RestaurantDAO();
             restaurantDAO.setId(result.getString("id"));
             restaurantDAO.setName(result.getString("name"));
-            restaurantDAO.setX(result.getInt("x"));
-            restaurantDAO.setY(result.getInt("y"));
+            restaurantDAO.setLocation(new Location(result.getInt("x"),result.getInt("y")));
             restaurantDAO.setLogo(result.getString("logo"));
             restaurantDAOS.add(restaurantDAO);
         }
@@ -48,8 +48,7 @@ public class RestaurantRepository {
         RestaurantDAO restaurantDAO = new RestaurantDAO();
         restaurantDAO.setId(result.getString("id"));
         restaurantDAO.setName(result.getString("name"));
-        restaurantDAO.setX(result.getInt("x"));
-        restaurantDAO.setY(result.getInt("y"));
+        restaurantDAO.setLocation(new Location(result.getInt("x"),result.getInt("y")));
         restaurantDAO.setLogo(result.getString("logo"));
 
         ResultSet innerResult = innerStatement.executeQuery("select * from foods where restaurantId = \"" + id + "\"");
@@ -89,8 +88,8 @@ public class RestaurantRepository {
                 }
                 insertResStatement.setString(1, restaurantDAO.getId());
                 insertResStatement.setString(2, restaurantDAO.getName());
-                insertResStatement.setInt(3, restaurantDAO.getX());
-                insertResStatement.setInt(4, restaurantDAO.getY());
+                insertResStatement.setInt(3, restaurantDAO.getLocation().getX());
+                insertResStatement.setInt(4, restaurantDAO.getLocation().getY());
                 insertResStatement.setString(5, restaurantDAO.getLogo());
                 insertResStatement.executeUpdate();
                 for (FoodDAO foodDAO : restaurantDAO.getMenu()) {

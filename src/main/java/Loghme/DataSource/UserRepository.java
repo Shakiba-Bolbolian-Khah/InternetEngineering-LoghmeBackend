@@ -1,5 +1,6 @@
 package Loghme.DataSource;
 
+import Loghme.Domain.Logic.Location;
 import Loghme.Exceptions.Error404;
 
 import java.sql.*;
@@ -19,8 +20,6 @@ public class UserRepository {
         Statement userStatement = connection.createStatement();
         Statement orderStatement = connection.createStatement();
         Statement itemStatement = connection.createStatement();
-        Statement cartStatement = connection.createStatement();
-        Statement cartItemStatement = connection.createStatement();
         ResultSet userResult = userStatement.executeQuery("select * from users where id =" + userId);
         if (!userResult.next())
             throw new Error404("Error: There is no user with id: " + userId);
@@ -31,8 +30,7 @@ public class UserRepository {
         userDAO.setLastName(userResult.getString("lastName"));
         userDAO.setLastName(userResult.getString("phoneNumber"));
         userDAO.setLastName(userResult.getString("email"));
-        userDAO.setX(userResult.getInt("x"));
-        userDAO.setY(userResult.getInt("y"));
+        userDAO.setLocation(new Location(userResult.getInt("x"),userResult.getInt("y")));
         userDAO.setCredit(userResult.getInt("credit"));
 
         userResult.close();
@@ -64,6 +62,21 @@ public class UserRepository {
             userDAO.addOrder(orderDAO);
         }
 
+        userDAO.setShoppingCart(getCart(userId));
+
+        orderResult.close();
+        userStatement.close();
+        orderStatement.close();
+        itemStatement.close();
+        connection.close();
+        return userDAO;
+    }
+
+    public CartDAO getCart(int userId) throws SQLException {
+        Connection connection;
+        connection = ConnectionPool.getConnection();
+        Statement cartStatement = connection.createStatement();
+        Statement cartItemStatement = connection.createStatement();
         ResultSet cartResult = cartStatement.executeQuery("select * from shoppingCarts where userId =" + userId);
         cartResult.next();
         CartDAO cartDAO = new CartDAO();
@@ -83,18 +96,12 @@ public class UserRepository {
             cartItemDAO.setPartyFood(cartItemResult.getBoolean("isPartyFood"));
             cartDAO.addItem(cartItemDAO);
         }
-        userDAO.setShoppingCart(cartDAO);
-
         cartItemResult.close();
         cartResult.close();
-        orderResult.close();
-        userStatement.close();
-        orderStatement.close();
-        itemStatement.close();
         cartStatement.close();
         cartItemStatement.close();
         connection.close();
-        return userDAO;
+        return cartDAO;
     }
 
     public void increaseCredit(int userId, int addedCredit) throws SQLException {
@@ -108,6 +115,93 @@ public class UserRepository {
         connection.close();
     }
 
+    public void insertInCart(String foodName, String restaurantId, int userId) throws SQLException {
+        Connection connection;
+        connection = ConnectionPool.getConnection();
+        connection.setAutoCommit(false);
+
+        PreparedStatement foodStatement = connection.prepareStatement("select * from foods where restaurantId = ? and name = ?");
+        Statement resStatement = connection.createStatement();
+        PreparedStatement cartUpdate = connection.prepareStatement(
+                "update shoppingCarts set isEmpty = ? , restaurantId = ? , restaurantName = ? , totalPayment = totalPayment + ? where userId = ? ");
+        PreparedStatement itemStatement = connection.prepareStatement(
+                "insert into cartItems (userId, foodName, price, number, isPartyFood) values (?, ?, ?, ?, ?, )");
+        try {
+            foodStatement.setString(1, restaurantId);
+            foodStatement.setString(2, foodName);
+            ResultSet foodResult = foodStatement.executeQuery();
+            foodResult.next();
+
+            ResultSet restaurantName = resStatement.executeQuery("select name from restaurants where id = \"" + restaurantId + "\"");
+            restaurantName.next();
+
+            cartUpdate.setBoolean(1, false);
+            cartUpdate.setString(2, restaurantId);
+            cartUpdate.setString(3, restaurantName.getString("name"));
+            cartUpdate.setInt(4, foodResult.getInt("price"));
+            cartUpdate.setInt(5, userId);
+            cartUpdate.executeUpdate();
+
+            itemStatement.setInt(1, userId);
+            itemStatement.setString(2, foodName);
+            itemStatement.setInt(3, foodResult.getInt("price"));
+            itemStatement.setInt(4, 1);
+            itemStatement.setBoolean(5, false);
+            itemStatement.executeUpdate();
+
+            foodResult.close();
+            restaurantName.close();
+            connection.commit();
+        } catch (SQLException e){
+            if(connection != null){
+                connection.rollback();
+            }
+        }
+        foodStatement.close();
+        resStatement.close();
+        cartUpdate.close();
+        itemStatement.close();
+        connection.close();
+    }
+
+    public void updateInCart(String foodName, String restaurantId, int userId) throws SQLException {
+        Connection connection;
+        connection = ConnectionPool.getConnection();
+        connection.setAutoCommit(false);
+
+        PreparedStatement foodStatement = connection.prepareStatement(
+                "select price from cartItems where userId = ? and foodName = ?");
+        PreparedStatement cartUpdate = connection.prepareStatement(
+                "update shoppingCarts set totalPayment = totalPayment + ? where userId = ? ");
+        PreparedStatement itemStatement = connection.prepareStatement(
+                "update cartItems set number = number + 1 where userId = ? and foodName = ?");
+        try {
+            foodStatement.setInt(1, userId);
+            foodStatement.setString(2, foodName);
+            ResultSet foodResult = foodStatement.executeQuery();
+            foodResult.next();
+
+            cartUpdate.setInt(1, foodResult.getInt("price"));
+            cartUpdate.setInt(2, userId);
+            cartUpdate.executeUpdate();
+
+            itemStatement.setInt(1, userId);
+            itemStatement.setString(2, foodName);
+            itemStatement.executeUpdate();
+
+            foodResult.close();
+            connection.commit();
+        } catch (SQLException e){
+            if(connection != null){
+                connection.rollback();
+            }
+        }
+        foodStatement.close();
+        cartUpdate.close();
+        itemStatement.close();
+        connection.close();
+    }
+//    public boolean getcartRow
 //    public void insertOrder()
 //    public void updateOrder()
 //    public void addToCart()

@@ -1,9 +1,11 @@
 package Loghme.Domain.Logic;
 
+import Loghme.DataSource.UserRepository;
 import Loghme.Exceptions.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -86,38 +88,33 @@ public class ShoppingCart {
         this.items = items;
     }
 
-    public int contain(Food food){
+    public int contain(String foodName, boolean isPartyFood){
         for(int i = 0; i < items.size(); i++){
-            if(items.get(i).getFood().equals(food)){
+            if(items.get(i).getFood().getName().equals(foodName) && items.get(i).isPartyFood() == isPartyFood){
                 return i;
             }
         }
         return -1;
     }
 
-    public int contains(String foodName){
-        for(int i = 0; i < items.size(); i++){
-            if(items.get(i).getFood().getName().equals(foodName)){
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public String addToCart(Food newFood, boolean isPartyFood){
-        int foodIndex = contain(newFood);
+    public String addToCart(String foodName, String restaurantId, boolean isPartyFood) throws SQLException {
+        int foodIndex = contain(foodName, isPartyFood);
         if(foodIndex == -1){
-            items.add(new ShoppingCartItem(newFood,1, isPartyFood));
+            if(!isPartyFood)
+                UserRepository.getInstance().insertInCart(foodName, restaurantId, 0);
+//            ToDo: for foodparty should be added later
         }
         else{
-            items.get(foodIndex).increaseNumber();
+            if(!isPartyFood)
+                UserRepository.getInstance().updateInCart(foodName,restaurantId,0);
+//            ToDo: for foodparty should be added later
         }
-        calculateTotalPayment(newFood.getPrice());
-        return "\""+newFood.getName()+"\" has been added to your cart successfully!";
+        return "\""+ foodName +"\" has been added to your cart successfully!";
     }
 
     public String deleteFromCart(String foodName) throws Error404 {
-        int foodIndex = contains(foodName);
+//        ToDo: true should be edited due to argument
+        int foodIndex = contain(foodName , true);
         if(foodIndex == -1){
             throw new Error404("Error: There is no food with name "+foodName+" in your cart to delete.");
         }

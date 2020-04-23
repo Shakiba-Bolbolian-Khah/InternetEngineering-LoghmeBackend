@@ -18,7 +18,7 @@ create table ShoppingCarts(
     restaurantName varchar(50),
     totalPayment int,
     isFoodParty boolean,
-    firstPartyFoodEnteredTime timestamp not null,
+    firstPartyFoodEnteredTime timestamp,
     primary key(userId),
     foreign key(userId) references users(id) on delete cascade on update cascade
 );
@@ -90,4 +90,7 @@ create table PartyFoods(
     foreign key(restaurantId) references restaurants(id) on delete cascade on update cascade
 );
 insert into Users(id, firstName, lastName, phoneNumber, email, x, y, credit)
-values (0, "احسان", "خامس‌پناه", "09123456789", "ekhamespanah@yahoo.com", 0, 0, 100000)
+values (0, "احسان", "خامس‌پناه", "09123456789", "ekhamespanah@yahoo.com", 0, 0, 100000);
+
+insert into ShoppingCarts(userId, isEmpty, isFoodParty)
+values (0, true, false);

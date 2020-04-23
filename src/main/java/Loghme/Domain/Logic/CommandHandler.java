@@ -1,34 +1,36 @@
 package Loghme.Domain.Logic;
 
+import Loghme.DataSource.RestaurantDAO;
 import Loghme.Exceptions.*;
 import Loghme.DataSource.APIReader;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class CommandHandler {
     private static CommandHandler instance;
     private Loghme loghme;
 
-    private CommandHandler() throws IOException {
+    private CommandHandler() throws IOException, SQLException {
         this.loghme = Loghme.getInstance();
         String restaurantsData = APIReader.getInstance().getDataFromAPI("restaurants");
-        doSetLoghmeRestaurants(restaurantsData);
+        insertLoghmeRestaurants(restaurantsData);
     }
 
-    public static CommandHandler getInstance() throws IOException {
+    public static CommandHandler getInstance() throws IOException, SQLException {
         if(instance == null) {
             instance = new CommandHandler();
         }
         return instance;
     }
 
-    public void doSetLoghmeRestaurants(String restaurantsData){
+    public void insertLoghmeRestaurants(String restaurantsData) throws SQLException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        ArrayList<Restaurant> restaurants = gson.fromJson(restaurantsData, new TypeToken<ArrayList<Restaurant>>(){}.getType());
-        loghme.doSetRestaurants(restaurants);
+        ArrayList<RestaurantDAO> restaurantDAOS = gson.fromJson(restaurantsData, new TypeToken<ArrayList<RestaurantDAO>>(){}.getType());
+        loghme.insertRestaurants(restaurantDAOS);
     }
 
     public void doSetLoghmeDeliveries(String deliveriesData){
@@ -37,46 +39,46 @@ public class CommandHandler {
         loghme.doSetDeliveries(deliveries);
     }
 
-    public void assignDelivery(Order order) throws Error404, Error403, IOException {
+    public void assignDelivery(Order order) throws Error404, Error403, IOException, SQLException {
         loghme.assignDelivery(order);
     }
 
-    public void addRestaurant(String newRestaurantInfo){
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        Restaurant newRestaurant;
-        try {
-            newRestaurant = gson.fromJson(newRestaurantInfo, Restaurant.class);
-            System.out.println(loghme.addRestaurant(newRestaurant));
+//    public void addRestaurant(String newRestaurantInfo){
+//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//        Restaurant newRestaurant;
+//        try {
+//            newRestaurant = gson.fromJson(newRestaurantInfo, Restaurant.class);
+//            System.out.println(loghme.addRestaurant(newRestaurant));
+//
+//        } catch (JsonSyntaxException e) {
+//            System.out.println("Error Wrong IO Command: Wrong JSON input.");
+//        } catch (ErrorHandler errorHandler){
+//            System.err.print(errorHandler);
+//        }
+//    }
 
-        } catch (JsonSyntaxException e) {
-            System.out.println("Error Wrong IO Command: Wrong JSON input.");
-        } catch (ErrorHandler errorHandler){
-            System.err.print(errorHandler);
-        }
-    }
+//    public void addFood(String newFoodInfo){
+//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//        Food newFood = null;
+//        String restaurantName = "";
+//        try {
+//            newFood = gson.fromJson(newFoodInfo, Food.class);
+//            restaurantName = new JsonParser().parse(newFoodInfo).getAsJsonObject().get("restaurantName").getAsString();
+//        } catch (JsonSyntaxException e) {
+//            System.out.println("Error Wrong IO Command: Wrong JSON input.");
+//        }
+//        try {
+//            System.out.println(loghme.addFood(newFood, restaurantName));
+//        } catch (ErrorHandler errorHandler) {
+//            System.err.print(errorHandler);
+//        }
+//    }
 
-    public void addFood(String newFoodInfo){
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        Food newFood = null;
-        String restaurantName = "";
-        try {
-            newFood = gson.fromJson(newFoodInfo, Food.class);
-            restaurantName = new JsonParser().parse(newFoodInfo).getAsJsonObject().get("restaurantName").getAsString();
-        } catch (JsonSyntaxException e) {
-            System.out.println("Error Wrong IO Command: Wrong JSON input.");
-        }
-        try {
-            System.out.println(loghme.addFood(newFood, restaurantName));
-        } catch (ErrorHandler errorHandler) {
-            System.err.print(errorHandler);
-        }
-    }
-
-    public ArrayList<Restaurant> doGetRestaurants() throws Error404 {
+    public ArrayList<Restaurant> doGetRestaurants() throws Error404, SQLException {
         return loghme.doGetRestaurants();
     }
 
-    public Restaurant doGetRestaurant(String restaurantId) throws Error404, Error403 {
+    public Restaurant doGetRestaurant(String restaurantId) throws Error404, Error403, SQLException {
         return loghme.doGetRestaurant(restaurantId);
     }
 
@@ -91,10 +93,14 @@ public class CommandHandler {
             System.out.println("Error Wrong IO Command: Wrong JSON input.");
         } catch (ErrorHandler errorHandler){
             System.err.print(errorHandler);
+        } catch (Error404 error404) {
+            System.err.print(error404);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    public String addToCart(String restaurantId, String foodName) throws Error404, Error403 {
+    public String addToCart(String restaurantId, String foodName) throws Error404, Error403, SQLException {
         return loghme.addToCart(restaurantId, foodName);
     }
 
@@ -102,7 +108,7 @@ public class CommandHandler {
         return loghme.deleteFromCart(restaurantId, foodName);
     }
 
-    public String addPartyFoodToCart(String restaurantId, String partyFoodName) throws Error404, Error403 {
+    public String addPartyFoodToCart(String restaurantId, String partyFoodName) throws Error404, Error403, SQLException {
         return loghme.addPartyFoodToCart(restaurantId, partyFoodName);
     }
 
@@ -131,6 +137,8 @@ public class CommandHandler {
             System.out.println(loghme.doGetRecommendedRestaurants());
         } catch (ErrorHandler errorHandler){
             System.err.print(errorHandler);
+        } catch (SQLException e) {
+            System.err.print(e);
         }
     }
 
