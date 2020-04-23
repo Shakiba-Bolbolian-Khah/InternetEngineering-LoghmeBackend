@@ -6,6 +6,8 @@ import Loghme.Exceptions.Error403;
 import Loghme.Exceptions.Error404;
 
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static java.sql.Connection.TRANSACTION_SERIALIZABLE;
 
@@ -177,7 +179,7 @@ public class UserRepository {
         PreparedStatement cartUpdate = connection.prepareStatement(
                 "update shoppingCarts set totalPayment = totalPayment + ? where userId = ? ");
         PreparedStatement itemStatement = connection.prepareStatement(
-                "update cartItems set number = number + 1 where userId = ? and foodName = ?");
+                "update cartItems set number = number + 1 where userId = ? and foodName = ? and isPartyFood = false");
         try {
             foodStatement.setInt(1, userId);
             foodStatement.setString(2, foodName);
@@ -213,42 +215,40 @@ public class UserRepository {
 
         PreparedStatement foodStatement = connection.prepareStatement("select * from partyFoods where restaurantId = ? and name = ?");
         Statement cartTime = connection.createStatement();
-        PreparedStatement cartUpdate = null;
         PreparedStatement itemStatement = connection.prepareStatement(
                 "insert into cartItems (userId, foodName, price, number, isPartyFood) values (?, ?, ?, ?, ?, )");
-        try {
-            foodStatement.setString(1, restaurantId);
-            foodStatement.setString(2, foodName);
-            ResultSet foodResult = foodStatement.executeQuery();
-            foodResult.next();
-            if (foodResult.getInt("count") <= 0) {
-                foodResult.close();
-                foodStatement.close();
-                cartTime.close();
-                cartUpdate.close();
-                itemStatement.close();
-                connection.close();
-                throw new Error403("Error: Sorry! "+foodName+" is over!");
-            }
-
-            ResultSet isTimeSet = cartTime.executeQuery("select isFoodParty from shoppingCarts where id = " + userId);
-            isTimeSet.next();
-            if(isTimeSet.getInt("isFoodParty") == 0) {
-                 cartUpdate = connection.prepareStatement(
-                        "update shoppingCarts set isEmpty = ? , restaurantId = ? , restaurantName = ? , totalPayment = totalPayment + ? , isFoodParty = isFoodParty + 1 , firstPartyFoodEnteredTime = ? where userId = ? ");
-                 Statement foodPartyTime = connection.createStatement();
-                 ResultSet time = foodPartyTime.executeQuery("select * from Foodparty");
-                 time.next();
-                 cartUpdate.setTimestamp(5, time.getTimestamp("enteredDate"));
-                 cartUpdate.setInt(6, userId);
-                 time.close();
-                 foodPartyTime.close();
-            }
-            else {
-                cartUpdate = connection.prepareStatement(
-                        "update shoppingCarts set isEmpty = ? , restaurantId = ? , restaurantName = ? , totalPayment = totalPayment + ? , isFoodParty = isFoodParty + 1 where userId = ? ");
-                cartUpdate.setInt(5, userId);
-            }
+        foodStatement.setString(1, restaurantId);
+        foodStatement.setString(2, foodName);
+        ResultSet foodResult = foodStatement.executeQuery();
+        foodResult.next();
+        if (foodResult.getInt("count") <= 0) {
+            foodResult.close();
+            foodStatement.close();
+            cartTime.close();
+            itemStatement.close();
+            connection.close();
+            throw new Error403("Error: Sorry! "+foodName+" is over!");
+        }
+        PreparedStatement cartUpdate;
+        ResultSet isTimeSet = cartTime.executeQuery("select isFoodParty from shoppingCarts where id = " + userId);
+        isTimeSet.next();
+        if(isTimeSet.getInt("isFoodParty") == 0) {
+             cartUpdate = connection.prepareStatement(
+                    "update shoppingCarts set isEmpty = ? , restaurantId = ? , restaurantName = ? , totalPayment = totalPayment + ? , isFoodParty = isFoodParty + 1 , firstPartyFoodEnteredTime = ? where userId = ? ");
+             Statement foodPartyTime = connection.createStatement();
+             ResultSet time = foodPartyTime.executeQuery("select * from Foodparty");
+             time.next();
+             cartUpdate.setTimestamp(5, time.getTimestamp("enteredDate"));
+             cartUpdate.setInt(6, userId);
+             time.close();
+             foodPartyTime.close();
+        }
+        else {
+            cartUpdate = connection.prepareStatement(
+                    "update shoppingCarts set isEmpty = ? , restaurantId = ? , restaurantName = ? , totalPayment = totalPayment + ? , isFoodParty = isFoodParty + 1 where userId = ? ");
+            cartUpdate.setInt(5, userId);
+        }
+        try{
             cartUpdate.setBoolean(1, false);
             cartUpdate.setString(2, restaurantId);
             cartUpdate.setString(3, foodResult.getString("restaurantName"));
@@ -328,9 +328,149 @@ public class UserRepository {
         cartUpdate.close();
         itemStatement.close();
         connection.close();
-}
+    }
 
-//    public void insertOrder()
-//    public void updateOrder()
-//    public void deleteFromCart()
+    public void deleteFromCart(String foodName, int userId, boolean isOne, int price) throws SQLException {
+        Connection connection;
+        connection = ConnectionPool.getConnection();
+        PreparedStatement deleteStatement;
+        PreparedStatement updateCart = connection.prepareStatement(
+                "update shoppingCarts set totalPayment = totalPayment - ? where userId = ? ");
+        updateCart.setInt(1, price);
+        updateCart.setInt(2, userId);
+
+        if(isOne)
+            deleteStatement = connection.prepareStatement("delete from cartItems where userId = ? and foodName = ?");
+        else
+            deleteStatement = connection.prepareStatement(
+                    "update cartItems set number = number - 1 where userId = ? and foodName = ? and and isPartyFood = false");
+
+        deleteStatement.setInt(1, userId);
+        deleteStatement.setString(2, foodName);
+        deleteStatement.executeUpdate();
+        updateCart.executeUpdate();
+
+        updateCart.close();
+        deleteStatement.close();
+        connection.close();
+    }
+
+    public void deletePartyFoodFromCart(String restaurantId, String foodName, int userId, boolean isOne, int price) throws SQLException {
+        Connection connection;
+        connection = ConnectionPool.getConnection();
+        connection.setAutoCommit(false);
+        PreparedStatement deleteStatement;
+        PreparedStatement updateCart = connection.prepareStatement(
+                "update shoppingCarts set totalPayment = totalPayment - ? ,  isFoodParty = isFoodParty - 1 where userId = ? ");
+        updateCart.setInt(1, price);
+        updateCart.setInt(2, userId);
+
+        if (isOne)
+            deleteStatement = connection.prepareStatement(
+                    "delete from cartItems where userId = ? and foodName = ? and isPartyFood = true");
+        else
+            deleteStatement = connection.prepareStatement(
+                    "update cartItems set number = number - 1 where userId = ? and foodName = ? and isPartyFood = true");
+        try {
+            deleteStatement.setInt(1, userId);
+            deleteStatement.setString(2, foodName);
+            deleteStatement.executeUpdate();
+            updateCart.executeUpdate();
+            FoodPartyRepository.getInstance().updateCount(1, restaurantId, foodName);
+            connection.commit();
+        } catch (SQLException e){
+            if(connection != null){
+                connection.rollback();
+            }
+        }
+        updateCart.close();
+        deleteStatement.close();
+        connection.close();
+    }
+
+    public void clearCart(int userId) throws SQLException {
+        Connection connection;
+        connection = ConnectionPool.getConnection();
+        PreparedStatement cartDelete = connection.prepareStatement(
+                "update shoppingCarts set totalPayment = 0 , isFoodParty = 0, isEmpty = true where userId = ? ");
+        cartDelete.setInt(1,userId);
+        PreparedStatement itemDelete = connection.prepareStatement(
+                "delete from cartItems where userId = ? ");
+        itemDelete.setInt(1, userId);
+        cartDelete.executeUpdate();
+        itemDelete.executeUpdate();
+        cartDelete.close();
+        itemDelete.close();
+        connection.close();
+    }
+
+    public void finalizeOrder(int userId, int orderId) throws SQLException {
+        Connection connection;
+        connection = ConnectionPool.getConnection();
+        connection.setAutoCommit(false);
+        PreparedStatement insertOrder = connection.prepareStatement(
+                "insert into orders (userId, id, restaurantId, restaurantName, totalPayment, state, finalizationTime) values (?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement insertItem = connection.prepareStatement(
+                "insert into orderItems (userId, orderId, foodName, price, number) values ( ?, ?, ?, ?, ?)");
+        CartDAO cartDAO = getCart(userId);
+
+        insertOrder.setInt(1, userId);
+        insertOrder.setInt(2, orderId);
+        insertOrder.setString(3, cartDAO.getRestaurantId());
+        insertOrder.setString(4, cartDAO.getRestaurantName());
+        insertOrder.setInt(5, cartDAO.getTotalPayment());
+        insertOrder.setString(6, "Searching");
+        insertOrder.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+        insertOrder.executeUpdate();
+
+        for(CartItemDAO cartItemDAO: cartDAO.getItems()){
+            insertItem.setInt(1,userId);
+            insertItem.setInt(2, orderId);
+            insertItem.setString(3, cartItemDAO.getFoodName());
+            insertItem.setInt(4, cartItemDAO.getPrice());
+            insertItem.setInt(5, cartItemDAO.getNumber());
+            insertItem.addBatch();
+        }
+        insertItem.executeBatch();
+        increaseCredit(userId, -cartDAO.getTotalPayment());
+
+        try {
+            connection.commit();
+        } catch (SQLException e){
+            if(connection != null){
+                connection.rollback();
+            }
+        }
+        insertOrder.close();
+        insertItem.close();
+        connection.close();
+    }
+
+    public void setDeliveryForOrder(int orderId, int userId, String deliveryId, LocalTime deliveringTime) throws SQLException {
+        Connection connection;
+        connection = ConnectionPool.getConnection();
+        PreparedStatement updateOrder = connection.prepareStatement(
+                "update orders set deliveringTime = ? , deliveryId = ?, state = ? where userId = ? and id = ?");
+        updateOrder.setTime(1,Time.valueOf(deliveringTime));
+        updateOrder.setString(2, deliveryId);
+        updateOrder.setString(3, "Delivering");
+        updateOrder.setInt(4, userId);
+        updateOrder.setInt(5, orderId);
+        updateOrder.executeUpdate();
+        updateOrder.close();
+        connection.close();
+    }
+
+    public void setDeliveredState(int orderId, int userId) throws SQLException {
+        Connection connection;
+        connection = ConnectionPool.getConnection();
+        PreparedStatement updateOrder = connection.prepareStatement(
+                "update orders set state = ? where userId = ? and id = ?");
+        updateOrder.setString(1, "Done");
+        updateOrder.setInt(2, userId);
+        updateOrder.setInt(3, orderId);
+        updateOrder.executeUpdate();
+        updateOrder.close();
+        connection.close();
+    }
 }

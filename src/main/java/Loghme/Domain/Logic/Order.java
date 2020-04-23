@@ -1,5 +1,6 @@
 package Loghme.Domain.Logic;
 
+import Loghme.DataSource.UserRepository;
 import Loghme.Exceptions.Error404;
 import Loghme.Domain.Scheduler.DeliveringTimeManager;
 
@@ -33,11 +34,12 @@ public class Order extends ShoppingCart {
         this.deliveringTime = deliveringTime;
     }
 
-    public void setDeliveryForOrder(String deliveryId, LocalTime deliveringTime) throws IOException, Error404 {
-        this.deliveryId = deliveryId;
-        this.state = OrderState.Delivering;
-        this.deliveringTime = deliveringTime;
-        new DeliveringTimeManager(this);
+    public void setDeliveryForOrder(int userId, String deliveryId, LocalTime deliveringTime) throws IOException, Error404 {
+//        this.deliveryId = deliveryId;
+//        this.state = OrderState.Delivering;
+//        this.deliveringTime = deliveringTime;
+        UserRepository.getInstance().setDeliveryForOrder(id, userId, deliveryId, deliveringTime);
+        new DeliveringTimeManager(this , userId);
     }
 
     public int getId() {

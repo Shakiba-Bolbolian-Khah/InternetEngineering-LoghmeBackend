@@ -2,6 +2,7 @@ package Loghme.Domain.Logic;
 
 import Loghme.Exceptions.*;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -101,16 +102,9 @@ public class User {
         return this.shoppingCart;
     }
 
-    public Order finalizeOrder(boolean isFoodPartyFinished) throws Error403, Error400 {
+    public int finalizeOrder() throws Error403, Error400, SQLException {
         int totalPayment = shoppingCart.getTotalPayment();
-        ShoppingCart order = shoppingCart.finalizeOrder(this.credit, isFoodPartyFinished);
-        this.credit -= totalPayment;
-        orders.ensureCapacity(orders.size()+1);
-        int orderId = orders.size();
-        Order newOrder = new Order(order.getRestaurantId(),order.getRestaurantName(),order.getTotalPayment(),order.isFoodParty()
-                ,order.getItems(),orderId, OrderState.Searching);
-        orders.add(newOrder);
-
-        return newOrder;
+        int orderId = shoppingCart.finalizeOrder(this.credit, orders.size());
+        return orderId;
     }
 }

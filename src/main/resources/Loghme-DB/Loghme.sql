@@ -39,7 +39,7 @@ create table Orders(
     totalPayment int not null,
     state varchar(10) not null,
     finalizationTime timestamp not null,
-    deliveringTime time not null,
+    deliveringTime time,
     deliveryId varchar(30),
 	primary key(userId, id),
     foreign key(userId) references users(id) on delete cascade on update cascade

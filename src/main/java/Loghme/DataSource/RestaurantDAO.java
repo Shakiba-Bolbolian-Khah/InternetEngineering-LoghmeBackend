@@ -8,8 +8,6 @@ public class RestaurantDAO {
     private String id;
     private String name;
     private Location location;
-//    private int x;
-//    private int y;
     private String logo;
     private ArrayList<FoodDAO> menu = new ArrayList<>();
 
@@ -51,5 +49,10 @@ public class RestaurantDAO {
 
     public void setLogo(String logo) {
         this.logo = logo;
+    }
+
+    public void clearMenu() {
+        this.menu.clear();
+        this.menu = new ArrayList<>();
     }
 }

@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class ShoppingCart {
@@ -111,51 +112,58 @@ public class ShoppingCart {
             if(!isPartyFood)
                 UserRepository.getInstance().updateInCart(foodName,0);
             else
-                UserRepository.getInstance().updatePartyFoodInCart(foodName, restaurantId, 0);
+                if(isPartyFinished())
+                    UserRepository.getInstance().updatePartyFoodInCart(foodName, restaurantId, 0);
+                else{
+                    UserRepository.getInstance().clearCart(0);
+                    throw new Error403("Error: Food party time is over!");
+                }
 //            ToDo: for foodparty should be added later
         }
         return "\""+ foodName +"\" has been added to your cart successfully!";
     }
 
-    public String deleteFromCart(String foodName) throws Error404 {
+    public String deleteFromCart(String restaurantId, String foodName, boolean isPartyFood) throws Error404, SQLException, Error403 {
 //        ToDo: true should be edited due to argument
-        int foodIndex = contain(foodName , true);
+        int foodIndex = contain(foodName , isPartyFood);
         if(foodIndex == -1){
             throw new Error404("Error: There is no food with name "+foodName+" in your cart to delete.");
         }
         else {
-            items.get(foodIndex).decreaseNumber();
-            totalPayment -= items.get(foodIndex).getFood().getPrice();
-            if (items.get(foodIndex).getNumber() == 0){
-                items.remove(foodIndex);
-                if(items.size() == 0)
-                    isEmpty = true;
-                return "\""+foodName+"\" has been deleted from your cart successfully!";
+            if (!isPartyFood)
+                UserRepository.getInstance().deleteFromCart(foodName, 0, items.get(foodIndex).getNumber() == 0, items.get(foodIndex).getFood().getPrice());
+            else {
+                if (isPartyFinished())
+                    UserRepository.getInstance().deletePartyFoodFromCart(restaurantId, foodName, 0, items.get(foodIndex).getNumber() == 0, items.get(foodIndex).getFood().getPrice());
+                else {
+                    UserRepository.getInstance().clearCart(0);
+                    throw new Error403("Error: Food party time is over!");
+                }
             }
-            else{
-                return "\""+foodName+"\" number has been decreased in your cart successfully!";
-            }
+            return "\"" + foodName + "\" has been deleted from your cart successfully!";
         }
+
     }
 
-    public ArrayList<ShoppingCartItem> doGetCart() throws Error404 {
-        if(isEmpty)
-            throw new Error404("Error: There is nothing to show in your cart!");
-        return items;
+    public boolean isPartyFinished(){
+        LocalDateTime now = LocalDateTime.now();
+        if(firstPartyFoodEnteredTime != null && isFoodParty != 0)
+            return (firstPartyFoodEnteredTime.until(now, ChronoUnit.MINUTES) < 30);
+        return false;
     }
 
-    public ShoppingCart finalizeOrder(int userCredit, boolean isFoodPartyFinished) throws Error403, Error400 {
+    public int finalizeOrder(int userCredit, int orderId) throws Error403, Error400, SQLException {
         if(isEmpty){
             throw new Error400("Error: There is nothing in your cart to be finalized!");
         }
-        if(isFoodParty != 0 && isFoodPartyFinished){
-            clearCart();
-            throw new Error403("Error: You ordered from food party! Food party time is over!!");
+        if(isFoodParty != 0 && !isPartyFinished()){
+            UserRepository.getInstance().clearCart(0);
+            throw new Error403("Error: You ordered from food party! Food party time is over!");
         }
         if (userCredit >= totalPayment){
-            ShoppingCart order = copyCart(this);
-            clearCart();
-            return order;
+            UserRepository.getInstance().finalizeOrder(0, orderId);
+            UserRepository.getInstance().clearCart(0);
+            return orderId;
         }
         else
             throw new Error400("Error: Not enough credit!");

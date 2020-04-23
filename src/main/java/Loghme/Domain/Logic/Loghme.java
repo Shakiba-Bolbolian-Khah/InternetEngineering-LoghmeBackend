@@ -19,11 +19,10 @@ public class Loghme {
     private static Loghme instance;
 
     private ArrayList<Delivery> deliveries;
-    private FoodParty foodParty;
+//    private FoodParty foodParty;
 
     private Loghme() {
         this.deliveries = new ArrayList<>();
-        this.foodParty = new FoodParty(LocalDateTime.now(),new ArrayList<>());
     }
 
     public static Loghme getInstance(){
@@ -40,8 +39,9 @@ public class Loghme {
         this.deliveries = deliveries;
     }
 
-    public void assignDelivery(Order deliveringOrder) throws Error404, Error403, IOException, SQLException {
+    public void assignDelivery(int orderId, int userId) throws Error404, Error403, IOException, SQLException {
         User user = getUser();
+        Order deliveringOrder = user.getOrder(orderId);
         double deliveringTime = 0;
         String BestDeliveryId = null;
         for (Delivery delivery: deliveries) {
@@ -55,7 +55,7 @@ public class Loghme {
         int minutes = (int) (deliveringTime % 3600) / 60;
         int seconds = (int) deliveringTime % 60;
         LocalTime remainingTime = LocalTime.of(hours, minutes, seconds);
-        deliveringOrder.setDeliveryForOrder(BestDeliveryId, remainingTime);
+        deliveringOrder.setDeliveryForOrder(userId, BestDeliveryId, remainingTime);
         //ToDo: update order function in DB must be called
     }
 
@@ -89,11 +89,6 @@ public class Loghme {
         return DataConverter.getInstance().DAOtoRestaurant(RestaurantRepository.getInstance().getRestaurant(restaurantId));
     }
 
-    public Food getFood(String restaurantId, String foodName) throws ErrorHandler, SQLException, Error404 {
-       Restaurant restaurant = doGetRestaurant(restaurantId);
-        return restaurant.getFood(foodName);
-    }
-
     public String addToCart(String restaurantId, String foodName, boolean isPartyFood) throws Error403, SQLException {
         ShoppingCart userCart = doGetCart();
         if (!userCart.isEmpty()) {
@@ -104,56 +99,30 @@ public class Loghme {
         return userCart.addToCart(foodName, restaurantId, isPartyFood);
     }
 
-    public String deleteFromCart(String restaurantId, String foodName) throws Error403, Error404 {
-//        if (user.getShoppingCart().isEmpty()) {
-//            throw new Error403("Error: There is nothing in your cart to delete.");
-//        }
-//        if (user.getShoppingCart().getRestaurantId().equals(restaurantId))
-//            return user.deleteFromCart(foodName);
-//        else
-//            throw new Error403("Error: You had not ordered food from this restaurant!");
-
-//        ToDo:User repository calling delete from cart
-        return "ok"; //Just in order to avoid error -_-
-
-    }
-
-    public String deletePartyFoodFromCart(String restaurantId, String partyFoodName) throws Error403, Error404 {
-//        if (user.getShoppingCart().isEmpty()) {
-//            throw new Error403("Error: There is nothing in your cart to delete.");
-//        }
-//        if (user.getShoppingCart().getRestaurantId().equals(restaurantId)) {
-//            if (!user.isFoodParty())
-//                throw new Error403("Error: You had not selected any food from food party!");
-//            else {
-//                if (!this.foodParty.isPartyFinished(user.getShoppingCartTime())) {
-//                    this.foodParty.increaseFoodCount(restaurantId, partyFoodName);
-//                    return user.deleteFromCart(partyFoodName);
-//                }
-//                else
-//                    throw new Error403("Error: Food party time is over!");
-//            }
-//        }
-//        else
-//            throw new Error403("Error: You had not ordered food from this restaurant!");
-        //        ToDo:User repository calling delete foodParty from cart
-        return "ok"; //Just in order to avoid error -_-
+    public String deleteFromCart(String restaurantId, String foodName, boolean isPartyFood) throws Error403, Error404, SQLException {
+        ShoppingCart userCart = doGetCart();
+        if (userCart.isEmpty()) {
+            throw new Error403("Error: There is nothing in your cart to delete.");
+        }
+        if (userCart.getRestaurantId().equals(restaurantId))
+            return userCart.deleteFromCart(restaurantId, foodName, isPartyFood);
+        else
+            throw new Error403("Error: You had not ordered food from this restaurant!");
     }
 
     public ShoppingCart doGetCart() throws SQLException {
         return DataConverter.getInstance().DAOtoCart(UserRepository.getInstance().getCart(0));
     }
 
-    public Order finalizeOrder() throws Error400, Error403, Error404, SQLException {
-        User user = DataConverter.getInstance().DAOtoUser(UserRepository.getInstance().getUser(0));
-        Order order = user.finalizeOrder(this.foodParty.isPartyFinished(user.getShoppingCartTime()));
-        findDelivery(order);
-        return order;
+    public void finalizeOrder() throws Error400, Error403, Error404, SQLException {
+        User user = getUser();
+        int orderId = user.finalizeOrder();
+        findDelivery(orderId, 0);
         //ToDo: User rep. calling insert and finalize order. I just added user here to avoid errors.
     }
 
-    public void findDelivery(Order order) {
-        new DeliveryFindingManager(30, order);
+    public void findDelivery(int orderId, int userId) {
+        new DeliveryFindingManager(30, orderId, userId);
     }
 
     public static Map<String, Double> sortByValue(Map<String, Double> hm)
