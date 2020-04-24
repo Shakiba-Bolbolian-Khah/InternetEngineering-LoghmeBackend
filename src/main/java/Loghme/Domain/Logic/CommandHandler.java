@@ -113,7 +113,7 @@ public class CommandHandler {
         JsonArray restaurantsArray = new JsonParser().parse(newPartyRestaurants).getAsJsonArray();
         ArrayList<PartyFoodDAO> partyFoodDAOS = new ArrayList<>();
         FoodPartyDAO foodPartyDAO = new FoodPartyDAO();
-        foodPartyDAO.setEnteredTime(LocalDateTime.now());
+        foodPartyDAO.setEnteredDate(LocalDateTime.now());
         for (int i = 0; i < restaurantsArray.size(); i++) {
             JsonArray newMenu = restaurantsArray.get(i).getAsJsonObject().get("menu").getAsJsonArray();
             String newRestaurantId = restaurantsArray.get(i).getAsJsonObject().get("id").getAsString();
@@ -123,7 +123,7 @@ public class CommandHandler {
             newPartyFoods.forEach((u) -> u.setRestaurantName(newRestaurantName));
             partyFoodDAOS.addAll(newPartyFoods);
         }
-        foodPartyDAO.setPartyFoodDAOS(partyFoodDAOS);
+        foodPartyDAO.setPartyFoods(partyFoodDAOS);
         loghme.setFoodParty(foodPartyDAO);
     }
 

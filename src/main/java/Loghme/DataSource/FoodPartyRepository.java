@@ -1,7 +1,6 @@
 package Loghme.DataSource;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 
 import static java.sql.Connection.TRANSACTION_SERIALIZABLE;
 
@@ -25,7 +24,7 @@ public class FoodPartyRepository {
             timeResult.close();
             return foodPartyDAO;
         }
-        foodPartyDAO.setEnteredTime(timeResult.getTimestamp("enteredDate").toLocalDateTime());
+        foodPartyDAO.setEnteredDate(timeResult.getTimestamp("enteredDate").toLocalDateTime());
         timeResult.close();
         ResultSet foodResult = foodsStatement.executeQuery("select * from partyFoods");
         while (foodResult.next()){
@@ -65,9 +64,9 @@ public class FoodPartyRepository {
         try {
             delTimeStatement.executeUpdate("delete from foodParty");
             delFoodStatement.executeUpdate("delete from partyFoods");
-            insertTimeStatement.setTimestamp(1, Timestamp.valueOf(foodPartyDAO.getEnteredTime()));
+            insertTimeStatement.setTimestamp(1, Timestamp.valueOf(foodPartyDAO.getEnteredDate()));
             insertTimeStatement.executeUpdate();
-            for (PartyFoodDAO partyFoodDAO : foodPartyDAO.getPartyFoodDAOS()) {
+            for (PartyFoodDAO partyFoodDAO : foodPartyDAO.getPartyFoods()) {
                 insertFoodStatement.setString(1, partyFoodDAO.getRestaurantId());
                 insertFoodStatement.setString(2, partyFoodDAO.getName());
                 insertFoodStatement.setString(3, partyFoodDAO.getRestaurantName());

@@ -7,15 +7,15 @@ public class FoodPartyDAO {
     LocalDateTime enteredDate;
     ArrayList<PartyFoodDAO> partyFoods = new ArrayList<>();
 
-    public LocalDateTime getEnteredTime() {
+    public LocalDateTime getEnteredDate() {
         return enteredDate;
     }
 
-    public void setEnteredTime(LocalDateTime enteredTime) {
-        this.enteredDate = enteredTime;
+    public void setEnteredDate(LocalDateTime enteredDate) {
+        this.enteredDate = enteredDate;
     }
 
-    public ArrayList<PartyFoodDAO> getPartyFoodDAOS() {
+    public ArrayList<PartyFoodDAO> getPartyFoods() {
         return partyFoods;
     }
 
@@ -23,7 +23,7 @@ public class FoodPartyDAO {
         this.partyFoods.add(partyFoodDAO);
     }
 
-    public void setPartyFoodDAOS(ArrayList<PartyFoodDAO> partyFoodDAOS) {
-        this.partyFoods = partyFoodDAOS;
+    public void setPartyFoods(ArrayList<PartyFoodDAO> partyFoods) {
+        this.partyFoods = partyFoods;
     }
 }
