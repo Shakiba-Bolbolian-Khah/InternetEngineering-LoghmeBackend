@@ -107,4 +107,8 @@ public class RestaurantRepository {
         insertFoodStatement.close();
         connection.close();
     }
+
+    public ArrayList<RestaurantDAO> search( String restaurantName, String foodName){
+        return new ArrayList<RestaurantDAO>();
+    }
 }

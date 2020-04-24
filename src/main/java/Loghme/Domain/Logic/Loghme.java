@@ -3,6 +3,7 @@ package Loghme.Domain.Logic;
 import Loghme.DataSource.*;
 import Loghme.Exceptions.*;
 import Loghme.Domain.Scheduler.DeliveryFindingManager;
+import Loghme.PresentationController.HomeRestaurantDTO;
 import Loghme.PresentationController.RestaurantDTO;
 
 import java.io.IOException;
@@ -29,7 +30,6 @@ public class Loghme {
     }
 
     public void insertRestaurants(ArrayList<RestaurantDAO> restaurantDAOS) throws SQLException {
-        System.out.println("thth");
         RestaurantRepository.getInstance().insertRestaurants(restaurantDAOS);
     }
 
@@ -175,4 +175,10 @@ public class Loghme {
     public FoodPartyDAO getFoodParty() throws SQLException {
         return FoodPartyRepository.getInstance().doGetFoodParty();
     }
+
+    public ArrayList<Restaurant> search(String restaurantName, String foodName){
+        return DataConverter.getInstance().DAOtoRestaurantList(RestaurantRepository.getInstance().search(restaurantName, foodName));
+    }
+
+
 }

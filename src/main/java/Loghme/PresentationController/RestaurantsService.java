@@ -35,4 +35,16 @@ public class RestaurantsService {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
+
+    @RequestMapping(value = "/restaurants/search", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> search(@PathVariable(value = "restaurant") String restaurantName,
+                                    @PathVariable(value = "food") String foodName) {
+        try{
+            return new ResponseEntity<>(CommandHandler.getInstance().search(restaurantName, foodName), HttpStatus.OK);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
