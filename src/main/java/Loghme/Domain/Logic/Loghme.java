@@ -54,7 +54,6 @@ public class Loghme {
         int seconds = (int) deliveringTime % 60;
         LocalTime remainingTime = LocalTime.of(hours, minutes, seconds);
         deliveringOrder.setDeliveryForOrder(userId, BestDeliveryId, remainingTime);
-        //ToDo: update order function in DB must be called
     }
 
     public User doGetUser() throws Error404, SQLException {
@@ -117,7 +116,6 @@ public class Loghme {
         int orderId = user.finalizeOrder();
         findDelivery(orderId, 0);
         return "Your order finalized successfully!";
-        //ToDo: User rep. calling insert and finalize order.
     }
 
     public void findDelivery(int orderId, int userId) {
@@ -179,6 +177,4 @@ public class Loghme {
     public ArrayList<Restaurant> search(String restaurantName, String foodName) throws SQLException, Error403 {
         return DataConverter.getInstance().DAOtoRestaurantList(RestaurantRepository.getInstance().search(restaurantName, foodName));
     }
-
-
 }

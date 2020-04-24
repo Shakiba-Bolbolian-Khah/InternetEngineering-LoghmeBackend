@@ -28,7 +28,7 @@ public class Order extends ShoppingCart {
 
     public void setDeliveryForOrder(int userId, String deliveryId, LocalTime deliveringTime) throws SQLException {
         UserRepository.getInstance().setDeliveryForOrder(id, userId, deliveryId, deliveringTime);
-        new DeliveringTimeManager(this , userId);
+        new DeliveringTimeManager(id, userId, deliveringTime);
     }
 
     public int getId() {
@@ -41,10 +41,6 @@ public class Order extends ShoppingCart {
 
     public void setState(OrderState state) {
         this.state = state;
-    }
-
-    public int doGetDeliveringTimeInSeconds() {
-        return deliveringTime.getHour()*3600 + deliveringTime.getMinute()*60 + deliveringTime.getSecond();
     }
 
     public LocalDateTime getFinalizationTime() {

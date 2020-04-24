@@ -36,9 +36,9 @@ public class RestaurantsService {
         }
     }
 
-    @RequestMapping(value = "/restaurants/search", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> search(@PathVariable(value = "restaurant") String restaurantName,
-                                    @PathVariable(value = "food") String foodName) {
+    @RequestMapping(value = "/restaurants/search", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> search(@RequestParam(value = "restaurant", required = true) String restaurantName,
+                                    @RequestParam(value = "food", required = true) String foodName) {
         try{
             return new ResponseEntity<>(CommandHandler.getInstance().search(restaurantName, foodName), HttpStatus.OK);
         } catch (SQLException | IOException e) {

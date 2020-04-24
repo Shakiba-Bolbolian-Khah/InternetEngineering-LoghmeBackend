@@ -109,24 +109,26 @@ public class RestaurantRepository {
         connection.close();
     }
 
-    public ArrayList<RestaurantDAO> search( String restaurantName, String foodName) throws SQLException, Error403 {
+    public ArrayList<RestaurantDAO> search(String restaurantName, String foodName) throws SQLException, Error403 {
         Connection connection;
         connection = ConnectionPool.getConnection();
-        PreparedStatement searchStatement;
+        Statement searchStatement = connection.createStatement();
+        ResultSet result;
 
-        if(restaurantName != "" && foodName != "")
-            searchStatement  = connection.prepareStatement(
+        if(!restaurantName.equals("") && !foodName.equals(""))
+            result = searchStatement.executeQuery(
                     "select * from restaurants where id in (select restaurantId from foods where name like \"%"+ foodName + "%\") and name like \"%"+ restaurantName +"%\"");
-        else if(restaurantName != "")
-            searchStatement = connection.prepareStatement(
+        else if(!restaurantName.equals(""))
+            result = searchStatement.executeQuery(
                     "select * from restaurants where name like \"%"+ restaurantName + "%\"");
-        else if(foodName != "")
-            searchStatement = connection.prepareStatement(
-                    "select * from restaurants where id in (select restaurantId from foods where name like \"%"+ foodName + "%\"");
-        else
+        else if(!foodName.equals(""))
+            result = searchStatement.executeQuery(
+                    "select * from restaurants where id in (select restaurantId from foods where name like \"%"+ foodName + "%\")");
+        else {
+            searchStatement.close();
+            connection.close();
             throw new Error403("No restaurant name and food name has been entered!");
-
-        ResultSet result = searchStatement.executeQuery();
+        }
         ArrayList<RestaurantDAO> restaurantDAOS = new ArrayList<>();
         while(result.next()) {
             RestaurantDAO restaurantDAO = new RestaurantDAO();

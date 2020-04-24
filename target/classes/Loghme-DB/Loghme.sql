@@ -14,7 +14,7 @@ create table Users(
 create table ShoppingCarts(
 	userId int,
     isEmpty boolean,
-    restaurantId varchar(30),
+    restaurantId varchar(60),
     restaurantName varchar(100),
     totalPayment int,
     isFoodParty int,
@@ -34,13 +34,13 @@ create table CartItems(
 create table Orders(
 	userId int,
     id int,
-    restaurantId varchar(30) not null,
+    restaurantId varchar(60) not null,
     restaurantName varchar(100) not null,
     totalPayment int not null,
     state varchar(10) not null,
-    finalizationTime timestamp not null,
+    finalizationTime timestamp,
     deliveringTime time,
-    deliveryId varchar(30),
+    deliveryId varchar(60),
 	primary key(userId, id),
     foreign key(userId) references users(id) on delete cascade on update cascade
 );
@@ -54,7 +54,7 @@ create table OrderItems(
     foreign key(userId, orderId) references orders(userId, id) on delete cascade on update cascade
 );
 create table Restaurants(
-	id varchar(30),
+	id varchar(60),
     name varchar(100) not null,
     x int not null,
     y int not null,
@@ -62,7 +62,7 @@ create table Restaurants(
     primary key(id)
 );
 create table Foods(
-	restaurantId varchar(30),
+	restaurantId varchar(60),
     name varchar(100),
     price int not null,
     description varchar(250),
@@ -76,7 +76,7 @@ create table Foodparty(
     primary key(enteredDate)
 );
 create table PartyFoods(
-	restaurantId varchar(30),
+	restaurantId varchar(60),
     name varchar(100),
     restaurantName varchar(100) not null,
 	oldPrice int not null,
@@ -91,5 +91,5 @@ create table PartyFoods(
 insert into Users(id, firstName, lastName, phoneNumber, email, x, y, credit)
 values (0, "احسان", "خامس‌پناه", "09123456789", "ekhamespanah@yahoo.com", 0, 0, 100000);
 
-insert into ShoppingCarts(userId, isEmpty, isFoodParty)
-values (0, true, 0);
+insert into ShoppingCarts(userId, isEmpty, isFoodParty, totalPayment)
+values (0, true, 0, 0);

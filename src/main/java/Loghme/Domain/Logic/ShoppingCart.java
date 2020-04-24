@@ -105,7 +105,6 @@ public class ShoppingCart {
                 UserRepository.getInstance().insertInCart(foodName, restaurantId, 0);
             else {
                 UserRepository.getInstance().insertPartyFoodInCart(foodName, restaurantId, 0);
-//            ToDo: for foodparty should be added later
             }
         }
         else{
@@ -118,23 +117,27 @@ public class ShoppingCart {
                     UserRepository.getInstance().clearCart(0);
                     throw new Error403("Error: Food party time is over!");
                 }
-//            ToDo: for foodparty should be added later
         }
         return "\""+ foodName +"\" has been added to your cart successfully!";
     }
 
     public String deleteFromCart(String restaurantId, String foodName, boolean isPartyFood) throws Error404, SQLException, Error403 {
-//        ToDo: true should be edited due to argument
         int foodIndex = contain(foodName , isPartyFood);
         if(foodIndex == -1){
             throw new Error404("Error: There is no food with name "+foodName+" in your cart to delete.");
         }
         else {
-            if (!isPartyFood)
-                UserRepository.getInstance().deleteFromCart(foodName, 0, items.get(foodIndex).getNumber() == 0, items.get(foodIndex).getFood().getPrice());
+            if (!isPartyFood) {
+                if (UserRepository.getInstance().deleteFromCart(foodName, 0, items.get(foodIndex).getNumber() == 1, items.get(foodIndex).getFood().getPrice())) {
+                    UserRepository.getInstance().clearCart(0);
+                }
+            }
             else {
-                if (isPartyFinished())
-                    UserRepository.getInstance().deletePartyFoodFromCart(restaurantId, foodName, 0, items.get(foodIndex).getNumber() == 0, items.get(foodIndex).getFood().getPrice());
+                if (isPartyFinished()) {
+                    if (UserRepository.getInstance().deletePartyFoodFromCart(restaurantId, foodName, 0, items.get(foodIndex).getNumber() == 1, items.get(foodIndex).getFood().getPrice())) {
+                        UserRepository.getInstance().clearCart(0);
+                    }
+                }
                 else {
                     UserRepository.getInstance().clearCart(0);
                     throw new Error403("Error: Food party time is over!");
