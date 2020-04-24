@@ -5,6 +5,7 @@ import Loghme.Exceptions.Error404;
 import Loghme.Domain.Scheduler.DeliveringTimeManager;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -16,15 +17,6 @@ public class Order extends ShoppingCart {
     private LocalDateTime finalizationTime;
     private LocalTime deliveringTime;
 
-//    public Order(String restaurantId, String restaurantName, int totalPayment, boolean isFoodParty, ArrayList<ShoppingCartItem> items, int id, OrderState state) {
-//        super(false, restaurantId, restaurantName, totalPayment, isFoodParty, items);
-//        this.id = id;
-//        this.deliveryId = null;
-//        this.state = state;
-//        this.finalizationTime = LocalDateTime.now();
-//        this.deliveringTime = null;
-//    }
-
     public Order(String restaurantId, String restaurantName, int totalPayment, int isFoodParty, ArrayList<ShoppingCartItem> items, int id, String deliveryId, OrderState state, LocalDateTime finalizationTime, LocalTime deliveringTime) {
         super(false, restaurantId, restaurantName, totalPayment, isFoodParty, items);
         this.id = id;
@@ -34,10 +26,7 @@ public class Order extends ShoppingCart {
         this.deliveringTime = deliveringTime;
     }
 
-    public void setDeliveryForOrder(int userId, String deliveryId, LocalTime deliveringTime) throws IOException, Error404 {
-//        this.deliveryId = deliveryId;
-//        this.state = OrderState.Delivering;
-//        this.deliveringTime = deliveringTime;
+    public void setDeliveryForOrder(int userId, String deliveryId, LocalTime deliveringTime) throws SQLException {
         UserRepository.getInstance().setDeliveryForOrder(id, userId, deliveryId, deliveringTime);
         new DeliveringTimeManager(this , userId);
     }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @RestController
 public class FoodPartyService {
@@ -18,7 +19,7 @@ public class FoodPartyService {
     public ResponseEntity<?> getFoodParty() {
         try {
             return new ResponseEntity<>(CommandHandler.getInstance().getFoodParty(), HttpStatus.OK);
-        } catch (IOException error) {
+        } catch (IOException|SQLException error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
@@ -51,7 +52,7 @@ public class FoodPartyService {
             return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
         } catch (Error400 error400) {
             return new ResponseEntity<>(error400.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (IOException error) {
+        } catch (IOException|SQLException error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @RestController
 public class RestaurantsService {
@@ -19,7 +20,7 @@ public class RestaurantsService {
             return new ResponseEntity<>(CommandHandler.getInstance().doGetRestaurants(), HttpStatus.OK);
         } catch (Error404 error404) {
             return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (IOException error) {
+        } catch (IOException| SQLException error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
@@ -32,7 +33,7 @@ public class RestaurantsService {
             return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Error403 error403) {
             return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
-        } catch (IOException error) {
+        } catch (IOException|SQLException error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }

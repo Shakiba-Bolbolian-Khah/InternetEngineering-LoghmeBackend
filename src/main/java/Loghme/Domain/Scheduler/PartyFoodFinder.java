@@ -4,6 +4,7 @@ import Loghme.Domain.Logic.CommandHandler;
 import Loghme.DataSource.APIReader;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class PartyFoodFinder implements Runnable {
     @Override
@@ -11,8 +12,8 @@ public class PartyFoodFinder implements Runnable {
         try {
             String foodPartyInfo = APIReader.getInstance().getDataFromAPI("foodparty");
             CommandHandler.getInstance().doSetFoodParty(foodPartyInfo);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException | SQLException e) {
+            System.err.print(e);
         }
     }
 }

@@ -168,18 +168,4 @@ public class ShoppingCart {
         else
             throw new Error400("Error: Not enough credit!");
     }
-
-    private static ShoppingCart copyCart(ShoppingCart cart) {
-        Gson gson = new GsonBuilder().create();
-        String orderInStringForm = gson.toJson(cart);
-        return gson.fromJson(orderInStringForm, ShoppingCart.class);
-    }
-
-    public void clearCart(){
-        items.clear();
-        totalPayment = 0;
-        isEmpty = true;
-        isFoodParty = 0;
-        firstPartyFoodEnteredTime = null;
-    }
 }

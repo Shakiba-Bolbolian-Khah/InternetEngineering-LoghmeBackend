@@ -1,13 +1,17 @@
 package Loghme.Domain.Logic;
 
-import Loghme.DataSource.RestaurantDAO;
+import Loghme.DataSource.*;
 import Loghme.Exceptions.*;
-import Loghme.DataSource.APIReader;
+import Loghme.PresentationController.HomeRestaurantDTO;
+import Loghme.PresentationController.RestaurantDTO;
+import Loghme.PresentationController.ShoppingCartDTO;
+import Loghme.PresentationController.UserDTO;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class CommandHandler {
@@ -43,75 +47,35 @@ public class CommandHandler {
         loghme.assignDelivery(orderId, userId);
     }
 
-//    public void addRestaurant(String newRestaurantInfo){
-//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//        Restaurant newRestaurant;
-//        try {
-//            newRestaurant = gson.fromJson(newRestaurantInfo, Restaurant.class);
-//            System.out.println(loghme.addRestaurant(newRestaurant));
-//
-//        } catch (JsonSyntaxException e) {
-//            System.out.println("Error Wrong IO Command: Wrong JSON input.");
-//        } catch (ErrorHandler errorHandler){
-//            System.err.print(errorHandler);
-//        }
-//    }
-
-//    public void addFood(String newFoodInfo){
-//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//        Food newFood = null;
-//        String restaurantName = "";
-//        try {
-//            newFood = gson.fromJson(newFoodInfo, Food.class);
-//            restaurantName = new JsonParser().parse(newFoodInfo).getAsJsonObject().get("restaurantName").getAsString();
-//        } catch (JsonSyntaxException e) {
-//            System.out.println("Error Wrong IO Command: Wrong JSON input.");
-//        }
-//        try {
-//            System.out.println(loghme.addFood(newFood, restaurantName));
-//        } catch (ErrorHandler errorHandler) {
-//            System.err.print(errorHandler);
-//        }
-//    }
-
-    public ArrayList<Restaurant> doGetRestaurants() throws Error404, SQLException {
-        return loghme.doGetRestaurants();
+    public ArrayList<HomeRestaurantDTO> doGetRestaurants() throws Error404, SQLException {
+        return DataConverter.getInstance().restaurantsToDTO(loghme.findNearestRestaurantsForUser());
     }
 
-    public Restaurant doGetRestaurant(String restaurantId) throws Error404, Error403, SQLException {
+    public RestaurantDTO doGetRestaurant(String restaurantId) throws Error404, SQLException {
         return loghme.doGetRestaurant(restaurantId);
     }
 
-    public String addToCart(String restaurantId, String foodName) throws Error404, Error403, SQLException {
-        return loghme.addToCart(restaurantId, foodName);
+    public String addToCart(String restaurantId, String foodName, boolean isPartyFood) throws Error403, SQLException {
+        return loghme.addToCart(restaurantId, foodName, isPartyFood);
     }
 
-    public String deleteFromCart(String restaurantId, String foodName) throws Error403, Error404 {
-        return loghme.deleteFromCart(restaurantId, foodName);
+    public String deleteFromCart(String restaurantId, String foodName, boolean isPartyFood) throws Error403, Error404, SQLException {
+        return loghme.deleteFromCart(restaurantId, foodName, isPartyFood);
     }
 
-    public String addPartyFoodToCart(String restaurantId, String partyFoodName) throws Error404, Error403, SQLException {
-        return loghme.addPartyFoodToCart(restaurantId, partyFoodName);
+    public ShoppingCartDTO doGetCart() throws Error400, SQLException {
+        ShoppingCartDTO cart = DataConverter.getInstance().DAOtoCartDTO(UserRepository.getInstance().getCart(0));
+        if(cart.isEmpty())
+            throw  new Error400("There is nothing to show in your cart!");
+        return cart;
     }
 
-    public String deletePartyFoodFromCart(String restaurantId, String partyFoodName) throws Error404, Error403 {
-        return loghme.deletePartyFoodFromCart(restaurantId, partyFoodName);
+    public void finalizeOrder() throws Error403, Error400, Error404, SQLException {
+        loghme.finalizeOrder();
     }
 
-    public ShoppingCart doGetCart() throws Error404 {
-        return loghme.doGetCart();
-    }
-
-    public Order finalizeOrder() throws Error403, Error400 {
-        return loghme.finalizeOrder();
-    }
-
-    public String getCartRestaurant(){
-        return loghme.getUser().getShoppingCart().getRestaurantName();
-    }
-
-    public User getUser(){
-        return loghme.getUser();
+    public UserDTO getUser() throws Error404, SQLException {
+        return DataConverter.getInstance().DAOtoUserDTO(UserRepository.getInstance().getUser(0));
     }
 
     public void getRecommendedRestaurants(){
@@ -121,15 +85,13 @@ public class CommandHandler {
             System.err.print(errorHandler);
         } catch (SQLException e) {
             System.err.print(e);
+        } catch (Error404 error404) {
+            error404.printStackTrace();
         }
     }
 
     public String increaseCredit(int addedCredit) throws SQLException {
         return loghme.increaseCredit(addedCredit);
-    }
-
-    public Order getOrder(int orderId) throws Error404 {
-        return loghme.getOrder(orderId);
     }
 
     public void doSetFoodParty(String newPartyRestaurants) throws SQLException {
@@ -146,25 +108,26 @@ public class CommandHandler {
         loghme.insertRestaurants(partyRestaurantDAOs);
     }
 
-    public void doSetPartyFoods(String newPartyRestaurants){
+    public void doSetPartyFoods(String newPartyRestaurants) throws SQLException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonArray restaurantsArray = new JsonParser().parse(newPartyRestaurants).getAsJsonArray();
-        ArrayList<PartyFood> partyFoods = new ArrayList<>();
-
+        ArrayList<PartyFoodDAO> partyFoodDAOS = new ArrayList<>();
+        FoodPartyDAO foodPartyDAO = new FoodPartyDAO();
+        foodPartyDAO.setEnteredTime(LocalDateTime.now());
         for (int i = 0; i < restaurantsArray.size(); i++) {
             JsonArray newMenu = restaurantsArray.get(i).getAsJsonObject().get("menu").getAsJsonArray();
             String newRestaurantId = restaurantsArray.get(i).getAsJsonObject().get("id").getAsString();
             String newRestaurantName = restaurantsArray.get(i).getAsJsonObject().get("name").getAsString();
-            ArrayList<PartyFood> newPartyFoods = gson.fromJson(newMenu, new TypeToken<ArrayList<PartyFood>>(){}.getType());
+            ArrayList<PartyFoodDAO> newPartyFoods = gson.fromJson(newMenu, new TypeToken<ArrayList<PartyFoodDAO>>(){}.getType());
             newPartyFoods.forEach((u) -> u.setRestaurantId(newRestaurantId));
             newPartyFoods.forEach((u) -> u.setRestaurantName(newRestaurantName));
-            partyFoods.addAll(newPartyFoods);
+            partyFoodDAOS.addAll(newPartyFoods);
         }
-//      ToDo: insert food party!    
-        loghme.setFoodParty(partyFoods);
+        foodPartyDAO.setPartyFoodDAOS(partyFoodDAOS);
+        loghme.setFoodParty(foodPartyDAO);
     }
 
-    public FoodParty getFoodParty(){
+    public FoodParty getFoodParty() throws SQLException {
         return loghme.getFoodParty();
     }
 }

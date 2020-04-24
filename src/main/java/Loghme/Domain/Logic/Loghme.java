@@ -1,10 +1,9 @@
 package Loghme.Domain.Logic;
 
-import Loghme.DataSource.RestaurantDAO;
-import Loghme.DataSource.RestaurantRepository;
-import Loghme.DataSource.UserRepository;
+import Loghme.DataSource.*;
 import Loghme.Exceptions.*;
 import Loghme.Domain.Scheduler.DeliveryFindingManager;
+import Loghme.PresentationController.RestaurantDTO;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -85,8 +84,8 @@ public class Loghme {
         return nearRestaurants;
     }
 
-    public Restaurant doGetRestaurant(String restaurantId) throws Error404, SQLException {
-        return DataConverter.getInstance().DAOtoRestaurant(RestaurantRepository.getInstance().getRestaurant(restaurantId));
+    public RestaurantDTO doGetRestaurant(String restaurantId) throws Error404, SQLException {
+        return DataConverter.getInstance().DAOtoRestaurantDTO(RestaurantRepository.getInstance().getRestaurant(restaurantId));
     }
 
     public String addToCart(String restaurantId, String foodName, boolean isPartyFood) throws Error403, SQLException {
@@ -169,11 +168,11 @@ public class Loghme {
         return "Credit increased successfully!";
     }
 
-    public String setFoodParty(ArrayList<PartyFood> partyFoods){
-        return foodParty.setFoodParty(partyFoods);
+    public void setFoodParty(FoodPartyDAO foodPartyDAO) throws SQLException {
+        FoodPartyRepository.getInstance().insertFoodParty(foodPartyDAO);
     }
 
-    public FoodParty getFoodParty(){
-        return foodParty;
+    public FoodParty getFoodParty() throws SQLException {
+        return DataConverter.getInstance().DAOtoFoodParty(FoodPartyRepository.getInstance().getFoodParty());
     }
 }

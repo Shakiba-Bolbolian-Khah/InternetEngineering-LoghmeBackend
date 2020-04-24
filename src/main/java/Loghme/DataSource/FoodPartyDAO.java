@@ -22,4 +22,8 @@ public class FoodPartyDAO {
     public void addPartyFoodDAO(PartyFoodDAO partyFoodDAO) {
         this.partyFoodDAOS.add(partyFoodDAO);
     }
+
+    public void setPartyFoodDAOS(ArrayList<PartyFoodDAO> partyFoodDAOS) {
+        this.partyFoodDAOS = partyFoodDAOS;
+    }
 }

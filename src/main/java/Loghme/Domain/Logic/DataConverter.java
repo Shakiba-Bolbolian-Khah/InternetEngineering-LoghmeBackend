@@ -1,6 +1,7 @@
 package Loghme.Domain.Logic;
 
 import Loghme.DataSource.*;
+import Loghme.PresentationController.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -87,5 +88,37 @@ public class DataConverter {
             orderItems.add(new ShoppingCartItem(orderedFood, orderItemDAO.getNumber(), false));
         }
         return orderItems;
+    }
+
+    public ArrayList<HomeRestaurantDTO> restaurantsToDTO(ArrayList<Restaurant> restaurants){
+        ArrayList<HomeRestaurantDTO> restaurantDTOS = new ArrayList<>();
+        for(Restaurant restaurant: restaurants){
+            restaurantDTOS.add(new HomeRestaurantDTO(restaurant.getName(), restaurant.getId(), restaurant.getLogoUrl()));
+        }
+        return restaurantDTOS;
+    }
+
+    public RestaurantDTO DAOtoRestaurantDTO(RestaurantDAO restaurantDAO){
+        return new RestaurantDTO(restaurantDAO.getName(), restaurantDAO.getId(),restaurantDAO.getLocation(),
+                restaurantDAO.getMenu(),restaurantDAO.getLogo());
+    }
+
+    public ShoppingCartDTO DAOtoCartDTO(CartDAO cartDAO){
+        return new ShoppingCartDTO(cartDAO.isEmpty(),cartDAO.getRestaurantId(), cartDAO.getRestaurantName(), cartDAO.getTotalPayment(),
+                cartDAO.getItems(), 0);
+    }
+
+    public UserDTO DAOtoUserDTO(UserDAO userDAO){
+        ArrayList<OrderDTO> orderDTOS = new ArrayList<>();
+        for(OrderDAO orderDAO: userDAO.getOrders()){
+            orderDTOS.add(DAOtoOrderDTO(orderDAO));
+        }
+        return new UserDTO(userDAO.getId(),userDAO.getFirstName(),userDAO.getLastName(),userDAO.getPhoneNumber(),
+                userDAO.getEmail(), userDAO.getCredit(), orderDTOS);
+    }
+
+    public OrderDTO DAOtoOrderDTO(OrderDAO orderDAO){
+        return new OrderDTO(orderDAO.getState(),orderDAO.getId(),orderDAO.getRestaurantId(),orderDAO.getRestaurantName(),
+                orderDAO.getTotalPayment(),0,orderDAO.getOrderItems());
     }
 }

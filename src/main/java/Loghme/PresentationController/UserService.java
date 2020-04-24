@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @RestController
 public class UserService {
@@ -18,7 +19,7 @@ public class UserService {
     public ResponseEntity<?> getUser(@PathVariable(value = "userId") String id) {
         try {
             return new ResponseEntity<>(CommandHandler.getInstance().getUser(), HttpStatus.OK);
-        } catch (IOException error) {
+        } catch (IOException| SQLException error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
@@ -28,7 +29,7 @@ public class UserService {
             return new ResponseEntity<>(CommandHandler.getInstance().doGetCart(), HttpStatus.OK);
         } catch (Error404 error404) {
             return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (IOException error){
+        } catch (IOException|SQLException error){
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
@@ -36,12 +37,14 @@ public class UserService {
     public ResponseEntity<?> finalizeCart(@RequestParam(value = "userId", required = true) String id) {
         try {
             return new ResponseEntity<>(CommandHandler.getInstance().finalizeOrder(), HttpStatus.OK);
-        } catch (IOException error){
+        } catch (IOException|SQLException error){
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         } catch (Error400 error400) {
             return new ResponseEntity<>(error400.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Error403 error403) {
             return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
+        } catch (Error404 error404) {
+            error404.printStackTrace();
         }
     }
     @RequestMapping(value = "/users/{userId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -49,7 +52,7 @@ public class UserService {
                                              @RequestParam(value = "credit", required = true) int newCredit){
         try {
             return new ResponseEntity<>(CommandHandler.getInstance().increaseCredit(newCredit), HttpStatus.OK);
-        } catch (IOException error) {
+        } catch (IOException|SQLException error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
@@ -82,7 +85,7 @@ public class UserService {
             return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
         } catch (Error400 error400) {
             return new ResponseEntity<>(error400.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (IOException error) {
+        } catch (IOException|SQLException error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }

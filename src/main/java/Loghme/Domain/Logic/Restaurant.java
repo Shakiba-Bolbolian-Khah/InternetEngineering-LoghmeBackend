@@ -39,10 +39,6 @@ public class Restaurant{
         return menu;
     }
 
-    public void clearMenu() {
-        this.menu.clear();
-    }
-
     public String getLogoUrl() {
         return logo;
     }

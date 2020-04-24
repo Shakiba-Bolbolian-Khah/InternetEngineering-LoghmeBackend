@@ -7,6 +7,7 @@ import Loghme.Domain.Logic.Order;
 import Loghme.DataSource.APIReader;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -32,8 +33,8 @@ public class DeliveryFindingManager {
                     CommandHandler.getInstance().assignDelivery(orderId, userId);
                     cancelTimer();
                 }
-            } catch (IOException | Error404 | Error403 e) {
-                e.printStackTrace();
+            } catch (IOException | Error404 | Error403 | SQLException e) {
+                System.err.print(e);
             }
         }
     }

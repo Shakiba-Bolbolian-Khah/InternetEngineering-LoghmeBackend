@@ -7,8 +7,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 public class FoodParty {
-    ArrayList<PartyFood> partyFoods;
-    LocalDateTime enteredDate;
+    private ArrayList<PartyFood> partyFoods;
+    private LocalDateTime enteredDate;
 
     public FoodParty(LocalDateTime enteredDate, ArrayList<PartyFood> partyFoods) {
         this.partyFoods = partyFoods;

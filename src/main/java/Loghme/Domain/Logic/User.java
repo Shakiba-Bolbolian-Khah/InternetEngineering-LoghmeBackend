@@ -86,10 +86,6 @@ public class User {
         return shoppingCart.isFoodParty();
     }
 
-    public void setTimeForShoppingCart(LocalDateTime enteredTime){
-        shoppingCart.setFirstPartyFoodEnteredTime(enteredTime);
-    }
-
     public LocalDateTime getShoppingCartTime(){
         return shoppingCart.getFirstPartyFoodEnteredTime();
     }
@@ -103,7 +99,6 @@ public class User {
     }
 
     public int finalizeOrder() throws Error403, Error400, SQLException {
-        int totalPayment = shoppingCart.getTotalPayment();
         int orderId = shoppingCart.finalizeOrder(this.credit, orders.size());
         return orderId;
     }
