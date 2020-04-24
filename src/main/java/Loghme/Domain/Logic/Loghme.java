@@ -176,7 +176,7 @@ public class Loghme {
         return FoodPartyRepository.getInstance().doGetFoodParty();
     }
 
-    public ArrayList<Restaurant> search(String restaurantName, String foodName){
+    public ArrayList<Restaurant> search(String restaurantName, String foodName) throws SQLException, Error403 {
         return DataConverter.getInstance().DAOtoRestaurantList(RestaurantRepository.getInstance().search(restaurantName, foodName));
     }
 

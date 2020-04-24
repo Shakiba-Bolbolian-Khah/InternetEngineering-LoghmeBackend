@@ -1,6 +1,7 @@
 package Loghme.DataSource;
 
 import Loghme.Domain.Logic.Location;
+import Loghme.Exceptions.Error403;
 import Loghme.Exceptions.Error404;
 
 import java.sql.*;
@@ -108,7 +109,36 @@ public class RestaurantRepository {
         connection.close();
     }
 
-    public ArrayList<RestaurantDAO> search( String restaurantName, String foodName){
-        return new ArrayList<RestaurantDAO>();
+    public ArrayList<RestaurantDAO> search( String restaurantName, String foodName) throws SQLException, Error403 {
+        Connection connection;
+        connection = ConnectionPool.getConnection();
+        PreparedStatement searchStatement;
+
+        if(restaurantName != "" && foodName != "")
+            searchStatement  = connection.prepareStatement(
+                    "select * from restaurants where id in (select restaurantId from foods where name like \"%"+ foodName + "%\") and name like \"%"+ restaurantName +"%\"");
+        else if(restaurantName != "")
+            searchStatement = connection.prepareStatement(
+                    "select * from restaurants where name like \"%"+ restaurantName + "%\"");
+        else if(foodName != "")
+            searchStatement = connection.prepareStatement(
+                    "select * from restaurants where id in (select restaurantId from foods where name like \"%"+ foodName + "%\"");
+        else
+            throw new Error403("No restaurant name and food name has been entered!");
+
+        ResultSet result = searchStatement.executeQuery();
+        ArrayList<RestaurantDAO> restaurantDAOS = new ArrayList<>();
+        while(result.next()) {
+            RestaurantDAO restaurantDAO = new RestaurantDAO();
+            restaurantDAO.setId(result.getString("id"));
+            restaurantDAO.setName(result.getString("name"));
+            restaurantDAO.setLocation(new Location(result.getInt("x"),result.getInt("y")));
+            restaurantDAO.setLogo(result.getString("logo"));
+            restaurantDAOS.add(restaurantDAO);
+        }
+        searchStatement.close();
+        result.close();
+        connection.close();
+        return restaurantDAOS;
     }
 }

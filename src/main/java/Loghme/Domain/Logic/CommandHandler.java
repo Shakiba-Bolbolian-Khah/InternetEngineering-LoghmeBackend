@@ -131,7 +131,7 @@ public class CommandHandler {
         return loghme.getFoodParty();
     }
 
-    public ArrayList<HomeRestaurantDTO> search( String restaurantName, String foodName) throws SQLException {
+    public ArrayList<HomeRestaurantDTO> search( String restaurantName, String foodName) throws SQLException, Error403 {
         return DataConverter.getInstance().restaurantsToDTO(loghme.search(restaurantName, foodName));
     }
 }
