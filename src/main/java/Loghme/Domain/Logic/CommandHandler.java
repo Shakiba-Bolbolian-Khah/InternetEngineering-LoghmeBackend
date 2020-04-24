@@ -64,18 +64,18 @@ public class CommandHandler {
     }
 
     public ShoppingCartDTO doGetCart() throws Error400, SQLException {
-        ShoppingCartDTO cart = DataConverter.getInstance().DAOtoCartDTO(UserRepository.getInstance().getCart(0));
+        ShoppingCartDTO cart = DataConverter.getInstance().DAOtoCartDTO(UserRepository.getInstance().doGetCart(0));
         if(cart.isEmpty())
             throw  new Error400("There is nothing to show in your cart!");
         return cart;
     }
 
-    public void finalizeOrder() throws Error403, Error400, Error404, SQLException {
-        loghme.finalizeOrder();
+    public String finalizeOrder() throws Error403, Error400, Error404, SQLException {
+        return loghme.finalizeOrder();
     }
 
-    public UserDTO getUser() throws Error404, SQLException {
-        return DataConverter.getInstance().DAOtoUserDTO(UserRepository.getInstance().getUser(0));
+    public UserDTO doGetUser() throws Error404, SQLException {
+        return DataConverter.getInstance().DAOtoUserDTO(UserRepository.getInstance().doGetUser(0));
     }
 
     public void getRecommendedRestaurants(){
@@ -127,7 +127,7 @@ public class CommandHandler {
         loghme.setFoodParty(foodPartyDAO);
     }
 
-    public FoodParty getFoodParty() throws SQLException {
+    public FoodPartyDAO getFoodParty() throws SQLException {
         return loghme.getFoodParty();
     }
 }

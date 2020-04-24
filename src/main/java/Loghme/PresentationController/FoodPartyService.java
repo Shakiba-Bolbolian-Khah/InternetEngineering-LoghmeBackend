@@ -35,14 +35,14 @@ public class FoodPartyService {
             switch (action) {
                 case "add":
                     for(int i = 0; i < count-1; i++){
-                        CommandHandler.getInstance().addPartyFoodToCart(restaurantId, partyFoodName);
+                        CommandHandler.getInstance().addToCart(restaurantId, partyFoodName, true);
                     }
-                    return new ResponseEntity<>(CommandHandler.getInstance().addPartyFoodToCart(restaurantId, partyFoodName), HttpStatus.OK);
+                    return new ResponseEntity<>(CommandHandler.getInstance().addToCart(restaurantId, partyFoodName, true), HttpStatus.OK);
                 case "delete":
                     for(int i = 0; i < count-1; i++){
-                        CommandHandler.getInstance().deletePartyFoodFromCart(restaurantId, partyFoodName);
+                        CommandHandler.getInstance().deleteFromCart(restaurantId, partyFoodName, true);
                     }
-                    return new ResponseEntity<>(CommandHandler.getInstance().deletePartyFoodFromCart(restaurantId, partyFoodName), HttpStatus.OK);
+                    return new ResponseEntity<>(CommandHandler.getInstance().deleteFromCart(restaurantId, partyFoodName, true), HttpStatus.OK);
                 default:
                     throw new Error400("Error: You can just add or delete a food.");
             }

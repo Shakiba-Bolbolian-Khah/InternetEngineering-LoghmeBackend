@@ -31,8 +31,6 @@ public class RestaurantsService {
             return new ResponseEntity<>(CommandHandler.getInstance().doGetRestaurant(restaurantId), HttpStatus.OK);
         } catch (Error404 error404) {
             return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (Error403 error403) {
-            return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
         } catch (IOException|SQLException error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }

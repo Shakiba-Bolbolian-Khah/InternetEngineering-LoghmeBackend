@@ -7,7 +7,6 @@ import Loghme.PresentationController.RestaurantDTO;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -18,7 +17,6 @@ public class Loghme {
     private static Loghme instance;
 
     private ArrayList<Delivery> deliveries;
-//    private FoodParty foodParty;
 
     private Loghme() {
         this.deliveries = new ArrayList<>();
@@ -31,6 +29,7 @@ public class Loghme {
     }
 
     public void insertRestaurants(ArrayList<RestaurantDAO> restaurantDAOS) throws SQLException {
+        System.out.println("thth");
         RestaurantRepository.getInstance().insertRestaurants(restaurantDAOS);
     }
 
@@ -39,7 +38,7 @@ public class Loghme {
     }
 
     public void assignDelivery(int orderId, int userId) throws Error404, Error403, IOException, SQLException {
-        User user = getUser();
+        User user = doGetUser();
         Order deliveringOrder = user.getOrder(orderId);
         double deliveringTime = 0;
         String BestDeliveryId = null;
@@ -58,8 +57,8 @@ public class Loghme {
         //ToDo: update order function in DB must be called
     }
 
-    public User getUser() throws Error404, SQLException {
-        return DataConverter.getInstance().DAOtoUser(UserRepository.getInstance().getUser(0));
+    public User doGetUser() throws Error404, SQLException {
+        return DataConverter.getInstance().DAOtoUser(UserRepository.getInstance().doGetUser(0));
     }
 
     public Double calculateDistance(Location restaurantLocation, Location userLocation) {
@@ -69,8 +68,8 @@ public class Loghme {
     }
 
     public ArrayList<Restaurant> findNearestRestaurantsForUser() throws Error404, SQLException {
-        User user = getUser();
-        ArrayList<Restaurant> restaurants = DataConverter.getInstance().DAOtoRestaurantList(RestaurantRepository.getInstance().getRestaurants());
+        User user = doGetUser();
+        ArrayList<Restaurant> restaurants = DataConverter.getInstance().DAOtoRestaurantList(RestaurantRepository.getInstance().doGetRestaurants());
         ArrayList<Restaurant> nearRestaurants = new ArrayList<>();
         if(restaurants.size() == 0){
             throw new Error404("Sorry! There is no restaurant around you in Loghme at this time!");
@@ -85,7 +84,7 @@ public class Loghme {
     }
 
     public RestaurantDTO doGetRestaurant(String restaurantId) throws Error404, SQLException {
-        return DataConverter.getInstance().DAOtoRestaurantDTO(RestaurantRepository.getInstance().getRestaurant(restaurantId));
+        return DataConverter.getInstance().DAOtoRestaurantDTO(RestaurantRepository.getInstance().doGetRestaurant(restaurantId));
     }
 
     public String addToCart(String restaurantId, String foodName, boolean isPartyFood) throws Error403, SQLException {
@@ -110,14 +109,15 @@ public class Loghme {
     }
 
     public ShoppingCart doGetCart() throws SQLException {
-        return DataConverter.getInstance().DAOtoCart(UserRepository.getInstance().getCart(0));
+        return DataConverter.getInstance().DAOtoCart(UserRepository.getInstance().doGetCart(0));
     }
 
-    public void finalizeOrder() throws Error400, Error403, Error404, SQLException {
-        User user = getUser();
+    public String finalizeOrder() throws Error400, Error403, Error404, SQLException {
+        User user = doGetUser();
         int orderId = user.finalizeOrder();
         findDelivery(orderId, 0);
-        //ToDo: User rep. calling insert and finalize order. I just added user here to avoid errors.
+        return "Your order finalized successfully!";
+        //ToDo: User rep. calling insert and finalize order.
     }
 
     public void findDelivery(int orderId, int userId) {
@@ -140,9 +140,9 @@ public class Loghme {
     }
 
     public String doGetRecommendedRestaurants() throws ErrorHandler, SQLException, Error404 {
-        User user = getUser();
+        User user = doGetUser();
         Map<String,Double> scores = new HashMap<>();
-        ArrayList<Restaurant> restaurants = DataConverter.getInstance().DAOtoRestaurantList(RestaurantRepository.getInstance().getRestaurants());
+        ArrayList<Restaurant> restaurants = DataConverter.getInstance().DAOtoRestaurantList(RestaurantRepository.getInstance().doGetRestaurants());
         if(restaurants.size() == 0){
             throw new ErrorHandler("Error: Sorry there is no restaurant in Loghme at this time!");
         }
@@ -172,7 +172,7 @@ public class Loghme {
         FoodPartyRepository.getInstance().insertFoodParty(foodPartyDAO);
     }
 
-    public FoodParty getFoodParty() throws SQLException {
-        return DataConverter.getInstance().DAOtoFoodParty(FoodPartyRepository.getInstance().getFoodParty());
+    public FoodPartyDAO getFoodParty() throws SQLException {
+        return FoodPartyRepository.getInstance().doGetFoodParty();
     }
 }

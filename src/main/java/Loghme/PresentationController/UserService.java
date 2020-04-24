@@ -18,19 +18,21 @@ public class UserService {
     @RequestMapping(value = "/users/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getUser(@PathVariable(value = "userId") String id) {
         try {
-            return new ResponseEntity<>(CommandHandler.getInstance().getUser(), HttpStatus.OK);
+            return new ResponseEntity<>(CommandHandler.getInstance().doGetUser(), HttpStatus.OK);
         } catch (IOException| SQLException error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (Error404 error404) {
+            return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
     @RequestMapping(value = "/users/cart", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getCart(@RequestParam(value = "userId", required = true) String id) {
         try {
             return new ResponseEntity<>(CommandHandler.getInstance().doGetCart(), HttpStatus.OK);
-        } catch (Error404 error404) {
-            return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IOException|SQLException error){
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (Error400 error400) {
+            return new ResponseEntity<>(error400.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
     @RequestMapping(value = "/users/finalize", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,7 +46,7 @@ public class UserService {
         } catch (Error403 error403) {
             return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
         } catch (Error404 error404) {
-            error404.printStackTrace();
+            return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
     @RequestMapping(value = "/users/{userId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -68,14 +70,14 @@ public class UserService {
             switch (action) {
                 case "add":
                     for(int i = 0; i < count-1; i++){
-                        CommandHandler.getInstance().addToCart(restaurantId, foodName);
+                        CommandHandler.getInstance().addToCart(restaurantId, foodName, false);
                     }
-                    return new ResponseEntity<>(CommandHandler.getInstance().addToCart(restaurantId, foodName), HttpStatus.OK);
+                    return new ResponseEntity<>(CommandHandler.getInstance().addToCart(restaurantId, foodName, false), HttpStatus.OK);
                 case "delete":
                     for(int i = 0; i < count-1; i++){
-                        CommandHandler.getInstance().deleteFromCart(restaurantId, foodName);
+                        CommandHandler.getInstance().deleteFromCart(restaurantId, foodName, false);
                     }
-                    return new ResponseEntity<>(CommandHandler.getInstance().deleteFromCart(restaurantId, foodName), HttpStatus.OK);
+                    return new ResponseEntity<>(CommandHandler.getInstance().deleteFromCart(restaurantId, foodName, false), HttpStatus.OK);
                 default:
                     throw new Error400("Error: You can just add or delete a food.");
             }

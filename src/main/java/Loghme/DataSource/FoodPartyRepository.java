@@ -14,7 +14,7 @@ public class FoodPartyRepository {
         return instance;
     }
 
-    public FoodPartyDAO getFoodParty() throws SQLException {
+    public FoodPartyDAO doGetFoodParty() throws SQLException {
         Connection connection;
         connection = ConnectionPool.getConnection();
         Statement timeStatement = connection.createStatement();
@@ -106,7 +106,7 @@ public class FoodPartyRepository {
         connection.close();
     }
 
-    public int getCount(String restaurantId, String foodName) throws SQLException {
+    public int doGetCount(String restaurantId, String foodName) throws SQLException {
         Connection connection;
         connection = ConnectionPool.getConnection();
         PreparedStatement pStatement = connection.prepareStatement(

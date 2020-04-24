@@ -37,19 +37,6 @@ public class DataConverter {
         return new Food(foodDAO.getName(), foodDAO.getDescription(), foodDAO.getPopularity(), foodDAO.getPrice(), foodDAO.getImage());
     }
 
-    public ArrayList<PartyFood> DAOtoPartyFoodList(ArrayList<PartyFoodDAO> partyFoodDAOS){
-        ArrayList<PartyFood> partyFoods = new ArrayList<>();
-        for(PartyFoodDAO partyFoodDAO: partyFoodDAOS){
-            partyFoods.add(new PartyFood(partyFoodDAO.getName(), partyFoodDAO.getDescription(), partyFoodDAO.getPopularity(),
-                    partyFoodDAO.getPrice(), partyFoodDAO.getImage(), partyFoodDAO.getRestaurantId(), partyFoodDAO.getRestaurantName(), partyFoodDAO.getCount(), partyFoodDAO.getOldPrice()));
-        }
-        return partyFoods;
-    }
-
-    public FoodParty DAOtoFoodParty(FoodPartyDAO foodPartyDAO){
-        return new FoodParty(foodPartyDAO.getEnteredTime(), DAOtoPartyFoodList(foodPartyDAO.getPartyFoodDAOS()));
-    }
-
     public User DAOtoUser(UserDAO userDAO){
         return new User(userDAO.getId(), userDAO.getFirstName(), userDAO.getLastName(), userDAO.getPhoneNumber(),
                 userDAO.getEmail(), userDAO.getLocation(), userDAO.getCredit(),

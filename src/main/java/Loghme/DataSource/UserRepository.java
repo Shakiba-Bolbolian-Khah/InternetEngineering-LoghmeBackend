@@ -1,6 +1,5 @@
 package Loghme.DataSource;
 
-import Loghme.Domain.Logic.FoodParty;
 import Loghme.Domain.Logic.Location;
 import Loghme.Exceptions.Error403;
 import Loghme.Exceptions.Error404;
@@ -20,7 +19,7 @@ public class UserRepository {
         return instance;
     }
 
-    public UserDAO getUser(int userId) throws Error404, SQLException {
+    public UserDAO doGetUser(int userId) throws Error404, SQLException {
         Connection connection;
         connection = ConnectionPool.getConnection();
         Statement userStatement = connection.createStatement();
@@ -34,8 +33,8 @@ public class UserRepository {
         userDAO.setId(userResult.getInt("id"));
         userDAO.setFirstName(userResult.getString("firstName"));
         userDAO.setLastName(userResult.getString("lastName"));
-        userDAO.setLastName(userResult.getString("phoneNumber"));
-        userDAO.setLastName(userResult.getString("email"));
+        userDAO.setPhoneNumber(userResult.getString("phoneNumber"));
+        userDAO.setEmail(userResult.getString("email"));
         userDAO.setLocation(new Location(userResult.getInt("x"),userResult.getInt("y")));
         userDAO.setCredit(userResult.getInt("credit"));
 
@@ -66,8 +65,7 @@ public class UserRepository {
 
             userDAO.addOrder(orderDAO);
         }
-
-        userDAO.setShoppingCart(getCart(userId));
+        userDAO.setShoppingCart(doGetCart(userId));
 
         orderResult.close();
         userStatement.close();
@@ -77,23 +75,27 @@ public class UserRepository {
         return userDAO;
     }
 
-    public CartDAO getCart(int userId) throws SQLException {
+    public CartDAO doGetCart(int userId) throws SQLException {
         Connection connection;
         connection = ConnectionPool.getConnection();
         Statement cartStatement = connection.createStatement();
         Statement cartItemStatement = connection.createStatement();
         ResultSet cartResult = cartStatement.executeQuery("select * from shoppingCarts where userId =" + userId);
         cartResult.next();
+
         CartDAO cartDAO = new CartDAO();
         cartDAO.setEmpty(cartResult.getBoolean("isEmpty"));
         cartDAO.setRestaurantId(cartResult.getString("restaurantId"));
         cartDAO.setRestaurantName(cartResult.getString("restaurantName"));
         cartDAO.setTotalPayment(cartResult.getInt("totalpayment"));
         cartDAO.setFoodParty(cartResult.getInt("isFoodParty"));
-        cartDAO.setFirstPartyFoodEnteredTime(cartResult.getTimestamp("firstPartyFoodEnteredTime").toLocalDateTime());
+
+        Timestamp cartTime = cartResult.getTimestamp("firstPartyFoodEnteredTime");
+        if (cartTime != null)
+            cartDAO.setFirstPartyFoodEnteredTime(cartTime.toLocalDateTime());
 
         ResultSet cartItemResult = cartItemStatement.executeQuery("select * from cartItems where userId = " + userId);
-        while(cartItemResult.next()) {
+        while (cartItemResult.next()) {
             CartItemDAO cartItemDAO = new CartItemDAO();
             cartItemDAO.setFoodName(cartItemResult.getString("foodName"));
             cartItemDAO.setPrice(cartItemResult.getInt("price"));
@@ -412,7 +414,7 @@ public class UserRepository {
                 "insert into orders (userId, id, restaurantId, restaurantName, totalPayment, state, finalizationTime) values (?, ?, ?, ?, ?, ?, ?)");
         PreparedStatement insertItem = connection.prepareStatement(
                 "insert into orderItems (userId, orderId, foodName, price, number) values ( ?, ?, ?, ?, ?)");
-        CartDAO cartDAO = getCart(userId);
+        CartDAO cartDAO = doGetCart(userId);
 
         insertOrder.setInt(1, userId);
         insertOrder.setInt(2, orderId);
