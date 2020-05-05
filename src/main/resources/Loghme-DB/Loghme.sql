@@ -6,6 +6,7 @@ create table Users(
     lastName varchar(40) not null,
     phoneNumber varchar(11) not null,
     email varchar(50) not null,
+    password varchar(50) not null,
     x int not null,
     y int not null,
     credit int,
@@ -88,8 +89,9 @@ create table PartyFoods(
     primary key(restaurantId, name),
     foreign key(restaurantId) references restaurants(id) on delete cascade on update cascade
 );
-insert into Users(id, firstName, lastName, phoneNumber, email, x, y, credit)
-values (0, "احسان", "خامس‌پناه", "09123456789", "ekhamespanah@yahoo.com", 0, 0, 100000);
+
+insert into Users(id, firstName, lastName, phoneNumber, email, password, x, y, credit)
+values (0, "احسان", "خامس‌پناه", "09123456789", "ekhamespanah@yahoo.com","123456", 0, 0, 100000);
 
 insert into ShoppingCarts(userId, isEmpty, isFoodParty, totalPayment)
 values (0, true, 0, 0);

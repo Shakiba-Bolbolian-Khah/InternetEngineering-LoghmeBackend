@@ -498,4 +498,71 @@ public class UserRepository {
         updateOrder.close();
         connection.close();
     }
+
+    public int signup(UserDAO userDAO, String hashPass) throws SQLException, Error403 {
+        Connection connection;
+        connection = ConnectionPool.getConnection();
+        PreparedStatement checkEmail = connection.prepareStatement("select * from users where email = ?");
+        checkEmail.setString(1, userDAO.getEmail());
+        ResultSet userResult = checkEmail.executeQuery();
+        if (userResult.next()){
+            checkEmail.close();
+            connection.close();
+            throw new Error403("Error: Email " + userDAO.getEmail() +" has been in system before.");
+        }
+        Statement findId = connection.createStatement();
+        ResultSet id = findId.executeQuery("select count(*) from users");
+        id.next();
+        userDAO.setId(id.getInt("count(*)"));
+
+        connection.setAutoCommit(false);
+        PreparedStatement insertUser = connection.prepareStatement(
+                "insert into Users(id, firstName, lastName, phoneNumber, email, password, x, y, credit) " +
+                        " values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement insertCart = connection.prepareStatement(
+                "insert into ShoppingCarts(userId, isEmpty, isFoodParty, totalPayment) " +
+                        " values (?, true, 0, 0)");
+
+        insertUser.setInt(1, userDAO.getId());
+        insertUser.setString(2, userDAO.getFirstName());
+        insertUser.setString(3, userDAO.getLastName());
+        insertUser.setString(4, userDAO.getPhoneNumber());
+        insertUser.setString(5, userDAO.getEmail());
+        insertUser.setString(6, hashPass);
+        insertUser.setInt(7, userDAO.getLocation().getX());
+        insertUser.setInt(8, userDAO.getLocation().getY());
+        insertUser.setInt(9, userDAO.getCredit());
+        insertUser.executeUpdate();
+
+        insertCart.setInt(1, userDAO.getId());
+        insertCart.executeUpdate();
+
+        try {
+            connection.commit();
+        } catch (SQLException e){
+            if(connection != null){
+                connection.rollback();
+            }
+        }
+        insertCart.close();
+        insertUser.close();
+        connection.close();
+        return userDAO.getId();
+    }
+
+    public int login(String email, String hashPass) throws SQLException, Error403 {
+        Connection connection;
+        connection = ConnectionPool.getConnection();
+        PreparedStatement findUser = connection.prepareStatement("select * from users where email = ? and password= ?");
+        findUser.setString(1, email);
+        findUser.setString(2, hashPass);
+        ResultSet userResult = findUser.executeQuery();
+        if (!userResult.next()){
+            findUser.close();
+            connection.close();
+            throw new Error403("Error: Entered email or password is not correct!");
+        }
+
+        return userResult.getInt("id");
+    }
 }

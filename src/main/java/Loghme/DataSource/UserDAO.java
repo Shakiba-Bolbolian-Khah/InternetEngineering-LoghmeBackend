@@ -11,12 +11,21 @@ public class UserDAO {
     private String phoneNumber;
     private String email;
     private Location location;
-//    private int x;
-//    private int y;
     private int credit;
     private CartDAO shoppingCart;
     private ArrayList<OrderDAO> orders = new ArrayList<>();
 
+    public UserDAO() {
+    }
+
+    public UserDAO(String firstName, String lastName, String phoneNumber, String email){
+        this.id = 0;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.location = new Location(0,0);
+    }
     public CartDAO getShoppingCart() {
         return shoppingCart;
     }

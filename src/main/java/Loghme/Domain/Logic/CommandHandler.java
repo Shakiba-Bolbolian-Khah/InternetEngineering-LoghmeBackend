@@ -134,4 +134,12 @@ public class CommandHandler {
     public ArrayList<HomeRestaurantDTO> search( String restaurantName, String foodName) throws SQLException, Error403 {
         return DataConverter.getInstance().restaurantsToDTO(loghme.search(restaurantName, foodName));
     }
+
+    public int signup( UserDAO userDAO, String password) throws SQLException, Error403 {
+        return loghme.signup(userDAO, password);
+    }
+
+    public int login( String email, String password) throws SQLException, Error403 {
+        return loghme.login(email, password);
+    }
 }
