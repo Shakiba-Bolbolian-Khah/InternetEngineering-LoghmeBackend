@@ -1,13 +1,11 @@
 package Loghme.PresentationController;
 
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Date;
 
 public class JWTmanager {
@@ -35,7 +33,7 @@ public class JWTmanager {
         return jws;
     }
 
-    public void validateJWT(String jws){
-
+    public int validateJWT(String jws){
+        return 1; // returns userId from jws
     }
 }

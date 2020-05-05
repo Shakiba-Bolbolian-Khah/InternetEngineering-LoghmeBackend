@@ -91,7 +91,7 @@ public class UserService {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
-    @RequestMapping(value = "/users/signup", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/authentication/signup", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> signup(@RequestParam(value = "firstName", required = true) String firstName,
                                     @RequestParam(value = "lastName", required = true) String lastName,
                                     @RequestParam(value = "phone", required = true) String phoneNumber,
@@ -109,7 +109,7 @@ public class UserService {
             return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
-    @RequestMapping(value = "/users/login", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/authentication/login", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> login( @RequestParam(value = "email", required = true) String email,
                                     @RequestParam(value = "password", required = true) String password){
         try {
