@@ -19,14 +19,14 @@ public class FoodPartyRepository {
         Statement timeStatement = connection.createStatement();
         Statement foodsStatement = connection.createStatement();
         FoodPartyDAO foodPartyDAO = new FoodPartyDAO();
-        ResultSet timeResult = timeStatement.executeQuery("select * from foodParty");
+        ResultSet timeResult = timeStatement.executeQuery("select * from Foodparty");
         if(!timeResult.next()) {
             timeResult.close();
             return foodPartyDAO;
         }
         foodPartyDAO.setEnteredDate(timeResult.getTimestamp("enteredDate").toLocalDateTime());
         timeResult.close();
-        ResultSet foodResult = foodsStatement.executeQuery("select * from partyFoods");
+        ResultSet foodResult = foodsStatement.executeQuery("select * from PartyFoods");
         while (foodResult.next()){
             PartyFoodDAO partyFoodDAO = new PartyFoodDAO();
             partyFoodDAO.setRestaurantId(foodResult.getString("restaurantId"));
@@ -57,13 +57,13 @@ public class FoodPartyRepository {
 
         Statement delTimeStatement = connection.createStatement();
         Statement delFoodStatement = connection.createStatement();
-        PreparedStatement insertTimeStatement = connection.prepareStatement("insert into foodParty (enteredDate) values (?)");
+        PreparedStatement insertTimeStatement = connection.prepareStatement("insert into Foodparty (enteredDate) values (?)");
         PreparedStatement insertFoodStatement = connection.prepareStatement(
-                "insert into partyFoods (restaurantId, name, restaurantName, oldPrice, price, count, description, image, popularity) " +
+                "insert into PartyFoods (restaurantId, name, restaurantName, oldPrice, price, count, description, image, popularity) " +
                         "values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         try {
-            delTimeStatement.executeUpdate("delete from foodParty");
-            delFoodStatement.executeUpdate("delete from partyFoods");
+            delTimeStatement.executeUpdate("delete from Foodparty");
+            delFoodStatement.executeUpdate("delete from PartyFoods");
             insertTimeStatement.setTimestamp(1, Timestamp.valueOf(foodPartyDAO.getEnteredDate()));
             insertTimeStatement.executeUpdate();
             for (PartyFoodDAO partyFoodDAO : foodPartyDAO.getPartyFoods()) {
@@ -96,7 +96,7 @@ public class FoodPartyRepository {
         Connection connection;
         connection = ConnectionPool.getConnection();
         PreparedStatement pStatement = connection.prepareStatement(
-                "update partyFoods set count = count + ? where name = ? and restaurantId = ?");
+                "update PartyFoods set count = count + ? where name = ? and restaurantId = ?");
         pStatement.setInt(1, count);
         pStatement.setString(2, foodName);
         pStatement.setString(3, restaurantId);
@@ -109,7 +109,7 @@ public class FoodPartyRepository {
         Connection connection;
         connection = ConnectionPool.getConnection();
         PreparedStatement pStatement = connection.prepareStatement(
-                "select count from partyFoods where name = ? and restaurantId = ?");
+                "select count from PartyFoods where name = ? and restaurantId = ?");
         pStatement.setString(1, foodName);
         pStatement.setString(2, restaurantId);
         ResultSet resultSet = pStatement.executeQuery();

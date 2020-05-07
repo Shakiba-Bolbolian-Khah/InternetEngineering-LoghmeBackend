@@ -20,10 +20,9 @@ public class UserRepository {
     public UserDAO doGetUser(int userId) throws Error404, SQLException {
         Connection connection;
         connection = ConnectionPool.getConnection();
-        Statement userStatement = connection.createStatement();
-        Statement orderStatement = connection.createStatement();
-        Statement itemStatement = connection.createStatement();
-        ResultSet userResult = userStatement.executeQuery("select * from users where id =" + userId);
+        PreparedStatement userStatement = connection.prepareStatement("select * from Users where id =?");
+        userStatement.setInt(1, userId);
+        ResultSet userResult = userStatement.executeQuery();
         if (!userResult.next())
             throw new Error404("Error: There is no user with id: " + userId);
 
@@ -38,7 +37,11 @@ public class UserRepository {
 
         userResult.close();
 
-        ResultSet orderResult = orderStatement.executeQuery("select * from orders where userId =" + userId);
+
+        PreparedStatement itemStatement = connection.prepareStatement("select * from OrderItems where orderId = ?  and userId = ?");
+        PreparedStatement orderStatement = connection.prepareStatement("select * from Orders where userId = ?");
+        orderStatement.setInt(1, userId);
+        ResultSet orderResult = orderStatement.executeQuery();
         while(orderResult.next()) {
             OrderDAO orderDAO = new OrderDAO();
             orderDAO.setId(orderResult.getInt("id"));
@@ -54,8 +57,9 @@ public class UserRepository {
             if (deliveringTime != null)
                 orderDAO.setDeliveringTime(deliveringTime.toLocalTime());
 
-            ResultSet itemResult = itemStatement.executeQuery("select * from orderItems where orderId = " + orderDAO.getId() +
-                    " and userId = " + userId);
+            itemStatement.setInt(1, orderDAO.getId());
+            itemStatement.setInt(2, userId);
+            ResultSet itemResult = itemStatement.executeQuery();
             while(itemResult.next()) {
                 OrderItemDAO orderItemDAO = new OrderItemDAO();
                 orderItemDAO.setFoodName(itemResult.getString("foodName"));
@@ -80,9 +84,9 @@ public class UserRepository {
     public CartDAO doGetCart(int userId) throws SQLException {
         Connection connection;
         connection = ConnectionPool.getConnection();
-        Statement cartStatement = connection.createStatement();
-        Statement cartItemStatement = connection.createStatement();
-        ResultSet cartResult = cartStatement.executeQuery("select * from shoppingCarts where userId =" + userId);
+        PreparedStatement cartStatement = connection.prepareStatement("select * from ShoppingCarts where userId = ? ");
+        cartStatement.setInt(1, userId);
+        ResultSet cartResult = cartStatement.executeQuery();
         cartResult.next();
 
         CartDAO cartDAO = new CartDAO();
@@ -96,7 +100,9 @@ public class UserRepository {
         if (cartTime != null)
             cartDAO.setFirstPartyFoodEnteredTime(cartTime.toLocalDateTime());
 
-        ResultSet cartItemResult = cartItemStatement.executeQuery("select * from cartItems where userId = " + userId);
+        PreparedStatement cartItemStatement = connection.prepareStatement("select * from CartItems where userId = ?");
+        cartItemStatement.setInt(1, userId);
+        ResultSet cartItemResult = cartItemStatement.executeQuery();
         while (cartItemResult.next()) {
             CartItemDAO cartItemDAO = new CartItemDAO();
             cartItemDAO.setFoodName(cartItemResult.getString("foodName"));
@@ -116,7 +122,7 @@ public class UserRepository {
     public void increaseCredit(int userId, int addedCredit) throws SQLException {
         Connection connection;
         connection = ConnectionPool.getConnection();
-        PreparedStatement pStatement = connection.prepareStatement("update users set credit = credit + ? where id = ?");
+        PreparedStatement pStatement = connection.prepareStatement("update Users set credit = credit + ? where id = ?");
         pStatement.setInt(1, addedCredit);
         pStatement.setInt(2, userId);
         pStatement.executeUpdate();
@@ -129,19 +135,20 @@ public class UserRepository {
         connection = ConnectionPool.getConnection();
         connection.setAutoCommit(false);
 
-        PreparedStatement foodStatement = connection.prepareStatement("select * from foods where restaurantId = ? and name = ?");
-        Statement resStatement = connection.createStatement();
+        PreparedStatement foodStatement = connection.prepareStatement("select * from Foods where restaurantId = ? and name = ?");
+        PreparedStatement resStatement = connection.prepareStatement("select name from Restaurants where id = ?");
         PreparedStatement cartUpdate = connection.prepareStatement(
-                "update shoppingCarts set isEmpty = ? , restaurantId = ? , restaurantName = ? , totalPayment = totalPayment + ? where userId = ? ");
+                "update ShoppingCarts set isEmpty = ? , restaurantId = ? , restaurantName = ? , totalPayment = totalPayment + ? where userId = ? ");
         PreparedStatement itemStatement = connection.prepareStatement(
-                "insert into cartItems (userId, foodName, price, number, isPartyFood) values (?, ?, ?, ?, ?)");
+                "insert into CartItems (userId, foodName, price, number, isPartyFood) values (?, ?, ?, ?, ?)");
         try {
             foodStatement.setString(1, restaurantId);
             foodStatement.setString(2, foodName);
             ResultSet foodResult = foodStatement.executeQuery();
             foodResult.next();
 
-            ResultSet restaurantName = resStatement.executeQuery("select name from restaurants where id = \"" + restaurantId + "\"");
+            resStatement.setString(1, restaurantId);
+            ResultSet restaurantName = resStatement.executeQuery();
             restaurantName.next();
 
             cartUpdate.setBoolean(1, false);
@@ -179,11 +186,11 @@ public class UserRepository {
         connection.setAutoCommit(false);
 
         PreparedStatement foodStatement = connection.prepareStatement(
-                "select price from cartItems where userId = ? and foodName = ?");
+                "select price from CartItems where userId = ? and foodName = ?");
         PreparedStatement cartUpdate = connection.prepareStatement(
-                "update shoppingCarts set totalPayment = totalPayment + ? where userId = ? ");
+                "update ShoppingCarts set totalPayment = totalPayment + ? where userId = ? ");
         PreparedStatement itemStatement = connection.prepareStatement(
-                "update cartItems set number = number + 1 where userId = ? and foodName = ? and isPartyFood = false");
+                "update CartItems set number = number + 1 where userId = ? and foodName = ? and isPartyFood = false");
         try {
             foodStatement.setInt(1, userId);
             foodStatement.setString(2, foodName);
@@ -216,10 +223,10 @@ public class UserRepository {
         connection = ConnectionPool.getConnection();
         connection.setAutoCommit(false);
 
-        PreparedStatement foodStatement = connection.prepareStatement("select * from partyFoods where restaurantId = ? and name = ?");
-        Statement cartTime = connection.createStatement();
+        PreparedStatement foodStatement = connection.prepareStatement("select * from PartyFoods where restaurantId = ? and name = ?");
+        PreparedStatement cartTime = connection.prepareStatement("select isFoodParty from ShoppingCarts where userId = ?");
         PreparedStatement itemStatement = connection.prepareStatement(
-                "insert into cartItems (userId, foodName, price, number, isPartyFood) values (?, ?, ?, ?, ?)");
+                "insert into CartItems (userId, foodName, price, number, isPartyFood) values (?, ?, ?, ?, ?)");
         foodStatement.setString(1, restaurantId);
         foodStatement.setString(2, foodName);
         ResultSet foodResult = foodStatement.executeQuery();
@@ -233,11 +240,13 @@ public class UserRepository {
             throw new Error403("Error: Sorry! "+foodName+" is over!");
         }
         PreparedStatement cartUpdate;
-        ResultSet isTimeSet = cartTime.executeQuery("select isFoodParty from shoppingCarts where userId = " + userId);
+
+        cartTime.setInt(1, userId);
+        ResultSet isTimeSet = cartTime.executeQuery();
         isTimeSet.next();
         if(isTimeSet.getInt("isFoodParty") == 0) {
              cartUpdate = connection.prepareStatement(
-                    "update shoppingCarts set isEmpty = ? , restaurantId = ? , restaurantName = ? , totalPayment = totalPayment + ? , isFoodParty = isFoodParty + 1 , firstPartyFoodEnteredTime = ? where userId = ? ");
+                    "update ShoppingCarts set isEmpty = ? , restaurantId = ? , restaurantName = ? , totalPayment = totalPayment + ? , isFoodParty = isFoodParty + 1 , firstPartyFoodEnteredTime = ? where userId = ? ");
              Statement foodPartyTime = connection.createStatement();
              ResultSet time = foodPartyTime.executeQuery("select * from Foodparty");
              time.next();
@@ -248,7 +257,7 @@ public class UserRepository {
         }
         else {
             cartUpdate = connection.prepareStatement(
-                    "update shoppingCarts set isEmpty = ? , restaurantId = ? , restaurantName = ? , totalPayment = totalPayment + ? , isFoodParty = isFoodParty + 1 where userId = ? ");
+                    "update ShoppingCarts set isEmpty = ? , restaurantId = ? , restaurantName = ? , totalPayment = totalPayment + ? , isFoodParty = isFoodParty + 1 where userId = ? ");
             cartUpdate.setInt(5, userId);
         }
         try{
@@ -288,12 +297,12 @@ public class UserRepository {
         connection = ConnectionPool.getConnection();
         connection.setAutoCommit(false);
 
-        PreparedStatement foodStatement = connection.prepareStatement("select * from partyFoods where restaurantId = ? and name = ?");
+        PreparedStatement foodStatement = connection.prepareStatement("select * from PartyFoods where restaurantId = ? and name = ?");
         Statement cartTime = connection.createStatement();
         PreparedStatement cartUpdate = connection.prepareStatement(
-                "update shoppingCarts set totalPayment = totalPayment + ? , isFoodParty = isFoodParty + 1 where userId = ? ");
+                "update ShoppingCarts set totalPayment = totalPayment + ? , isFoodParty = isFoodParty + 1 where userId = ? ");
         PreparedStatement itemStatement = connection.prepareStatement(
-                "update cartItems set number = number + 1 where userId = ? and foodName = ? and isPartyFood = true");
+                "update CartItems set number = number + 1 where userId = ? and foodName = ? and isPartyFood = true");
         try {
             foodStatement.setString(1, restaurantId);
             foodStatement.setString(2, foodName);
@@ -338,14 +347,15 @@ public class UserRepository {
         connection = ConnectionPool.getConnection();
         PreparedStatement deleteStatement;
         PreparedStatement updateCart = connection.prepareStatement(
-                "update shoppingCarts set totalPayment = totalPayment - ? where userId = ? ");
+                "update ShoppingCarts set totalPayment = totalPayment - ? where userId = ? ");
         updateCart.setInt(1, price);
         updateCart.setInt(2, userId);
 
         if(isOne) {
-            deleteStatement = connection.prepareStatement("delete from cartItems where userId = ? and foodName = ?");
-            Statement checkCart = connection.createStatement();
-            ResultSet itemNumber = checkCart.executeQuery("select count(*) from cartItems where userId = " + userId);
+            deleteStatement = connection.prepareStatement("delete from CartItems where userId = ? and foodName = ?");
+            PreparedStatement checkCart = connection.prepareStatement("select count(*) from CartItems where userId = ?");
+            checkCart.setInt(1, userId);
+            ResultSet itemNumber = checkCart.executeQuery();
             itemNumber.next();
             if(itemNumber.getInt("count(*)") == 1)
                 isEmpty = true;
@@ -354,7 +364,7 @@ public class UserRepository {
         }
         else
             deleteStatement = connection.prepareStatement(
-                    "update cartItems set number = number - 1 where userId = ? and foodName = ? and isPartyFood = false");
+                    "update CartItems set number = number - 1 where userId = ? and foodName = ? and isPartyFood = false");
 
         deleteStatement.setInt(1, userId);
         deleteStatement.setString(2, foodName);
@@ -374,15 +384,16 @@ public class UserRepository {
         connection.setAutoCommit(false);
         PreparedStatement deleteStatement;
         PreparedStatement updateCart = connection.prepareStatement(
-                "update shoppingCarts set totalPayment = totalPayment - ? ,  isFoodParty = isFoodParty - 1 where userId = ? ");
+                "update ShoppingCarts set totalPayment = totalPayment - ? ,  isFoodParty = isFoodParty - 1 where userId = ? ");
         updateCart.setInt(1, price);
         updateCart.setInt(2, userId);
 
         if (isOne) {
             deleteStatement = connection.prepareStatement(
-                    "delete from cartItems where userId = ? and foodName = ? and isPartyFood = true");
-            Statement checkCart = connection.createStatement();
-            ResultSet itemNumber = checkCart.executeQuery("select count(*) from cartItems where userId = " + userId);
+                    "delete from CartItems where userId = ? and foodName = ? and isPartyFood = true");
+            PreparedStatement checkCart = connection.prepareStatement("select count(*) from CartItems where userId = ?");
+            checkCart.setInt(1, userId);
+            ResultSet itemNumber = checkCart.executeQuery();
             itemNumber.next();
             if (itemNumber.getInt("count(*)") == 1)
                 isEmpty = true;
@@ -391,7 +402,7 @@ public class UserRepository {
         }
         else
             deleteStatement = connection.prepareStatement(
-                    "update cartItems set number = number - 1 where userId = ? and foodName = ? and isPartyFood = true");
+                    "update CartItems set number = number - 1 where userId = ? and foodName = ? and isPartyFood = true");
         try {
             deleteStatement.setInt(1, userId);
             deleteStatement.setString(2, foodName);
@@ -414,10 +425,10 @@ public class UserRepository {
         Connection connection;
         connection = ConnectionPool.getConnection();
         PreparedStatement cartDelete = connection.prepareStatement(
-                "update shoppingCarts set totalPayment = 0 , isFoodParty = 0, isEmpty = true where userId = ? ");
+                "update ShoppingCarts set totalPayment = 0 , isFoodParty = 0, isEmpty = true where userId = ? ");
         cartDelete.setInt(1,userId);
         PreparedStatement itemDelete = connection.prepareStatement(
-                "delete from cartItems where userId = ? ");
+                "delete from CartItems where userId = ? ");
         itemDelete.setInt(1, userId);
         cartDelete.executeUpdate();
         itemDelete.executeUpdate();
@@ -431,9 +442,9 @@ public class UserRepository {
         connection = ConnectionPool.getConnection();
         connection.setAutoCommit(false);
         PreparedStatement insertOrder = connection.prepareStatement(
-                "insert into orders (userId, id, restaurantId, restaurantName, totalPayment, state, finalizationTime) values (?, ?, ?, ?, ?, ?, ?)");
+                "insert into Orders (userId, id, restaurantId, restaurantName, totalPayment, state, finalizationTime) values (?, ?, ?, ?, ?, ?, ?)");
         PreparedStatement insertItem = connection.prepareStatement(
-                "insert into orderItems (userId, orderId, foodName, price, number) values (?, ?, ?, ?, ?)");
+                "insert into OrderItems (userId, orderId, foodName, price, number) values (?, ?, ?, ?, ?)");
         CartDAO cartDAO = doGetCart(userId);
 
         insertOrder.setInt(1, userId);
@@ -454,7 +465,7 @@ public class UserRepository {
             insertItem.executeUpdate();
         }
 
-        PreparedStatement decrease = connection.prepareStatement("update users set credit = credit - ? where id = ?");
+        PreparedStatement decrease = connection.prepareStatement("update Users set credit = credit - ? where id = ?");
         decrease.setInt(1, cartDAO.getTotalPayment());
         decrease.setInt(2, userId);
         decrease.executeUpdate();
@@ -475,7 +486,7 @@ public class UserRepository {
         Connection connection;
         connection = ConnectionPool.getConnection();
         PreparedStatement updateOrder = connection.prepareStatement(
-                "update orders set deliveringTime = ? , deliveryId = ? , state = ? where userId = ? and id = ?");
+                "update Orders set deliveringTime = ? , deliveryId = ? , state = ? where userId = ? and id = ?");
         updateOrder.setTime(1,Time.valueOf(deliveringTime));
         updateOrder.setString(2, deliveryId);
         updateOrder.setString(3, "Delivering");
@@ -490,7 +501,7 @@ public class UserRepository {
         Connection connection;
         connection = ConnectionPool.getConnection();
         PreparedStatement updateOrder = connection.prepareStatement(
-                "update orders set state = ? where userId = ? and id = ?");
+                "update Orders set state = ? where userId = ? and id = ?");
         updateOrder.setString(1, "Done");
         updateOrder.setInt(2, userId);
         updateOrder.setInt(3, orderId);
@@ -502,7 +513,7 @@ public class UserRepository {
     public int signup(UserDAO userDAO, String hashPass) throws SQLException, Error403 {
         Connection connection;
         connection = ConnectionPool.getConnection();
-        PreparedStatement checkEmail = connection.prepareStatement("select * from users where email = ?");
+        PreparedStatement checkEmail = connection.prepareStatement("select * from Users where email = ?");
         checkEmail.setString(1, userDAO.getEmail());
         ResultSet userResult = checkEmail.executeQuery();
         if (userResult.next()){
@@ -511,7 +522,7 @@ public class UserRepository {
             throw new Error403("Error: Email " + userDAO.getEmail() +" has been in system before.");
         }
         Statement findId = connection.createStatement();
-        ResultSet id = findId.executeQuery("select count(*) from users");
+        ResultSet id = findId.executeQuery("select count(*) from Users");
         id.next();
         userDAO.setId(id.getInt("count(*)"));
 
@@ -553,16 +564,43 @@ public class UserRepository {
     public int login(String email, String hashPass) throws SQLException, Error403 {
         Connection connection;
         connection = ConnectionPool.getConnection();
-        PreparedStatement findUser = connection.prepareStatement("select * from users where email = ? and password= ?");
+        PreparedStatement findUser;
+
+        findUser = connection.prepareStatement("select * from Users where email = ? and password= ?");
         findUser.setString(1, email);
         findUser.setString(2, hashPass);
+
         ResultSet userResult = findUser.executeQuery();
+
+        System.out.println("User ID: ");
+        System.out.println(userResult.getInt("id"));
+
         if (!userResult.next()){
             findUser.close();
             connection.close();
             throw new Error403("Error: Entered email or password is not correct!");
         }
+        return userResult.getInt("id");
+    }
 
+    public int googleLogin(String email) throws SQLException, Error403 {
+        Connection connection;
+        connection = ConnectionPool.getConnection();
+        PreparedStatement findUser;
+
+        findUser = connection.prepareStatement("select * from Users where email = ? ");
+        findUser.setString(1, email);
+
+        System.out.println(findUser);
+        System.out.println("User ID: ");
+        ResultSet userResult = findUser.executeQuery();
+
+        System.out.println(userResult.getInt("id"));
+        if (!userResult.next()){
+            findUser.close();
+            connection.close();
+            throw new Error403("Error: Entered email is not in system!");
+        }
         return userResult.getInt("id");
     }
 }

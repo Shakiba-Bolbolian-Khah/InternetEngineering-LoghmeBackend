@@ -22,7 +22,6 @@ public class JWTfilter implements Filter {
             ((HttpServletResponse) servletResponse).setStatus(HttpServletResponse.SC_ACCEPTED);
             return;
         }
-        System.out.println("dsd");
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String path = request.getRequestURI().split("/")[2];
         if (path.equals("authentication")) {
@@ -46,6 +45,5 @@ public class JWTfilter implements Filter {
     }
 
     public void init(FilterConfig fConfig) throws ServletException {
-
     }
 }

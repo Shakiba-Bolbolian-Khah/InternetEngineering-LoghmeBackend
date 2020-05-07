@@ -5,6 +5,7 @@ import Loghme.Exceptions.Error400;
 import Loghme.Exceptions.Error403;
 import Loghme.Exceptions.Error404;
 import Loghme.Domain.Logic.CommandHandler;
+import com.auth0.jwt.exceptions.JWTCreationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -103,7 +104,7 @@ public class UserService {
             int userId = CommandHandler.getInstance().signup(newUser, password);
             return new ResponseEntity<>(JWTmanager.getInstance().createJWT(userId, email), HttpStatus.OK);
 
-        } catch (IOException|SQLException error) {
+        } catch (IOException|SQLException | JWTCreationException error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         } catch (Error403 error403) {
             return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
@@ -113,11 +114,31 @@ public class UserService {
     public ResponseEntity<?> login( @RequestParam(value = "email", required = true) String email,
                                     @RequestParam(value = "password", required = true) String password){
         try {
-
+            System.out.println(email);
+            System.out.println(password);
             int userId = CommandHandler.getInstance().login(email, password);
+            System.out.println(userId);
             return new ResponseEntity<>(JWTmanager.getInstance().createJWT(userId, email), HttpStatus.OK);
 
-        } catch (IOException|SQLException error) {
+        } catch (IOException | JWTCreationException error) {
+            return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (SQLException error) {
+            return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (Error403 error403) {
+            return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
+        }
+    }
+    @RequestMapping(value = "/authentication/googleLogin", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> googleLogin( @RequestParam(value = "email", required = true) String email){
+        try {
+            System.out.println(email);
+            int userId = CommandHandler.getInstance().googleLogin(email);
+            System.out.println(userId);
+            return new ResponseEntity<>(JWTmanager.getInstance().createJWT(userId, email), HttpStatus.OK);
+
+        } catch (IOException | JWTCreationException error) {
+            return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (SQLException error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         } catch (Error403 error403) {
             return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);

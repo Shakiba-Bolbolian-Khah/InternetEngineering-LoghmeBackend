@@ -21,7 +21,7 @@ public class RestaurantRepository {
         Connection connection;
         connection = ConnectionPool.getConnection();
         Statement statement = connection.createStatement();
-        ResultSet result = statement.executeQuery("select * from restaurants");
+        ResultSet result = statement.executeQuery("select * from Restaurants");
         while(result.next()) {
             RestaurantDAO restaurantDAO = new RestaurantDAO();
             restaurantDAO.setId(result.getString("id"));
@@ -39,19 +39,24 @@ public class RestaurantRepository {
     public RestaurantDAO doGetRestaurant(String id) throws SQLException, Error404 {
         Connection connection;
         connection = ConnectionPool.getConnection();
-        Statement statement = connection.createStatement();
-        Statement innerStatement = connection.createStatement();
-        ResultSet result = statement.executeQuery("select * from restaurants where id = \"" + id + "\"");
-        if (!result.next())
+        PreparedStatement statement = connection.prepareStatement("select * from Restaurants where id = ?");
+        statement.setString(1, id);
+        ResultSet result = statement.executeQuery();
+        PreparedStatement innerStatement = connection.prepareStatement("select * from Foods where restaurantId = ?");
+        innerStatement.setString(1,id);
+        if (!result.next()) {
+            statement.close();
+            innerStatement.close();
+            connection.close();
             throw new Error404("Error: There is no restaurant with id: " + id);
-
+        }
         RestaurantDAO restaurantDAO = new RestaurantDAO();
         restaurantDAO.setId(result.getString("id"));
         restaurantDAO.setName(result.getString("name"));
         restaurantDAO.setLocation(new Location(result.getInt("x"),result.getInt("y")));
         restaurantDAO.setLogo(result.getString("logo"));
 
-        ResultSet innerResult = innerStatement.executeQuery("select * from foods where restaurantId = \"" + id + "\"");
+        ResultSet innerResult = innerStatement.executeQuery();
         while (innerResult.next()) {
             FoodDAO foodDAO = new FoodDAO();
             foodDAO.setName(innerResult.getString("name"));
@@ -72,11 +77,11 @@ public class RestaurantRepository {
     public void insertRestaurants(ArrayList<RestaurantDAO> restaurantDAOS) throws SQLException {
         Connection connection;
         connection = ConnectionPool.getConnection();
-        PreparedStatement searchStatement = connection.prepareStatement("select id from restaurants where id = ?");
+        PreparedStatement searchStatement = connection.prepareStatement("select id from Restaurants where id = ?");
         PreparedStatement insertResStatement = connection.prepareStatement(
-                "insert into restaurants (id, name, x, y, logo) values (?, ?, ?, ?, ?)");
+                "insert into Restaurants (id, name, x, y, logo) values (?, ?, ?, ?, ?)");
         PreparedStatement insertFoodStatement = connection.prepareStatement(
-                "insert into foods (restaurantId, name, price, description, image, popularity) values (?, ?, ?, ?, ?, ?)");
+                "insert into Foods (restaurantId, name, price, description, image, popularity) values (?, ?, ?, ?, ?, ?)");
 
         for (RestaurantDAO restaurantDAO : restaurantDAOS) {
             searchStatement.setString(1, restaurantDAO.getId());
@@ -115,15 +120,17 @@ public class RestaurantRepository {
         Statement searchStatement = connection.createStatement();
         ResultSet result;
 
+        //ToDo: Check these with Hamed
+
         if(!restaurantName.equals("") && !foodName.equals(""))
             result = searchStatement.executeQuery(
-                    "select * from restaurants where id in (select restaurantId from foods where name like \"%"+ foodName + "%\") and name like \"%"+ restaurantName +"%\"");
+                    "select * from Restaurants where id in (select restaurantId from Foods where name like \"%"+ foodName + "%\") and name like \"%"+ restaurantName +"%\"");
         else if(!restaurantName.equals(""))
             result = searchStatement.executeQuery(
-                    "select * from restaurants where name like \"%"+ restaurantName + "%\"");
+                    "select * from Restaurants where name like \"%"+ restaurantName + "%\"");
         else if(!foodName.equals(""))
             result = searchStatement.executeQuery(
-                    "select * from restaurants where id in (select restaurantId from foods where name like \"%"+ foodName + "%\")");
+                    "select * from Restaurants where id in (select restaurantId from Foods where name like \"%"+ foodName + "%\")");
         else {
             searchStatement.close();
             connection.close();

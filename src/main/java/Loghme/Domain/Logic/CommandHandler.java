@@ -140,6 +140,11 @@ public class CommandHandler {
     }
 
     public int login( String email, String password) throws SQLException, Error403 {
+        System.out.println("Command Handler: "+ email+password);
         return loghme.login(email, password);
+    }
+
+    public int googleLogin( String email) throws SQLException, Error403 {
+        return loghme.googleLogin(email);
     }
 }

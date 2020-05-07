@@ -19,21 +19,13 @@ public class ConnectionPool {
 
         dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/Loghme");
         dataSource.setUser("root");
-        dataSource.setPassword("MirHamed2495");
+        dataSource.setPassword("sH&b10hA86E");
 
         dataSource.setInitialPoolSize(5);
         dataSource.setMinPoolSize(5);
         dataSource.setAcquireIncrement(5);
         dataSource.setMaxPoolSize(20);
         dataSource.setMaxStatements(100);
-//        ds.setDriverClassName("com.mysql.jdbc.Driver");
-//        // remote db
-//        ds.setUrl("jdbc:mysql://localhost:3306/Loghme");
-//        ds.setUsername("root");
-//        ds.setPassword("MirHamed2495");
-//        ds.setMinIdle(5);
-//        ds.setMaxIdle(15);
-//        ds.setMaxOpenPreparedStatements(100);
     }
 
     public static Connection getConnection() throws SQLException {

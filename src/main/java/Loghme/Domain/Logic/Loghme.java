@@ -214,6 +214,11 @@ public class Loghme {
 
     public int login(String email, String password) throws SQLException, Error403 {
         String hashPass = hashMD5(password);
+        System.out.println(email);
         return UserRepository.getInstance().login(email, hashPass);
+    }
+
+    public int googleLogin(String email) throws SQLException, Error403 {
+        return UserRepository.getInstance().googleLogin(email);
     }
 }
