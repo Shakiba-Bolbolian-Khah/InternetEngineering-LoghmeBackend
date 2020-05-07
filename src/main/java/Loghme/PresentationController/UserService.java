@@ -6,6 +6,8 @@ import Loghme.Exceptions.Error403;
 import Loghme.Exceptions.Error404;
 import Loghme.Domain.Logic.CommandHandler;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +19,10 @@ import java.sql.SQLException;
 @RestController
 public class UserService {
 
-    @RequestMapping(value = "/users/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getUser(@PathVariable(value = "userId") int id) {
+    @RequestMapping(value = "/users", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getUser(@RequestParam(value = "userId", required = true) int id) {
         try {
-            return new ResponseEntity<>(CommandHandler.getInstance().doGetUser(), HttpStatus.OK);
+            return new ResponseEntity<>(CommandHandler.getInstance().doGetUser(id), HttpStatus.OK);
         } catch (IOException| SQLException error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         } catch (Error404 error404) {
@@ -30,7 +32,7 @@ public class UserService {
     @RequestMapping(value = "/users/cart", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getCart(@RequestParam(value = "userId", required = true) int id) {
         try {
-            return new ResponseEntity<>(CommandHandler.getInstance().doGetCart(), HttpStatus.OK);
+            return new ResponseEntity<>(CommandHandler.getInstance().doGetCart(id), HttpStatus.OK);
         } catch (IOException|SQLException error){
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         } catch (Error400 error400) {
@@ -40,7 +42,7 @@ public class UserService {
     @RequestMapping(value = "/users/finalize", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> finalizeCart(@RequestParam(value = "userId", required = true) int id) {
         try {
-            return new ResponseEntity<>(CommandHandler.getInstance().finalizeOrder(), HttpStatus.OK);
+            return new ResponseEntity<>(CommandHandler.getInstance().finalizeOrder(id), HttpStatus.OK);
         } catch (IOException|SQLException error){
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         } catch (Error400 error400) {
@@ -51,11 +53,11 @@ public class UserService {
             return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
-    @RequestMapping(value = "/users/{userId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> increaseCreadit(@PathVariable(value = "userId") int id,
+    @RequestMapping(value = "/users", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> increaseCreadit(@RequestParam(value = "userId", required = true) int id,
                                              @RequestParam(value = "credit", required = true) int newCredit){
         try {
-            return new ResponseEntity<>(CommandHandler.getInstance().increaseCredit(newCredit), HttpStatus.OK);
+            return new ResponseEntity<>(CommandHandler.getInstance().increaseCredit(newCredit, id), HttpStatus.OK);
         } catch (IOException|SQLException error) {
             return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
         }
@@ -71,14 +73,14 @@ public class UserService {
             switch (action) {
                 case "add":
                     for(int i = 0; i < count-1; i++){
-                        CommandHandler.getInstance().addToCart(restaurantId, foodName, false);
+                        CommandHandler.getInstance().addToCart(restaurantId, foodName, false, id);
                     }
-                    return new ResponseEntity<>(CommandHandler.getInstance().addToCart(restaurantId, foodName, false), HttpStatus.OK);
+                    return new ResponseEntity<>(CommandHandler.getInstance().addToCart(restaurantId, foodName, false, id), HttpStatus.OK);
                 case "delete":
                     for(int i = 0; i < count-1; i++){
-                        CommandHandler.getInstance().deleteFromCart(restaurantId, foodName, false);
+                        CommandHandler.getInstance().deleteFromCart(restaurantId, foodName, false, id);
                     }
-                    return new ResponseEntity<>(CommandHandler.getInstance().deleteFromCart(restaurantId, foodName, false), HttpStatus.OK);
+                    return new ResponseEntity<>(CommandHandler.getInstance().deleteFromCart(restaurantId, foodName, false, id), HttpStatus.OK);
                 default:
                     throw new Error400("Error: You can just add or delete a food.");
             }
@@ -105,9 +107,9 @@ public class UserService {
             return new ResponseEntity<>(JWTmanager.getInstance().createJWT(userId, email), HttpStatus.OK);
 
         } catch (IOException|SQLException | JWTCreationException error) {
-            return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+            return new ResponseEntity<>(new Gson().toJson(error.getMessage()), HttpStatus.SERVICE_UNAVAILABLE);
         } catch (Error403 error403) {
-            return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Gson().toJson(error403.getMessage()), HttpStatus.FORBIDDEN);
         }
     }
     @RequestMapping(value = "/authentication/login", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -120,12 +122,10 @@ public class UserService {
             System.out.println(userId);
             return new ResponseEntity<>(JWTmanager.getInstance().createJWT(userId, email), HttpStatus.OK);
 
-        } catch (IOException | JWTCreationException error) {
-            return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
-        } catch (SQLException error) {
-            return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (IOException | JWTCreationException | SQLException error) {
+            return new ResponseEntity<>(new Gson().toJson(error.getMessage()), HttpStatus.SERVICE_UNAVAILABLE);
         } catch (Error403 error403) {
-            return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Gson().toJson(error403.getMessage()), HttpStatus.FORBIDDEN);
         }
     }
     @RequestMapping(value = "/authentication/googleLogin", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -136,12 +136,10 @@ public class UserService {
             System.out.println(userId);
             return new ResponseEntity<>(JWTmanager.getInstance().createJWT(userId, email), HttpStatus.OK);
 
-        } catch (IOException | JWTCreationException error) {
-            return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
-        } catch (SQLException error) {
-            return new ResponseEntity<>(error.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (IOException | JWTCreationException | SQLException error) {
+            return new ResponseEntity<>(new Gson().toJson(error.getMessage()), HttpStatus.SERVICE_UNAVAILABLE);
         } catch (Error403 error403) {
-            return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Gson().toJson(error403.getMessage()), HttpStatus.FORBIDDEN);
         }
     }
 }

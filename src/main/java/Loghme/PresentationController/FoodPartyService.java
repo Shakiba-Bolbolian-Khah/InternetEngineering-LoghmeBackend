@@ -26,7 +26,7 @@ public class FoodPartyService {
 
     @RequestMapping(value = "/foodparty", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addPartyFoodToCart(
-            @RequestParam(value = "userId", required = true) String userId,
+            @RequestParam(value = "userId", required = true) int userId,
             @RequestParam(value = "id", required = true) String restaurantId,
             @RequestParam(value = "name", required = true) String partyFoodName,
             @RequestParam(value = "action", required = true) String action,
@@ -35,14 +35,14 @@ public class FoodPartyService {
             switch (action) {
                 case "add":
                     for(int i = 0; i < count-1; i++){
-                        CommandHandler.getInstance().addToCart(restaurantId, partyFoodName, true);
+                        CommandHandler.getInstance().addToCart(restaurantId, partyFoodName, true, userId);
                     }
-                    return new ResponseEntity<>(CommandHandler.getInstance().addToCart(restaurantId, partyFoodName, true), HttpStatus.OK);
+                    return new ResponseEntity<>(CommandHandler.getInstance().addToCart(restaurantId, partyFoodName, true, userId), HttpStatus.OK);
                 case "delete":
                     for(int i = 0; i < count-1; i++){
-                        CommandHandler.getInstance().deleteFromCart(restaurantId, partyFoodName, true);
+                        CommandHandler.getInstance().deleteFromCart(restaurantId, partyFoodName, true, userId);
                     }
-                    return new ResponseEntity<>(CommandHandler.getInstance().deleteFromCart(restaurantId, partyFoodName, true), HttpStatus.OK);
+                    return new ResponseEntity<>(CommandHandler.getInstance().deleteFromCart(restaurantId, partyFoodName, true, userId), HttpStatus.OK);
                 default:
                     throw new Error400("Error: You can just add or delete a food.");
             }

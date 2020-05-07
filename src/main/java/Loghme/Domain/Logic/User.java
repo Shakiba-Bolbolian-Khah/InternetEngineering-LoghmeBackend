@@ -98,8 +98,7 @@ public class User {
         return this.shoppingCart;
     }
 
-    public int finalizeOrder() throws Error403, Error400, SQLException {
-        int orderId = shoppingCart.finalizeOrder(this.credit, orders.size());
-        return orderId;
+    public int finalizeOrder(int userId) throws Error403, Error400, SQLException {
+        return shoppingCart.finalizeOrder(this.credit, orders.size(), userId);
     }
 }

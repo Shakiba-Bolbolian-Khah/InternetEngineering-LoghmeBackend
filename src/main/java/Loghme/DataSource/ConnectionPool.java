@@ -19,7 +19,7 @@ public class ConnectionPool {
 
         dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/Loghme");
         dataSource.setUser("root");
-        dataSource.setPassword("sH&b10hA86E");
+        dataSource.setPassword("MirHamed2495");
 
         dataSource.setInitialPoolSize(5);
         dataSource.setMinPoolSize(5);

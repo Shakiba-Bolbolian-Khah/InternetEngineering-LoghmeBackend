@@ -566,20 +566,20 @@ public class UserRepository {
         connection = ConnectionPool.getConnection();
         PreparedStatement findUser;
 
-        findUser = connection.prepareStatement("select * from Users where email = ? and password= ?");
+        findUser = connection.prepareStatement("select * from Users where email = ? and password = ?");
         findUser.setString(1, email);
         findUser.setString(2, hashPass);
 
         ResultSet userResult = findUser.executeQuery();
 
         System.out.println("User ID: ");
-        System.out.println(userResult.getInt("id"));
 
         if (!userResult.next()){
             findUser.close();
             connection.close();
             throw new Error403("Error: Entered email or password is not correct!");
         }
+        System.out.println(userResult.getInt("id"));
         return userResult.getInt("id");
     }
 
@@ -595,12 +595,12 @@ public class UserRepository {
         System.out.println("User ID: ");
         ResultSet userResult = findUser.executeQuery();
 
-        System.out.println(userResult.getInt("id"));
         if (!userResult.next()){
             findUser.close();
             connection.close();
             throw new Error403("Error: Entered email is not in system!");
         }
+        System.out.println(userResult.getInt("id"));
         return userResult.getInt("id");
     }
 }

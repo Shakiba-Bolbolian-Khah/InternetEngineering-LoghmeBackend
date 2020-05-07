@@ -55,43 +55,41 @@ public class CommandHandler {
         return loghme.doGetRestaurant(restaurantId);
     }
 
-    public String addToCart(String restaurantId, String foodName, boolean isPartyFood) throws Error403, SQLException {
-        return loghme.addToCart(restaurantId, foodName, isPartyFood);
+    public String addToCart(String restaurantId, String foodName, boolean isPartyFood, int userId) throws Error403, SQLException {
+        return loghme.addToCart(restaurantId, foodName, isPartyFood, userId);
     }
 
-    public String deleteFromCart(String restaurantId, String foodName, boolean isPartyFood) throws Error403, Error404, SQLException {
-        return loghme.deleteFromCart(restaurantId, foodName, isPartyFood);
+    public String deleteFromCart(String restaurantId, String foodName, boolean isPartyFood, int userId) throws Error403, Error404, SQLException {
+        return loghme.deleteFromCart(restaurantId, foodName, isPartyFood, userId);
     }
 
-    public ShoppingCartDTO doGetCart() throws Error400, SQLException {
-        ShoppingCartDTO cart = DataConverter.getInstance().DAOtoCartDTO(UserRepository.getInstance().doGetCart(0));
+    public ShoppingCartDTO doGetCart(int userId) throws Error400, SQLException {
+        ShoppingCartDTO cart = DataConverter.getInstance().DAOtoCartDTO(UserRepository.getInstance().doGetCart(userId));
         if(cart.isEmpty())
             throw  new Error400("There is nothing to show in your cart!");
         return cart;
     }
 
-    public String finalizeOrder() throws Error403, Error400, Error404, SQLException {
-        return loghme.finalizeOrder();
+    public String finalizeOrder(int userId) throws Error403, Error400, Error404, SQLException {
+        return loghme.finalizeOrder(userId);
     }
 
-    public UserDTO doGetUser() throws Error404, SQLException {
-        return DataConverter.getInstance().DAOtoUserDTO(UserRepository.getInstance().doGetUser(0));
+    public UserDTO doGetUser(int userId) throws Error404, SQLException {
+        return DataConverter.getInstance().DAOtoUserDTO(UserRepository.getInstance().doGetUser(userId));
     }
 
-    public void getRecommendedRestaurants(){
+    public void getRecommendedRestaurants(int userId){
         try {
-            System.out.println(loghme.doGetRecommendedRestaurants());
-        } catch (ErrorHandler errorHandler){
+            System.out.println(loghme.doGetRecommendedRestaurants(userId));
+        } catch (ErrorHandler | SQLException errorHandler){
             System.err.print(errorHandler);
-        } catch (SQLException e) {
-            System.err.print(e);
         } catch (Error404 error404) {
             error404.printStackTrace();
         }
     }
 
-    public String increaseCredit(int addedCredit) throws SQLException {
-        return loghme.increaseCredit(addedCredit);
+    public String increaseCredit(int addedCredit, int userId) throws SQLException {
+        return loghme.increaseCredit(addedCredit, userId);
     }
 
     public void doSetFoodParty(String newPartyRestaurants) throws SQLException {

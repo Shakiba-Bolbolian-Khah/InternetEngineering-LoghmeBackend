@@ -1,4 +1,7 @@
 package Loghme.PresentationController;
+import Loghme.DataSource.UserRepository;
+import Loghme.Domain.Logic.CommandHandler;
+import Loghme.Exceptions.Error404;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -6,7 +9,10 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.gson.Gson;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.Map;
 
@@ -36,8 +42,9 @@ public class JWTmanager {
                 .withClaim("userId", userId)
                 .sign(algorithmHS);
 
-        System.out.println(token);
-        return token;
+        Gson gson = new Gson();
+        System.out.println(gson.toJson(token));
+        return gson.toJson(token);
     }
 
     public int validateJWT(String jwtString){
@@ -50,10 +57,9 @@ public class JWTmanager {
 
             Map<String, Claim> claims = jwt.getClaims();
             Claim claim = claims.get("userId");
-            int userId = claim.asInt();
-            return userId;
-
-        } catch (JWTVerificationException exception){
+            System.out.println(claim.asInt());
+            return CommandHandler.getInstance().doGetUser(claim.asInt()).getId();
+        } catch (JWTVerificationException | Error404 | IOException | SQLException exception){
             return -1;
         }
     }

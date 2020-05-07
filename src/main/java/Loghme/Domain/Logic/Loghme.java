@@ -41,7 +41,7 @@ public class Loghme {
     }
 
     public void assignDelivery(int orderId, int userId) throws Error404, Error403, IOException, SQLException {
-        User user = doGetUser();
+        User user = doGetUser(userId);
         Order deliveringOrder = user.getOrder(orderId);
         double deliveringTime = 0;
         String BestDeliveryId = null;
@@ -59,8 +59,8 @@ public class Loghme {
         deliveringOrder.setDeliveryForOrder(userId, BestDeliveryId, remainingTime);
     }
 
-    public User doGetUser() throws Error404, SQLException {
-        return DataConverter.getInstance().DAOtoUser(UserRepository.getInstance().doGetUser(0));
+    public User doGetUser(int userId) throws Error404, SQLException {
+        return DataConverter.getInstance().DAOtoUser(UserRepository.getInstance().doGetUser(userId));
     }
 
     public Double calculateDistance(Location restaurantLocation, Location userLocation) {
@@ -70,14 +70,13 @@ public class Loghme {
     }
 
     public ArrayList<Restaurant> findNearestRestaurantsForUser() throws Error404, SQLException {
-        User user = doGetUser();
         ArrayList<Restaurant> restaurants = DataConverter.getInstance().DAOtoRestaurantList(RestaurantRepository.getInstance().doGetRestaurants());
         ArrayList<Restaurant> nearRestaurants = new ArrayList<>();
         if(restaurants.size() == 0){
             throw new Error404("Sorry! There is no restaurant around you in Loghme at this time!");
         }
         for (Restaurant restaurant : restaurants) {
-            Double distance = calculateDistance(restaurant.getLocation(), user.getLocation());
+            Double distance = calculateDistance(restaurant.getLocation(), new Location(0,0));
             if (distance <= 170) {
                 nearRestaurants.add(restaurant);
             }
@@ -89,35 +88,35 @@ public class Loghme {
         return DataConverter.getInstance().DAOtoRestaurantDTO(RestaurantRepository.getInstance().doGetRestaurant(restaurantId));
     }
 
-    public String addToCart(String restaurantId, String foodName, boolean isPartyFood) throws Error403, SQLException {
-        ShoppingCart userCart = doGetCart();
+    public String addToCart(String restaurantId, String foodName, boolean isPartyFood, int userId) throws Error403, SQLException {
+        ShoppingCart userCart = doGetCart(userId);
         if (!userCart.isEmpty()) {
             if (!(userCart.getRestaurantId().equals(restaurantId))) {
                 throw new Error403("Error: You chose your restaurant before! Choosing 2 restaurants is invalid!");
             }
         }
-        return userCart.addToCart(foodName, restaurantId, isPartyFood);
+        return userCart.addToCart(foodName, restaurantId, isPartyFood, userId);
     }
 
-    public String deleteFromCart(String restaurantId, String foodName, boolean isPartyFood) throws Error403, Error404, SQLException {
-        ShoppingCart userCart = doGetCart();
+    public String deleteFromCart(String restaurantId, String foodName, boolean isPartyFood, int userId) throws Error403, Error404, SQLException {
+        ShoppingCart userCart = doGetCart(userId);
         if (userCart.isEmpty()) {
             throw new Error403("Error: There is nothing in your cart to delete.");
         }
         if (userCart.getRestaurantId().equals(restaurantId))
-            return userCart.deleteFromCart(restaurantId, foodName, isPartyFood);
+            return userCart.deleteFromCart(restaurantId, foodName, isPartyFood, userId);
         else
             throw new Error403("Error: You had not ordered food from this restaurant!");
     }
 
-    public ShoppingCart doGetCart() throws SQLException {
-        return DataConverter.getInstance().DAOtoCart(UserRepository.getInstance().doGetCart(0));
+    public ShoppingCart doGetCart(int userId) throws SQLException {
+        return DataConverter.getInstance().DAOtoCart(UserRepository.getInstance().doGetCart(userId));
     }
 
-    public String finalizeOrder() throws Error400, Error403, Error404, SQLException {
-        User user = doGetUser();
-        int orderId = user.finalizeOrder();
-        findDelivery(orderId, 0);
+    public String finalizeOrder(int userId) throws Error400, Error403, Error404, SQLException {
+        User user = doGetUser(userId);
+        int orderId = user.finalizeOrder(userId);
+        findDelivery(orderId, userId);
         return "Your order finalized successfully!";
     }
 
@@ -140,8 +139,8 @@ public class Loghme {
         return temp;
     }
 
-    public String doGetRecommendedRestaurants() throws ErrorHandler, SQLException, Error404 {
-        User user = doGetUser();
+    public String doGetRecommendedRestaurants(int userId) throws ErrorHandler, SQLException, Error404 {
+        User user = doGetUser(userId);
         Map<String,Double> scores = new HashMap<>();
         ArrayList<Restaurant> restaurants = DataConverter.getInstance().DAOtoRestaurantList(RestaurantRepository.getInstance().doGetRestaurants());
         if(restaurants.size() == 0){
@@ -164,8 +163,8 @@ public class Loghme {
         return recommended.substring(0, recommended.length()-1);
     }
 
-    public String increaseCredit(int addedCredit) throws SQLException {
-        UserRepository.getInstance().increaseCredit(0, addedCredit);
+    public String increaseCredit(int addedCredit, int userId) throws SQLException {
+        UserRepository.getInstance().increaseCredit(userId, addedCredit);
         return "Credit increased successfully!";
     }
 
@@ -181,8 +180,7 @@ public class Loghme {
         return DataConverter.getInstance().DAOtoRestaurantList(RestaurantRepository.getInstance().search(restaurantName, foodName));
     }
 
-    public String hashMD5(String input)
-    {
+    public String hashMD5(String input) {
         try {
             // Static getInstance method is called with hashing MD5
             MessageDigest md = MessageDigest.getInstance("MD5");

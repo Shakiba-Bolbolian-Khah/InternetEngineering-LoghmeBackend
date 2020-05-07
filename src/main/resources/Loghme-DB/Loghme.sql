@@ -1,4 +1,3 @@
-SET default_storage_engine= Innodb;
 create database Loghme;
 use Loghme;
 create table Users(
@@ -11,7 +10,7 @@ create table Users(
     x int not null,
     y int not null,
     credit int,
-    primary key(id, email)
+    primary key(id)
 );
 create table ShoppingCarts(
 	userId int,
@@ -90,9 +89,3 @@ create table PartyFoods(
     primary key(restaurantId, name),
     foreign key(restaurantId) references Restaurants(id) on delete cascade on update cascade
 );
-
-insert into Users(id, firstName, lastName, phoneNumber, email, password, x, y, credit)
-values (0, "Ehsan", "Khames Panah", "09123456789", "ekhamespanah@yahoo.com","123456", 0, 0, 100000);
-
-insert into ShoppingCarts(userId, isEmpty, isFoodParty, totalPayment)
-values (0, true, 0, 0);
