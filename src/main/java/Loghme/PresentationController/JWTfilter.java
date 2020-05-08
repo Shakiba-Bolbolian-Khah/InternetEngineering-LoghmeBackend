@@ -40,8 +40,8 @@ public class JWTfilter implements Filter {
                 return;
             }
             request.setAttribute("userId", userId);
+            chain.doFilter(request, servletResponse);
         }
-        chain.doFilter(request, servletResponse);
     }
 
     public void init(FilterConfig fConfig) throws ServletException {

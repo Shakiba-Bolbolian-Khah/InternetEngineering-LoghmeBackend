@@ -11,8 +11,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
-@ WebFilter(asyncSupported = true, urlPatterns = { "/*" })
+@ WebFilter(asyncSupported = true)
 public class CORSFilter implements Filter {
         public void destroy() {
 
@@ -20,14 +19,10 @@ public class CORSFilter implements Filter {
 
         public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
 
-            // Server delay
-//            try {
-//                Thread.sleep(3000);
-
             // Authorize (allow) all domains to consume the content
             ((HttpServletResponse) servletResponse).setHeader("Access-Control-Allow-Origin","*");
             ((HttpServletResponse) servletResponse).setHeader("Access-Control-Allow-Methods","OPTIONS, GET, POST, PUT, DELETE, HEAD");
-            ((HttpServletResponse) servletResponse).setHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, X-Device-User-Agent, Content-Type, Accept, Authentication");
+            ((HttpServletResponse) servletResponse).setHeader("Access-Control-Allow-Headers","*");
 
             // For HTTP OPTIONS verb/method reply with ACCEPTED status code -- per CORS handshake
             if (((HttpServletRequest) servletRequest).getMethod().equals("OPTIONS")) {
@@ -36,10 +31,7 @@ public class CORSFilter implements Filter {
             }
 
             // pass the request along the filter chain
-                chain.doFilter(servletRequest, servletResponse);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+            chain.doFilter((HttpServletRequest) servletRequest, servletResponse);
         }
 
         public void init(FilterConfig fConfig) throws ServletException {

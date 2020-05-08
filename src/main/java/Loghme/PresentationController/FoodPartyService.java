@@ -26,7 +26,7 @@ public class FoodPartyService {
 
     @RequestMapping(value = "/foodparty", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addPartyFoodToCart(
-            @RequestParam(value = "userId", required = true) int userId,
+            @RequestAttribute(value = "userId", required = true) int userId,
             @RequestParam(value = "id", required = true) String restaurantId,
             @RequestParam(value = "name", required = true) String partyFoodName,
             @RequestParam(value = "action", required = true) String action,
