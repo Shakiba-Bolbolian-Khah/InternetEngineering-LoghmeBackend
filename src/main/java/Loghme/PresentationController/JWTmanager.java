@@ -1,5 +1,6 @@
 package Loghme.PresentationController;
 
+import com.google.gson.Gson;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
@@ -13,6 +14,15 @@ public class JWTmanager {
     private String secretString = "loghmeloghmeloghmeloghmeloghmeloghmeloghme";
     private SecretKey key = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
 
+    private class JWTdata {
+        private String JWT;
+        private Date expDate;
+
+        public JWTdata(String JWT, Date expDate) {
+            this.JWT = JWT;
+            this.expDate = expDate;
+        }
+    }
     public static JWTmanager getInstance() {
         if(instance == null) {
             instance = new JWTmanager();
@@ -20,16 +30,18 @@ public class JWTmanager {
         return instance;
     }
 
-    public String createJWT(int userId, String email) {
+    public String createJWT(int userId) {
         String issuer = "Corona";
-        return Jwts.builder()
+        Date expDate = new Date(System.currentTimeMillis() + 60 * 1000);
+        String jwtStr = Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setIssuer(issuer)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600 * 1000))
+                .setExpiration(expDate)
                 .claim("userId", userId)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+        return new Gson().toJson(new JWTdata(jwtStr, expDate));
     }
 
     public int validateJWT(String jwt) {

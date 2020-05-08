@@ -23,6 +23,7 @@ Loghme\Domain\Logic\ShoppingCart.class
 Loghme\Domain\Logic\PartyFood.class
 Loghme\PresentationController\UserService.class
 Loghme\Domain\Logic\User.class
+Loghme\PresentationController\JWTmanager$JWTdata.class
 Loghme\DataSource\OrderItemDAO.class
 Loghme\Domain\Logic\CommandHandler.class
 Loghme\Domain\Logic\Delivery.class

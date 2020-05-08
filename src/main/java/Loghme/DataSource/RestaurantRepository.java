@@ -1,6 +1,7 @@
 package Loghme.DataSource;
 
 import Loghme.Domain.Logic.Location;
+import Loghme.Exceptions.Error400;
 import Loghme.Exceptions.Error403;
 import Loghme.Exceptions.Error404;
 
@@ -114,7 +115,7 @@ public class RestaurantRepository {
         connection.close();
     }
 
-    public ArrayList<RestaurantDAO> search(String restaurantName, String foodName) throws SQLException, Error403 {
+    public ArrayList<RestaurantDAO> search(String restaurantName, String foodName) throws SQLException, Error400 {
         Connection connection;
         connection = ConnectionPool.getConnection();
         PreparedStatement searchStatementBoth = connection.prepareStatement(
@@ -144,7 +145,7 @@ public class RestaurantRepository {
             searchStatementRestaurant.close();
             searchStatementFood.close();
             connection.close();
-            throw new Error403("No restaurant name and food name has been entered!");
+            throw new Error400("No restaurant name and food name has been entered!");
         }
         ArrayList<RestaurantDAO> restaurantDAOS = new ArrayList<>();
         while(result.next()) {

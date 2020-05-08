@@ -6,6 +6,7 @@ import Loghme.Exceptions.Error403;
 import Loghme.Exceptions.Error404;
 import Loghme.Domain.Logic.CommandHandler;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +47,7 @@ public class UserService {
         } catch (Error400 error400) {
             return new ResponseEntity<>(error400.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Error403 error403) {
-            return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Gson().toJson(error403.getMessage()), HttpStatus.FORBIDDEN);
         } catch (Error404 error404) {
             return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
         }
@@ -85,7 +86,7 @@ public class UserService {
         } catch (Error404 error404) {
             return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Error403 error403) {
-            return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Gson().toJson(error403.getMessage()), HttpStatus.FORBIDDEN);
         } catch (Error400 error400) {
             return new ResponseEntity<>(error400.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (IOException|SQLException error) {
@@ -102,7 +103,7 @@ public class UserService {
 
             UserDAO newUser = new UserDAO(firstName, lastName, phoneNumber, email);
             int userId = CommandHandler.getInstance().signup(newUser, password);
-            return new ResponseEntity<>(new Gson().toJson(JWTmanager.getInstance().createJWT(userId, email)), HttpStatus.OK);
+            return new ResponseEntity<>(new Gson().toJson(JWTmanager.getInstance().createJWT(userId)), HttpStatus.OK);
 
         } catch (IOException|SQLException error) {
             return new ResponseEntity<>(new Gson().toJson(error.getMessage()), HttpStatus.SERVICE_UNAVAILABLE);
@@ -115,7 +116,7 @@ public class UserService {
                                     @RequestParam(value = "password", required = true) String password){
         try {
             int userId = CommandHandler.getInstance().login(email, password);
-            return new ResponseEntity<>(new Gson().toJson(JWTmanager.getInstance().createJWT(userId, email)), HttpStatus.OK);
+            return new ResponseEntity<>(new Gson().toJson(JWTmanager.getInstance().createJWT(userId)), HttpStatus.OK);
 
         } catch (IOException | SQLException error) {
             return new ResponseEntity<>(new Gson().toJson(error.getMessage()), HttpStatus.SERVICE_UNAVAILABLE);
@@ -127,7 +128,7 @@ public class UserService {
     public ResponseEntity<?> googleLogin( @RequestParam(value = "email", required = true) String email){
         try {
             int userId = CommandHandler.getInstance().googleLogin(email);
-            return new ResponseEntity<>(new Gson().toJson(JWTmanager.getInstance().createJWT(userId, email)), HttpStatus.OK);
+            return new ResponseEntity<>(new Gson().toJson(JWTmanager.getInstance().createJWT(userId)), HttpStatus.OK);
 
         } catch (IOException | SQLException error) {
             return new ResponseEntity<>(new Gson().toJson(error.getMessage()), HttpStatus.SERVICE_UNAVAILABLE);

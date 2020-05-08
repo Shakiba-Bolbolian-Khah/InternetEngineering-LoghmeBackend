@@ -1,6 +1,9 @@
 package Loghme.PresentationController;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -37,6 +40,12 @@ public class JWTfilter implements Filter {
             int userId = JWTmanager.getInstance().validateJWT(jwtStr);
             if (userId == -1) {
                 ((HttpServletResponse) servletResponse).setStatus(HttpServletResponse.SC_FORBIDDEN);
+                String error = new Gson().toJson("BAD_JWT");
+                PrintWriter out = ((HttpServletResponse) servletResponse).getWriter();
+                ((HttpServletResponse) servletResponse).setContentType("application/json");
+                ((HttpServletResponse) servletResponse).setCharacterEncoding("UTF-8");
+                out.print(error);
+                out.flush();
                 return;
             }
             request.setAttribute("userId", userId);

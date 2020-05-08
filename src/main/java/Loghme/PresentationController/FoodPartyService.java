@@ -4,6 +4,7 @@ import Loghme.Exceptions.Error400;
 import Loghme.Exceptions.Error403;
 import Loghme.Exceptions.Error404;
 import Loghme.Domain.Logic.CommandHandler;
+import com.google.gson.Gson;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +50,7 @@ public class FoodPartyService {
         } catch (Error404 error404) {
             return new ResponseEntity<>(error404.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Error403 error403) {
-            return new ResponseEntity<>(error403.getMessage(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Gson().toJson(error403.getMessage()), HttpStatus.FORBIDDEN);
         } catch (Error400 error400) {
             return new ResponseEntity<>(error400.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (IOException|SQLException error) {
