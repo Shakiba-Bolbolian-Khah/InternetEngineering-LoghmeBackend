@@ -32,7 +32,7 @@ public class JWTmanager {
 
     public String createJWT(int userId) {
         String issuer = "Corona";
-        Date expDate = new Date(System.currentTimeMillis() + 60 * 1000);
+        Date expDate = new Date(System.currentTimeMillis() + 3600 * 1000);
         String jwtStr = Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setIssuer(issuer)
