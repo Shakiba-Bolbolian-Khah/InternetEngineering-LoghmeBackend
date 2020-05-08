@@ -572,14 +572,11 @@ public class UserRepository {
 
         ResultSet userResult = findUser.executeQuery();
 
-        System.out.println("User ID: ");
-
         if (!userResult.next()){
             findUser.close();
             connection.close();
             throw new Error403("Error: Entered email or password is not correct!");
         }
-        System.out.println(userResult.getInt("id"));
         return userResult.getInt("id");
     }
 
@@ -591,8 +588,6 @@ public class UserRepository {
         findUser = connection.prepareStatement("select * from Users where email = ? ");
         findUser.setString(1, email);
 
-        System.out.println(findUser);
-        System.out.println("User ID: ");
         ResultSet userResult = findUser.executeQuery();
 
         if (!userResult.next()){
@@ -600,7 +595,6 @@ public class UserRepository {
             connection.close();
             throw new Error403("Error: Entered email is not in system!");
         }
-        System.out.println(userResult.getInt("id"));
         return userResult.getInt("id");
     }
 }

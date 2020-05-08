@@ -117,22 +117,32 @@ public class RestaurantRepository {
     public ArrayList<RestaurantDAO> search(String restaurantName, String foodName) throws SQLException, Error403 {
         Connection connection;
         connection = ConnectionPool.getConnection();
-        Statement searchStatement = connection.createStatement();
+        PreparedStatement searchStatementBoth = connection.prepareStatement(
+                "select * from Restaurants where id in (select restaurantId from Foods where name like ?) and name like ?");
+        PreparedStatement searchStatementRestaurant = connection.prepareStatement(
+                "select * from Restaurants where name like ?");
+        PreparedStatement searchStatementFood = connection.prepareStatement(
+                "select * from Restaurants where id in (select restaurantId from Foods where name like ?)");
+
         ResultSet result;
 
-        //ToDo: Check these with Hamed
-
-        if(!restaurantName.equals("") && !foodName.equals(""))
-            result = searchStatement.executeQuery(
-                    "select * from Restaurants where id in (select restaurantId from Foods where name like \"%"+ foodName + "%\") and name like \"%"+ restaurantName +"%\"");
-        else if(!restaurantName.equals(""))
-            result = searchStatement.executeQuery(
-                    "select * from Restaurants where name like \"%"+ restaurantName + "%\"");
-        else if(!foodName.equals(""))
-            result = searchStatement.executeQuery(
-                    "select * from Restaurants where id in (select restaurantId from Foods where name like \"%"+ foodName + "%\")");
+        if(!restaurantName.equals("") && !foodName.equals("")){
+            searchStatementBoth.setString(1, "%"+foodName+"%");
+            searchStatementBoth.setString(2, "%"+restaurantName+"%");
+            result = searchStatementBoth.executeQuery();
+        }
+        else if(!restaurantName.equals("")){
+            searchStatementRestaurant.setString(1, "%"+restaurantName+"%");
+            result = searchStatementRestaurant.executeQuery();
+        }
+        else if(!foodName.equals("")) {
+            searchStatementFood.setString(1, "%"+foodName+"%");
+            result = searchStatementFood.executeQuery();
+        }
         else {
-            searchStatement.close();
+            searchStatementBoth.close();
+            searchStatementRestaurant.close();
+            searchStatementFood.close();
             connection.close();
             throw new Error403("No restaurant name and food name has been entered!");
         }
@@ -145,7 +155,9 @@ public class RestaurantRepository {
             restaurantDAO.setLogo(result.getString("logo"));
             restaurantDAOS.add(restaurantDAO);
         }
-        searchStatement.close();
+        searchStatementBoth.close();
+        searchStatementRestaurant.close();
+        searchStatementFood.close();
         result.close();
         connection.close();
         return restaurantDAOS;
