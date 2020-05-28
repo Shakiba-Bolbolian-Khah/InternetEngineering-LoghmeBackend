@@ -1,4 +1,4 @@
-create database Loghme;
+create database IF NOT EXISTS Loghme;
 use Loghme;
 create table Users(
 	id int,
