@@ -1,7 +1,8 @@
 variables:
   USER: "mirhamedjz"
   PASSWORD: "MirHamed2495"
-  IMAGE: "mirhamedjz/loghme-backend"
+  IMAGE_BACKEND: "mirhamedjz/loghme-backend"
+  IMAGE_DB: "mirhamedjz/loghme-db"
 docker-build-master:
   # Official docker image.
   image: docker:latest
@@ -11,8 +12,10 @@ docker-build-master:
   before_script:
     - docker login -u "$USER" -p "$PASSWORD"
   script:
-    - docker build --pull -t "$IMAGE" .
-    - docker push "$IMAGE"
+    - docker build --pull -t "$IMAGE_BACKEND" .
+    - docker push "$IMAGE_BACKEND"
+    - docker build --pull -t "$IMAGE_DB" ./src/main/resources/Loghme-DB
+    - docker push "$IMAGE_DB"
   after_script:
     - docker logout
   only:
