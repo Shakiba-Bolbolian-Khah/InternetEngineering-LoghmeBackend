@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: loghme-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: loghme-backend
+  template:
+    metadata:
+      labels:
+        app: loghme-backend
+    spec:
+      containers:
+      - name: loghme-backend
+        image: mirhamedjz/loghme-backend:latest
+        resources:
+          limits:
+            memory: "300Mi"
+            cpu: "0.3"
+          requests:
+            memory: "200Mi"
+            cpu: "0.2"
+        ports:
+        - containerPort: 8080

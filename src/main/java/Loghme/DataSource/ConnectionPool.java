@@ -17,7 +17,7 @@ public class ConnectionPool {
             e.printStackTrace();
         }
 
-        dataSource.setJdbcUrl("jdbc:mysql://localhost:3306/Loghme");
+        dataSource.setJdbcUrl("jdbc:mysql://mysql-db:3306/Loghme");
         dataSource.setUser("root");
         dataSource.setPassword("MirHamed2495");
 
