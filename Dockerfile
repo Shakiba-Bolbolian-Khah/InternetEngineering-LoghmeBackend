@@ -1,6 +1,6 @@
 FROM openjdk:11.0.5
-RUN echo "Asia/Tehran" > /etc/timezone
-RUN dpkg-reconfigure -f noninteractive tzdata
+ENV TZ=Asia/Tehran
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get -y update && apt-get install -y maven
 WORKDIR /code
 ADD pom.xml /code/pom.xml
